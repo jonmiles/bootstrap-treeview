@@ -16,7 +16,7 @@ Where provided these are the actual versions bootstrap-treeview has been tested 
 - [Bootstrap v3.0.3](http://getbootstrap.com/)
 - [jQuery v2.0.3](http://jquery.com/)
 
-Sorry no support for Bootstrap 2.
+Sorry no support planned for Bootstrap 2.
 
 ## Usage
 
@@ -35,10 +35,10 @@ The component will bind to any existing DOM element.
 	<div id="tree"></div>
 
 
-The most basic usage may look something like this.
+Basic usage may look something like this.
 
 	function getTree() {
-		// Some logic to retrieve, or generate tree data
+		// Some logic to retrieve, or generate tree structure
 		return data;
 	}
  
@@ -48,7 +48,7 @@ The most basic usage may look something like this.
 
 ## Data Structure
 
-In order to define the hierarchical structure of the tree it's necessary to provide a nested array of JavaScript objects.  
+In order to define the hierarchical structure needed for the tree it's necessary to provide a nested array of JavaScript objects.
 
 Example
 
@@ -92,7 +92,7 @@ At the lowest level a tree node is a represented as a simple JavaScript object. 
 		text: "Node 1"
 	}
 
-Here's the full node specification
+If you want to do more, here's the full node specification
 
 	{
 		text: "Node 1", 
@@ -110,6 +110,8 @@ Here's the full node specification
 
 
 ## Node Properties
+
+The following properties are defined to allow node level overrides, such as node specific icons, colours and tags.
 
 ### text
 String.  Mandatory
@@ -154,7 +156,7 @@ You can extend the node object by adding any number of additional key value pair
 ## Options
 
 ### data
-JSON Array of Objects.  No default, expects data
+Array of Objects.  No default, expects data
 
 This is the core data to be displayed by the tree view.
 
