@@ -201,16 +201,11 @@
           data: defaultData
         });
 
-        // $('#treeview5').treeview({
-        //   color: "#428bca",
-        //   expandIcon: 'glyphicon glyphicon-chevron-right',
-        //   collapseIcon: 'glyphicon glyphicon-chevron-down',
-        //   nodeIcon: 'glyphicon glyphicon-bookmark',
-        //   data: defaultData
-        // });
         $('#treeview5').treeview({
           color: "#428bca",
-          showBorder: false,
+          expandIcon: 'glyphicon glyphicon-chevron-right',
+          collapseIcon: 'glyphicon glyphicon-chevron-down',
+          nodeIcon: 'glyphicon glyphicon-bookmark',
           data: defaultData
         });
 
@@ -274,6 +269,10 @@
             $('#event_output').prepend('<p>You clicked ' + node.text + '</p>');
           }
         });
+
+        // $('#treeview11').on('nodeSelected', function (event, node) {
+        //   $('#event_output').prepend('<p>You clicked ' + node.text + '</p>');
+        // });
 
   		});
   	</script>
