@@ -1,6 +1,6 @@
 /* global $, module, test, equal, ok */
 
-;(function() {
+;(function () {
 
 	'use strict';
 
@@ -46,9 +46,43 @@
 		}
 	];
 
+	var json = '[' +
+		'{' +
+			'"text": "Parent 1",' +
+			'"nodes": [' +
+				'{' +
+					'"text": "Child 1",' +
+					'"nodes": [' +
+						'{' +
+							'"text": "Grandchild 1"' +
+						'},' +
+						'{' +
+							'"text": "Grandchild 2"' +
+						'}' +
+					']' +
+				'},' +
+				'{' +
+					'"text": "Child 2"' +
+				'}' +
+			']' +
+		'},' +
+		'{' +
+			'"text": "Parent 2"' +
+		'},' +
+		'{' +
+			'"text": "Parent 3"' +
+		'},' +
+		'{' +
+			'"text": "Parent 4"' +
+		'},' +
+		'{' +
+			'"text": "Parent 5"' +
+		'}' +
+	']';
+
 	module('Options');
 
-	test('Options setup', function() {
+	test('Options setup', function () {
 		// First test defaults option values
 		var el = init(),
 			options = getOptions(el);
@@ -114,9 +148,18 @@
 		
 	});
 
+	module('Data');
+
+	test('Accepts JSON', function () {
+
+		var el = init({levels:1,data:json});
+		equal($(el.selector + ' ul li').length, 5, 'Correct number of root nodes');
+
+	});
+
 	module('Behaviour');
 
-	test('Is chainable', function() {
+	test('Is chainable', function () {
 		var el = init();
 		ok(el.addClass('test'), 'Is chainable');
 		equal(el.attr('class'), 'treeview test', 'Test class was added');
@@ -154,7 +197,7 @@
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
 
-	test('Selecting a node', function() {
+	test('Selecting a node', function () {
 
 		var cbWorked, onWorked = false;
 		init({

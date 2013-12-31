@@ -89,8 +89,11 @@
 		},
 
 		_init: function(options) {
-
+		
 			if (options.data) {
+				if (typeof options.data === 'string') {
+					options.data = $.parseJSON(options.data);
+				}
 				this.tree = $.extend(true, [], options.data);
 				delete options.data;
 			}
