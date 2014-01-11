@@ -35,7 +35,9 @@ module.exports = function(grunt) {
       main: { 
         files: [
           // copy dist to tests
-          { expand: true, cwd: 'dist', src: '*', dest: 'tests/lib/' },
+          // { expand: true, cwd: 'dist', src: '*', dest: 'tests/lib/' },
+          { expand: true, cwd: 'src/css', src: '*', dest: 'tests/lib/' },
+          { expand: true, cwd: 'src/js', src: '*', dest: 'tests/lib/' },
           // copy latest libs to tests
           { expand: true, cwd: 'public/bower_components/jquery', src: 'jquery.js', dest: 'tests/lib/' },
           { expand: true, cwd: 'public/bower_components/bootstrap-datepicker/js', src: 'bootstrap-datepicker.js', dest: 'tests/lib/' },
