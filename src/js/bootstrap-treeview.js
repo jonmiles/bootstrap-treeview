@@ -60,6 +60,7 @@
 		highlightSelected: true,
 		showBorder: true,
 		showTags: false,
+		selectLeafOnly: false,
 
 		// Event handler for when a node is selected
 		onNodeSelected: undefined
@@ -138,7 +139,12 @@
 				this._render();
 			}
 			else if (node) {
-				this._setSelectedNode(node);
+				if (this.options.selectLeafOnly && !this._isLeaf(node)) {
+					this._toggleNodes(node);
+					this._render();
+				} else {
+					this._setSelectedNode(node);
+				}
 			}
 		},
 
@@ -204,7 +210,7 @@
 		// to simulate expanding or collapsing a node.
 		_toggleNodes: function(node) {
 
-			if (!node.nodes && !node._nodes) {
+			if (this._isLeaf(node)) {
 				return;
 			}
 
@@ -216,6 +222,11 @@
 				node.nodes = node._nodes;
 				delete node._nodes;
 			}
+		},
+
+		// Returns true if the node is a leaf of the tree
+		_isLeaf: function(node) {
+			return (!node.nodes && !node._nodes);
 		},
 
 		_render: function() {

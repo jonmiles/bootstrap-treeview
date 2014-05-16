@@ -220,6 +220,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the background color of the selected node.
 
+### selectLeafOnly
+Boolean.  Default: false
+
+Set this to only allow selection of leaf elements of the tree. This means that clicking anywhere on a collapsible item will expand/collapse and no selection event is fired.
+
 ### showBorder
 Boolean.  Default: true
 
