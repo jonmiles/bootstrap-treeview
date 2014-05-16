@@ -210,6 +210,11 @@ String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Boots
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
 
+### noDeselect
+Boolean.  Default: false
+
+Set this to disable deselecting items. When a selected item is clicked, a selected event will be fired instead of deselecting the item.
+
 ### selectedColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
 

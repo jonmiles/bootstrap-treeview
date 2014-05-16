@@ -61,6 +61,7 @@
 		showBorder: true,
 		showTags: false,
 		selectLeafOnly: false,
+		noDeselect: false,
 
 		// Event handler for when a node is selected
 		onNodeSelected: undefined
@@ -173,7 +174,7 @@
 
 			if (!node) { return; }
 			
-			if (node === this.selectedNode) {
+			if (node === this.selectedNode && !this.options.noDeselect) {
 				this.selectedNode = {};
 			}
 			else {
