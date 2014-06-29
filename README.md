@@ -210,6 +210,11 @@ String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Boots
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
 
+### noDeselect
+Boolean.  Default: false
+
+Set this to disable deselecting items. When a selected item is clicked, a selected event will be fired instead of deselecting the item.
+
 ### selectedColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
 
@@ -219,6 +224,11 @@ Sets the foreground color of the selected node.
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
 
 Sets the background color of the selected node.
+
+### selectLeafOnly
+Boolean.  Default: false
+
+Set this to only allow selection of leaf elements of the tree. This means that clicking anywhere on a collapsible item will expand/collapse and no selection event is fired.
 
 ### showBorder
 Boolean.  Default: true
