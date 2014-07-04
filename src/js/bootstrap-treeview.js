@@ -258,6 +258,13 @@
 					.addClass((node === self.selectedNode) ? 'node-selected' : '')
 					.attr('data-nodeid', node.nodeId)
 					.attr('style', self._buildStyleOverride(node));
+				
+				// add attrs defined in JSON
+				// but only ones starting with data-
+				$.each(node._data, function(k, v) {
+					if (k.match(/^data\-/))
+						treeItem.attr(k, v);
+				});
 
 				// Add indent/spacer to mimic tree structure
 				for (var i = 0; i < (level - 1); i++) {
