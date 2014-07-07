@@ -61,6 +61,8 @@
 		showBorder: true,
 		showTags: false,
 
+		singleClickToggle: false,
+
 		// Event handler for when a node is selected
 		onNodeSelected: undefined
 	};
@@ -139,6 +141,11 @@
 			}
 			else if (node) {
 				this._setSelectedNode(node);
+
+				if (this.options.singleClickToggle === true) {
+					this._toggleNodes(node);
+					this._render();
+				}
 			}
 		},
 

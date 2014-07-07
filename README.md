@@ -142,6 +142,11 @@ String.  Optional
 
 Used in conjunction with global enableLinks option to specify anchor tag URL on a given node.
 
+### singleClickToggle
+Boolean. Optional
+
+When true, nodes will automatically expand when clicked, in addition to becoming selected.
+
 ### tags
 Array of Strings.  Optional
 
