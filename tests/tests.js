@@ -247,4 +247,34 @@
 		ok(!onWorked, 'nodeSelected was not fired');
 	});
 
+	test('Clicking a collapsed node expands the node when singleClickToggle true', function () {
+		init({
+			levels: 1,
+			data: data,
+			singleClickToggle: true
+		});
+
+		var nodeCount = $('.list-group-item').length;
+		var el = $('.list-group-item:first');
+		el.trigger('click');
+		el = $('.list-group-item:first');
+		ok(el.hasClass('node-selected'), 'Node should be selected');
+		ok(($('.list-group-item').length > nodeCount), 'Number of nodes has incrased, so node must have expanded');
+	});
+
+	test('Clicking an expanded node collapses the node when singleClickToggle true', function () {
+		init({
+			levels: 2,
+			data: data,
+			singleClickToggle: true
+		});
+
+		var nodeCount = $('.list-group-item').length;
+		var el = $('.list-group-item:first');
+		el.trigger('click');
+		el = $('.list-group-item:first');
+		ok(el.hasClass('node-selected'), 'Node should be selected');
+		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
+	});
+
 }());
