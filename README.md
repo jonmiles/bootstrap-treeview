@@ -54,10 +54,10 @@ Example
 
 	var tree = [
 	  {
-	    text: "Parent 1"
+	    text: "Parent 1",
 	    nodes: [
 	      {
-	        text: "Child 1"
+	        text: "Child 1",
 	        nodes: [
 	          {
 	            text: "Grandchild 1"
