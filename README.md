@@ -180,6 +180,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the default foreground color used by all nodes, except when overridden on a per node basis in data.
 
+### emptyIcon
+String, class name(s).  Default: "glyphicon" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be used on a tree node with no child nodes.
+
 ### enableLinks
 Boolean.  Default: false
 

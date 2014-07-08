@@ -47,6 +47,7 @@
 
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
+		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
 
 		color: undefined, // '#000000',
@@ -286,7 +287,7 @@
 					treeItem
 						.append($(self._template.iconWrapper)
 							.append($(self._template.icon)
-								.addClass('glyphicon'))
+								.addClass(self.options.emptyIcon))
 						);
 				}
 
