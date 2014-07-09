@@ -172,7 +172,7 @@
         },
 
 
-        // Changes the selected node to the specified one without triggering relying on the onChanging event
+        // Changes the selected node to the specified one without relying on the onChanging event
         _setSelectedNodeInternal: function(node){
             var target;
 
