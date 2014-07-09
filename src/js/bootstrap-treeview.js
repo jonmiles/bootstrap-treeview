@@ -62,7 +62,9 @@
 		showTags: false,
 
 		// Event handler for when a node is selected
-		onNodeSelected: undefined
+		onNodeSelected: undefined,
+        onNodeChange: undefined,
+        onNodeChanging: undefined
 	};
 
 	Tree.prototype = {
@@ -121,6 +123,10 @@
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.on('nodeSelected', this.options.onNodeSelected);
 			}
+
+            if (typeof (this.options.onNodeChange) === 'function') {
+                this.$element.on('nodeChange', this.options.onNodeChange);
+            }
 		},
 
 		_clickHandler: function(event) {
@@ -161,20 +167,44 @@
 			this.$element.trigger('nodeSelected', [$.extend(true, {}, node)]);
 		},
 
-		// Handles selecting and unselecting of nodes, 
-		// as well as determining whether or not to trigger the nodeSelected event
-		_setSelectedNode: function(node) {
+        _triggerNodeChange: function(node) {
+            this.$element.trigger('nodeChange', [node ? $.extend(true, {}, node) : null]);
+        },
 
+
+        // Changes the selected node to the specified one without triggering relying on the onChanging event
+        _setSelectedNodeInternal: function(node){
+            var target;
+
+            if (node === this.selectedNode) {
+                this.selectedNode = {};
+                target = null;
+            }
+            else {
+                target = node;
+                this._triggerNodeSelectedEvent(this.selectedNode = node);
+            }
+
+            this._triggerNodeChange(target);
+            this._render();
+        },
+
+        // Handles selecting and deselecting of nodes
+		_setSelectedNode: function(node) {
 			if (!node) { return; }
-			
-			if (node === this.selectedNode) {
-				this.selectedNode = {};
-			}
-			else {
-				this._triggerNodeSelectedEvent(this.selectedNode = node);
-			}
-			
-			this._render();
+
+            // if user subscribed to nodeChanging event, dispatch it and wait for results
+            // else call onChange/onNodeSelected events immediately
+            if(typeof this.options.onNodeChanging == 'function'){
+                var self = this;
+                this.options.onNodeChanging(null, function(change){
+                    if(change){
+                        self._setSelectedNodeInternal(node);
+                    }
+                });
+            } else {
+                this._setSelectedNodeInternal(node);
+            }
 		},
 
 		// On initialization recurses the entire tree structure 
