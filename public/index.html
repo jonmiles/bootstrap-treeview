@@ -230,6 +230,12 @@
 
 
         $('#treeview1').treeview({
+          onNodeChange: function(event, node){
+            console.log(node);
+          },
+          onNodeChanging: function(currentNode, newNode, change){
+              change(confirm('Change node?'));
+          },
           data: defaultData
         });
 
