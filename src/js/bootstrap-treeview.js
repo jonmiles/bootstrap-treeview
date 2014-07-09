@@ -197,7 +197,7 @@
             // else call onChange/onNodeSelected events immediately
             if(typeof this.options.onNodeChanging == 'function'){
                 var self = this;
-                this.options.onNodeChanging(null, function(change){
+                this.options.onNodeChanging(this.selectedNode, node, function(change){
                     if(change){
                         self._setSelectedNodeInternal(node);
                     }
