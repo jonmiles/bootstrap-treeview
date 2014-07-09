@@ -195,7 +195,7 @@
 
             // if user subscribed to nodeChanging event, dispatch it and wait for results
             // else call onChange/onNodeSelected events immediately
-            if(typeof this.options.onNodeChanging == 'function'){
+            if((typeof this.options.onNodeChanging == 'function') && node != this.selectedNode){
                 var self = this;
                 this.options.onNodeChanging(this.selectedNode, node, function(change){
                     if(change){
