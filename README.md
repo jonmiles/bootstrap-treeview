@@ -142,6 +142,11 @@ String.  Optional
 
 Used in conjunction with global enableLinks option to specify anchor tag URL on a given node.
 
+### selectable
+Boolean.  Default: true
+
+Whether of not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
+
 ### tags
 Array of Strings.  Optional
 

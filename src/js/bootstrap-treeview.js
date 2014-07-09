@@ -138,7 +138,12 @@
 				this._render();
 			}
 			else if (node) {
-				this._setSelectedNode(node);
+				if (this._isSelectable(node)) {
+					this._setSelectedNode(node);
+				} else {
+					this._toggleNodes(node);
+					this._render();
+				}
 			}
 		},
 
@@ -216,6 +221,11 @@
 				node.nodes = node._nodes;
 				delete node._nodes;
 			}
+		},
+
+		// Returns true if the node is selectable in the tree
+		_isSelectable: function (node) {
+			return node.selectable !== false;
 		},
 
 		_render: function() {
