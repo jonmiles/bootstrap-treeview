@@ -54,10 +54,10 @@ Example
 
 	var tree = [
 	  {
-	    text: "Parent 1"
+	    text: "Parent 1",
 	    nodes: [
 	      {
-	        text: "Child 1"
+	        text: "Child 1",
 	        nodes: [
 	          {
 	            text: "Grandchild 1"
@@ -141,6 +141,11 @@ The background color used on a given node, overrides global color option.
 String.  Optional
 
 Used in conjunction with global enableLinks option to specify anchor tag URL on a given node.
+
+### selectable
+Boolean.  Default: true
+
+Whether of not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
 
 ### tags
 Array of Strings.  Optional

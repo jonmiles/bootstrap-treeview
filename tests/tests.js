@@ -215,7 +215,7 @@
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Node is correctly selected : class "node-selected" added');
 		ok(($('.node-selected').length === 1), 'There is only one selected node');
-		ok(cbWorked, 'onNodeSelected function was calledted');
+		ok(cbWorked, 'onNodeSelected function was called');
 		ok(onWorked, 'nodeSelected was fired');
 	});
 
@@ -245,6 +245,58 @@
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
 		ok(!cbWorked, 'onNodeSelected was not called');
 		ok(!onWorked, 'nodeSelected was not fired');
+	});
+
+	test('Clicking a non-selectable, colllapsed node expands the node', function () {
+		var testData = $.extend(true, {}, data);
+		testData[0].selectable = false;
+
+		var cbCalled, onCalled = false;
+		init({
+			levels: 1,
+			data: testData,
+			onNodeSelected: function(/*event, date*/) {
+				cbCalled = true;
+			}
+		})
+		.on('nodeSelected', function(/*event, date*/) {
+			onCalled = true;
+		});
+
+		var nodeCount = $('.list-group-item').length;
+		var el = $('.list-group-item:first');
+		el.trigger('click');
+		el = $('.list-group-item:first');
+		ok(!el.hasClass('node-selected'), 'Node should not be selected');
+		ok(!cbCalled, 'onNodeSelected function should not be called');
+		ok(!onCalled, 'nodeSelected should not fire');
+		ok(($('.list-group-item').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
+	});
+
+	test('Clicking a non-selectable, expanded node collapses the node', function () {
+		var testData = $.extend(true, {}, data);
+		testData[0].selectable = false;
+
+		var cbCalled, onCalled = false;
+		init({
+			levels: 2,
+			data: testData,
+			onNodeSelected: function(/*event, date*/) {
+				cbCalled = true;
+			}
+		})
+		.on('nodeSelected', function(/*event, date*/) {
+			onCalled = true;
+		});
+
+		var nodeCount = $('.list-group-item').length;
+		var el = $('.list-group-item:first');
+		el.trigger('click');
+		el = $('.list-group-item:first');
+		ok(!el.hasClass('node-selected'), 'Node should not be selected');
+		ok(!cbCalled, 'onNodeSelected function should not be called');
+		ok(!onCalled, 'nodeSelected should not fire');
+		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
 
     test('Selecting a node (onNodeChange)', function(){
