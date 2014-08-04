@@ -1,2 +1,9 @@
 node_modules/
 public/bower_components/
+
+# Copied by Grunt
+public/css/bootstrap-treeview.css
+public/js/bootstrap-treeview.js
+tests/lib/bootstrap-treeview.css
+tests/lib/bootstrap-treeview.js
+tests/lib/jquery.js
