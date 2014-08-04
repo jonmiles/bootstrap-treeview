@@ -34,7 +34,7 @@
 
 		this.tree = [];
 		this.nodes = [];
-		this.selectedNode = {};
+		this.selectedNode = null;
 		
 		this._init(options);
 	};
@@ -62,7 +62,10 @@
 		showTags: false,
 
 		// Event handler for when a node is selected
-		onNodeSelected: undefined
+		onNodeSelected: undefined,
+
+		// Event handler for when a node is unselected
+		onNodeUnselected: undefined
 	};
 
 	Tree.prototype = {
@@ -121,6 +124,10 @@
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.on('nodeSelected', this.options.onNodeSelected);
 			}
+
+			if (typeof (this.options.onNodeUnselected) === 'function') {
+				this.$element.on('nodeUnselected', this.options.onNodeUnselected);
+			}
 		},
 
 		_clickHandler: function(event) {
@@ -166,6 +173,12 @@
 			this.$element.trigger('nodeSelected', [$.extend(true, {}, node)]);
 		},
 
+		// Actually triggers the nodeUnselected event
+		_triggerNodeUnselectedEvent: function(node) {
+
+			this.$element.trigger('nodeUnselected', [$.extend(true, {}, node)]);
+		},
+
 		// Handles selecting and unselecting of nodes, 
 		// as well as determining whether or not to trigger the nodeSelected event
 		_setSelectedNode: function(node) {
@@ -173,9 +186,14 @@
 			if (!node) { return; }
 			
 			if (node === this.selectedNode) {
-				this.selectedNode = {};
+				this._triggerNodeUnselectedEvent(node);
+				this.selectedNode = null;
 			}
 			else {
+				if (this.selectedNode) {
+					this._triggerNodeUnselectedEvent(this.selectedNode);
+				}
+
 				this._triggerNodeSelectedEvent(this.selectedNode = node);
 			}
 			

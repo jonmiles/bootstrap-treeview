@@ -221,30 +221,106 @@
 
 	test('Unselecting a node', function () {
 
-		var cbWorked, onWorked = false;
+		var cbOnSelectedWorked = false, onSelectedWorked = false,
+			cbOnUnselectedWorked = false, onUnselectedWorked = false;
+
 		init({
 			data: data,
 			onNodeSelected: function(/*event, date*/) {
-				cbWorked = true;
+				cbOnSelectedWorked = true;
+			},
+			onNodeUnselected: function(/*event, date*/) {
+				cbOnUnselectedWorked = true;
 			}
 		})
 		.on('nodeSelected', function(/*event, date*/) {
-			onWorked = true;
+			onSelectedWorked = true;
+		})
+		.on('nodeUnselected', function(/*event, date*/) {
+			onUnselectedWorked = true;
 		});
 
 		// First select a node
 		var el = $('.list-group-item:first');
+
+		// Selecting the node
 		el.trigger('click');
+		ok(cbOnSelectedWorked, 'onNodeSelected was called');
+		ok(onSelectedWorked, 'nodeSelected was fired');
+		ok(!cbOnUnselectedWorked, 'onNodeUnselected was not called');
+		ok(!onUnselectedWorked, 'nodeUnselected was not fired');
 
 		// Then test unselect by simulating another click
-		cbWorked = onWorked = false;
+		cbOnSelectedWorked = onSelectedWorked = false;
+		cbOnUnselectedWorked = onUnselectedWorked = false;
+
+		// Unselecting the node
 		el = $('.list-group-item:first');
 		el.trigger('click');
+
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Node is correctly unselected : class "node-selected" removed');
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
-		ok(!cbWorked, 'onNodeSelected was not called');
-		ok(!onWorked, 'nodeSelected was not fired');
+
+		ok(!cbOnSelectedWorked, 'onNodeSelected was called');
+		ok(!onSelectedWorked, 'nodeSelected was fired');
+		ok(cbOnUnselectedWorked, 'onNodeUnselected was not called');
+		ok(onUnselectedWorked, 'nodeUnselected was not fired');
+	});
+
+	test('Unselecting and selecting another node', function () {
+
+		var cbSelected = null,
+			selected = null,
+			cbUnselected = null,
+			cbUnselectedFired = false,
+			unselected = null,
+			unselectedFired = false;
+
+		init({
+			data: data,
+			onNodeSelected: function(event, node) {
+				cbSelected = node.text;
+			},
+			onNodeUnselected: function(event, node) {
+				cbUnselected = node.text;
+				cbUnselectedFired = true;
+			}
+		})
+		.on('nodeSelected',  function(event, node) {
+			selected = node.text;
+		})
+		.on('nodeUnselected',  function(event, node) {
+			unselected = node.text;
+			unselectedFired = true;
+		});
+
+		// First select "Parent 1"
+		var el = $('.list-group-item:nth-child(1)');
+
+		el.trigger('click');
+		ok(selected == 'Parent 1', '"Parent 1" selected (via event binding)');
+		ok(cbSelected == 'Parent 1', '"Parent 1" selected (via callback)');
+		ok(unselected === null, 'No one unselected (via event binding)');
+		ok(cbUnselected === null, 'No one unselected (via callback)');
+		ok(!cbUnselectedFired, 'onNodeUnselected was not called');
+		ok(!unselectedFired, 'nodeUnselected was not fired');
+
+
+		// Then test unselect by simulating another click
+		cbSelected = null, selected = null, cbUnselected = null, unselected = null;
+		cbUnselectedFired = unselectedFired = false;
+
+		// Selecting "Child 1"
+		el = $('.list-group-item:nth-child(2)');
+		el.trigger('click');
+
+		ok(selected == 'Child 1', '"Child 1" selected (via event binding)');
+		ok(cbSelected == 'Child 1', '"Child 1" selected (via callback)');
+		ok(unselected == 'Parent 1', '"Parent 1" unselected (via event binding)');
+		ok(cbUnselected == 'Parent 1', '"Parent 1" unselected (via callback)');
+		ok(cbUnselectedFired, 'onNodeUnselected was called');
+		ok(unselectedFired, 'nodeUnselected was fired');
 	});
 
 	test('Clicking a non-selectable, colllapsed node expands the node', function () {
