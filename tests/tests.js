@@ -262,10 +262,10 @@
 		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Node is correctly unselected : class "node-selected" removed');
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
 
-		ok(!cbOnSelectedWorked, 'onNodeSelected was called');
-		ok(!onSelectedWorked, 'nodeSelected was fired');
-		ok(cbOnUnselectedWorked, 'onNodeUnselected was not called');
-		ok(onUnselectedWorked, 'nodeUnselected was not fired');
+		ok(!cbOnSelectedWorked, 'onNodeSelected was not called');
+		ok(!onSelectedWorked, 'nodeSelected was  not fired');
+		ok(cbOnUnselectedWorked, 'onNodeUnselected was called');
+		ok(onUnselectedWorked, 'nodeUnselected was fired');
 	});
 
 	test('Unselecting and selecting another node', function () {
