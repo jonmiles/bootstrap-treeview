@@ -90,6 +90,7 @@
 		equal(options.levels, 2, 'levels defaults ok');
 		equal(options.expandIcon, 'glyphicon glyphicon-plus', 'expandIcon defaults ok');
 		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon defaults ok');
+		equal(options.emptyIcon, 'glyphicon', 'emptyIcon defaults ok');
 		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon defaults ok');
 		equal(options.color, undefined, 'color defaults ok');
 		equal(options.backColor, undefined, 'backColor defaults ok');
@@ -108,6 +109,7 @@
 			levels: 99,
 			expandIcon: 'glyphicon glyphicon-expand',
 			collapseIcon: 'glyphicon glyphicon-collapse',
+			emptyIcon: 'glyphicon',
 			nodeIcon: 'glyphicon glyphicon-node',
 			color: 'yellow',
 			backColor: 'purple',
@@ -127,6 +129,7 @@
 		equal(options.levels, 99, 'levels set ok');
 		equal(options.expandIcon, 'glyphicon glyphicon-expand', 'expandIcon set ok');
 		equal(options.collapseIcon, 'glyphicon glyphicon-collapse', 'collapseIcon set ok');
+		equal(options.emptyIcon, 'glyphicon', 'emptyIcon set ok');
 		equal(options.nodeIcon, 'glyphicon glyphicon-node', 'nodeIcon set ok');
 		equal(options.color, 'yellow', 'color set ok');
 		equal(options.backColor, 'purple', 'backColor set ok');
@@ -182,7 +185,7 @@
 		init({levels:1,data:data});
 
 		var nodeCount = $('.list-group-item').length;
-		var el = $('i.click-expand:first');
+		var el = $('.click-expand:first');
 		el.trigger('click');
 		ok(($('.list-group-item').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
 	});
@@ -192,7 +195,7 @@
 		init({levels:2,data:data});
 
 		var nodeCount = $('.list-group-item').length;
-		var el = $('i.click-collapse:first');
+		var el = $('.click-collapse:first');
 		el.trigger('click');
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
