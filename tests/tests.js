@@ -185,7 +185,7 @@
 		init({levels:1,data:data});
 
 		var nodeCount = $('.list-group-item').length;
-		var el = $('i.click-expand:first');
+		var el = $('.click-expand:first');
 		el.trigger('click');
 		ok(($('.list-group-item').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
 	});
@@ -195,7 +195,7 @@
 		init({levels:2,data:data});
 
 		var nodeCount = $('.list-group-item').length;
-		var el = $('i.click-collapse:first');
+		var el = $('.click-collapse:first');
 		el.trigger('click');
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
