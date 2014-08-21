@@ -17,7 +17,7 @@
  * limitations under the License.
  * ========================================================= */
 
-;(function($, window, document, undefined) {
+; (function ($, window, document, undefined) {
 
 	/*global jQuery, console*/
 
@@ -25,7 +25,7 @@
 
 	var pluginName = 'treeview';
 
-	var Tree = function(element, options) {
+	var Tree = function (element, options) {
 
 		this.$element = $(element);
 		this._element = element;
@@ -35,7 +35,7 @@
 		this.tree = [];
 		this.nodes = [];
 		this.selectedNode = {};
-		
+
 		this._init(options);
 	};
 
@@ -47,8 +47,8 @@
 
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
-		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
+        emptyIcon: 'glyphicon',
 
 		color: undefined, // '#000000',
 		backColor: undefined, // '#FFFFFF',
@@ -63,19 +63,40 @@
 		showTags: false,
 
 		// Event handler for when a node is selected
-		onNodeSelected: undefined
+		onNodeSelected: undefined,
+		onNodeToggled: undefined
 	};
 
 	Tree.prototype = {
 
-		remove: function() {
+		remove: function () {
 
 			this._destroy();
 			$.removeData(this, 'plugin_' + pluginName);
 			$('#' + this._styleId).remove();
 		},
 
-		_destroy: function() {
+		addItem: function (node, item, render) {
+			var $node = this._findNode(node._treeItem);
+			if ($node._nodes)
+				$node._nodes.push(item);
+			else
+				$node.nodes.push(item);
+			if (render || render == undefined)
+				this._render();
+		},
+
+		clearNode: function (node, render) {
+			var $node = this._findNode(node._treeItem);
+			if ($node._nodes)
+				$node._nodes = [];
+			else
+				$node.nodes = [];
+			if (render || render == undefined)
+				this._render();
+		},
+
+		_destroy: function () {
 
 			if (this.initialized) {
 				this.$wrapper.remove();
@@ -89,8 +110,8 @@
 			this.initialized = false;
 		},
 
-		_init: function(options) {
-		
+		_init: function (options) {
+
 			if (options.data) {
 				if (typeof options.data === 'string') {
 					options.data = $.parseJSON(options.data);
@@ -108,12 +129,12 @@
 			this._render();
 		},
 
-		_unsubscribeEvents: function() {
+		_unsubscribeEvents: function () {
 
 			this.$element.off('click');
 		},
 
-		_subscribeEvents: function() {
+		_subscribeEvents: function () {
 
 			this._unsubscribeEvents();
 
@@ -122,35 +143,34 @@
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.on('nodeSelected', this.options.onNodeSelected);
 			}
+			if (typeof (this.options.onNodeToggled) === 'function') {
+				this.$element.on('nodeToggled', this.options.onNodeToggled);
+			}
 		},
 
-		_clickHandler: function(event) {
+		_clickHandler: function (event) {
 
 			if (!this.options.enableLinks) { event.preventDefault(); }
-			
+
 			var target = $(event.target),
 				classList = target.attr('class') ? target.attr('class').split(' ') : [],
 				node = this._findNode(target);
 
-			if ((classList.indexOf('click-expand') != -1) ||
-					(classList.indexOf('click-collapse') != -1)) {
+			if (((classList.indexOf('click-expand') != -1) ||
+					(classList.indexOf('click-collapse') != -1)) ||
+                ((node._nodes || node.nodes) && node.selectable === false)) {
 				// Expand or collapse node by toggling child node visibility
 				this._toggleNodes(node);
 				this._render();
 			}
-			else if (node) {
-				if (this._isSelectable(node)) {
-					this._setSelectedNode(node);
-				} else {
-					this._toggleNodes(node);
-					this._render();
-				}
+			else if (node && (node.selectable || node.selectable == undefined)) {
+				this._setSelectedNode(node);
 			}
 		},
 
 		// Looks up the DOM for the closest parent list item to retrieve the 
 		// data attribute nodeid, which is used to lookup the node in the flattened structure.
-		_findNode: function(target) {
+		_findNode: function (target) {
 
 			var nodeId = target.closest('li.list-group-item').attr('data-nodeid'),
 				node = this.nodes[nodeId];
@@ -162,37 +182,41 @@
 		},
 
 		// Actually triggers the nodeSelected event
-		_triggerNodeSelectedEvent: function(node) {
+		_triggerNodeSelectedEvent: function (node) {
 
 			this.$element.trigger('nodeSelected', [$.extend(true, {}, node)]);
 		},
 
+		_triggerNodeToggled: function (node) {
+			this.$element.trigger('nodeToggled', [$.extend(true, {}, node), !node._nodes]);
+		},
+
 		// Handles selecting and unselecting of nodes, 
 		// as well as determining whether or not to trigger the nodeSelected event
-		_setSelectedNode: function(node) {
+		_setSelectedNode: function (node) {
 
-			if (!node) { return; }
-			
+			if (!node) return;
+
 			if (node === this.selectedNode) {
 				this.selectedNode = {};
 			}
 			else {
 				this._triggerNodeSelectedEvent(this.selectedNode = node);
 			}
-			
+
 			this._render();
 		},
 
 		// On initialization recurses the entire tree structure 
 		// setting expanded / collapsed states based on initial levels
-		_setInitialLevels: function(nodes, level) {
+		_setInitialLevels: function (nodes, level) {
 
 			if (!nodes) { return; }
 			level += 1;
 
 			var self = this;
 			$.each(nodes, function addNodes(id, node) {
-				
+
 				if (level >= self.options.levels) {
 					self._toggleNodes(node);
 				}
@@ -208,7 +232,7 @@
 
 		// Toggle renaming nodes -> _nodes, _nodes -> nodes
 		// to simulate expanding or collapsing a node.
-		_toggleNodes: function(node) {
+		_toggleNodes: function (node) {
 
 			if (!node.nodes && !node._nodes) {
 				return;
@@ -222,14 +246,10 @@
 				node.nodes = node._nodes;
 				delete node._nodes;
 			}
+			this._triggerNodeToggled(node);
 		},
 
-		// Returns true if the node is selectable in the tree
-		_isSelectable: function (node) {
-			return node.selectable !== false;
-		},
-
-		_render: function() {
+		_render: function () {
 
 			var self = this;
 
@@ -240,7 +260,7 @@
 				self.$wrapper = $(self._template.list);
 
 				self._injectStyle();
-				
+
 				self.initialized = true;
 			}
 
@@ -251,86 +271,97 @@
 			self._buildTree(self.tree, 0);
 		},
 
+		_createItem: function (self, node, level) {
+			var treeItem = $(self._template.item)
+				.addClass('node-' + self._elementId)
+				.addClass((node === self.selectedNode) ? 'node-selected' : '')
+				.attr('data-nodeid', node.nodeId)
+                .attr('data-selectable', node.selectable || node.selectable == undefined)
+				.attr('style', self._buildStyleOverride(node));
+
+			// Add indent/spacer to mimic tree structure
+			for (var i = 0; i < (level - 1) ; i++) {
+				treeItem.append(self._template.indent);
+			}
+
+			// Add expand, collapse or empty spacer icons 
+			// to facilitate tree structure navigation
+			if (node._nodes) {
+				treeItem
+					.append($(self._template.iconWrapper)
+						.append($(self._template.icon)
+							.addClass('click-expand')
+							.addClass(self.options.expandIcon))
+					);
+			}
+			else if (node.nodes) {
+				treeItem
+					.append($(self._template.iconWrapper)
+						.append($(self._template.icon)
+							.addClass('click-collapse')
+							.addClass(self.options.collapseIcon))
+					);
+			}
+			else {
+				treeItem
+					.append($(self._template.iconWrapper)
+						.append($(self._template.icon)
+							.addClass('glyphicon'))
+					);
+			}
+
+			// Add node icon
+			treeItem
+				.append($(self._template.iconWrapper)
+					.append($(self._template.icon)
+						.addClass(node.icon ? node.icon : self.options.nodeIcon))
+				);
+
+			// Add text
+			if (self.options.enableLinks) {
+				// Add hyperlink
+				treeItem
+					.append($(self._template.link)
+						.attr('href', node.href)
+						.append(node.text)
+					);
+			}
+			else {
+				// otherwise just text
+				treeItem
+					.append(node.text);
+			}
+
+			// Add tags as badges
+			if (self.options.showTags && node.tags) {
+				$.each(node.tags, function addTag(id, tag) {
+					treeItem
+						.append($(self._template.badge)
+							.append(tag)
+						);
+				});
+			}
+			return treeItem;
+		},
+
 		// Starting from the root node, and recursing down the 
 		// structure we build the tree one node at a time
-		_buildTree: function(nodes, level) {
+		_buildTree: function (nodes, level) {
 
 			if (!nodes) { return; }
 			level += 1;
 
 			var self = this;
 			$.each(nodes, function addNodes(id, node) {
-
 				node.nodeId = self.nodes.length;
+				node._level = level;
 				self.nodes.push(node);
 
-				var treeItem = $(self._template.item)
-					.addClass('node-' + self._elementId)
-					.addClass((node === self.selectedNode) ? 'node-selected' : '')
-					.attr('data-nodeid', node.nodeId)
-					.attr('style', self._buildStyleOverride(node));
-
-				// Add indent/spacer to mimic tree structure
-				for (var i = 0; i < (level - 1); i++) {
-					treeItem.append(self._template.indent);
-				}
-
-				// Add expand, collapse or empty spacer icons 
-				// to facilitate tree structure navigation
-				if (node._nodes) {
-					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass('click-expand')
-							.addClass(self.options.expandIcon)
-						);
-				}
-				else if (node.nodes) {
-					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass('click-collapse')
-							.addClass(self.options.collapseIcon)
-						);
-				}
-				else {
-					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass(self.options.emptyIcon)
-						);
-				}
-
-				// Add node icon
-				treeItem
-					.append($(self._template.icon)
-						.addClass(node.icon ? node.icon : self.options.nodeIcon)
-					);
-
-				// Add text
-				if (self.options.enableLinks) {
-					// Add hyperlink
-					treeItem
-						.append($(self._template.link)
-							.attr('href', node.href)
-							.append(node.text)
-						);
-				}
-				else {
-					// otherwise just text
-					treeItem
-						.append(node.text);
-				}
-
-				// Add tags as badges
-				if (self.options.showTags && node.tags) {
-					$.each(node.tags, function addTag(id, tag) {
-						treeItem
-							.append($(self._template.badge)
-								.append(tag)
-							);
-					});
-				}
+				var treeItem = self._createItem(self, node, level);
 
 				// Add item to the tree
 				self.$wrapper.append(treeItem);
+				node._treeItem = treeItem;
 
 				// Recursively add child ndoes
 				if (node.nodes) {
@@ -342,7 +373,7 @@
 		// Define any node level style override for
 		// 1. selectedNode
 		// 2. node|data assigned color overrides
-		_buildStyleOverride: function(node) {
+		_buildStyleOverride: function (node) {
 
 			var style = '';
 			if (this.options.highlightSelected && (node === this.selectedNode)) {
@@ -363,7 +394,7 @@
 		},
 
 		// Add inline style into head 
-		_injectStyle: function() {
+		_injectStyle: function () {
 
 			if (this.options.injectStyle && !document.getElementById(this._styleId)) {
 				$('<style type="text/css" id="' + this._styleId + '"> ' + this._buildStyle() + ' </style>').appendTo('head');
@@ -371,7 +402,7 @@
 		},
 
 		// Construct trees style based on user options
-		_buildStyle: function() {
+		_buildStyle: function () {
 
 			var style = '.node-' + this._elementId + '{';
 			if (this.options.color) {
@@ -401,27 +432,27 @@
 			list: '<ul class="list-group"></ul>',
 			item: '<li class="list-group-item"></li>',
 			indent: '<span class="indent"></span>',
-			expandCollapseIcon: '<span class="expand-collapse"></span>',
-			icon: '<span class="icon"></span>',
+			iconWrapper: '<span class="icon"></span>',
+			icon: '<i></i>',
 			link: '<a href="#" style="color:inherit;"></a>',
 			badge: '<span class="badge"></span>'
 		},
 
-		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.expand-collapse{width:1rem;height:1rem}span.icon{margin-left:10px;margin-right:5px}'
+		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 		// _css: '.list-group-item{cursor:pointer;}.list-group-item:hover{background-color:#f5f5f5;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 
 	};
 
-	var logError = function(message) {
-        if(window.console) {
-            window.console.error(message);
-        }
-    };
+	var logError = function (message) {
+		if (window.console) {
+			window.console.error(message);
+		}
+	};
 
 	// Prevent against multiple instantiations,
 	// handle updates and method calls
-	$.fn[pluginName] = function(options, args) {
-		return this.each(function() {
+	$.fn[pluginName] = function (options, args) {
+		return this.each(function () {
 			var self = $.data(this, 'plugin_' + pluginName);
 			if (typeof options === 'string') {
 				if (!self) {

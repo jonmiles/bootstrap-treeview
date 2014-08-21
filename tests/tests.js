@@ -301,5 +301,29 @@
 		ok(!onCalled, 'nodeSelected should not fire');
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
+    
+    test('Expanding/Collapsing a node should trigger nodeToggled event', function () {
+        var testData = $.extend(true, {}, data);
+		testData[0].selectable = false;
+        var cbCalled, onCalled = false;
+        
+        init({
+            levels: 2,
+            data: testData,
+            onNodeToggled: function(/*event, node*/) {
+                cbCalled = true;
+            }
+        })
+        .on('nodeToggled', function (/*event, node*/){
+            onCalled = true;
+        });
+        
+        var nodeCount = $('.list-group-item').length;
+		var el = $('.list-group-item:first');
+		el.trigger('click');
+        
+        ok(cbCalled, 'Eventhandler from options sould have been called');
+        ok(onCalled, 'Eventhandler from jQuery on sould have been called');
+    });
 
 }());
