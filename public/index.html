@@ -71,7 +71,7 @@
           <div id="treeview12" class="test"></div>
         </div>
         <div class="col-sm-4">
-          <h2></h2>
+          <h2>Multiselect</h2>
           <div id="treeview13" class="test"></div>
         </div>
         <div class="col-sm-4">
@@ -326,6 +326,11 @@
         $('#treeview12').treeview({
           data: json
         });
+
+        $('#treeview13').treeview({
+          data: defaultData,
+          multiselection: true
+        });        
 
   		});
   	</script>

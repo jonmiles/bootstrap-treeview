@@ -240,7 +240,10 @@ Boolean.  Default: false
 
 Whether or not to display tags to the right of each node.  The values of which must be provided in the data structure on a per node basis.
 
+### multiselection 
+Boolean.  Default: false
 
+Whether or not to allow multiselection of nodes. Multiselection is working without any additional advanced functionality. It means, that it just simply allowing to select more than one node without any automatic selection of parents, etc.
 
 ## Methods
 
@@ -250,6 +253,22 @@ Removes the tree view component. Removing attached events, internal attached obj
 
 	$('#tree').treeview('remove');
 
+### getSelectedNodes(receiver)
+
+Receiver can be either an array to which will be selected nodes added, or a function with will be called with all selected nodes as paramater
+
+  var selectedNodes = []
+	$('#tree').treeview('getSelectedNodes', [selectedNodes]);
+	var callback = function(selectedNodes) {
+	   //do something
+  }
+  $('#tree').treeview('getSelectedNodes', [callback]);
+
+### deselectAllNodes
+
+Deselect all nodes in the tree view component.
+
+	$('#tree').treeview('deselectAllNodes');
 
 
 ## Events

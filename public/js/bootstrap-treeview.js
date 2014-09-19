@@ -34,7 +34,7 @@
 
 		this.tree = [];
 		this.nodes = [];
-		this.selectedNode = {};
+		this.selectedNodes = [];
 		
 		this._init(options);
 	};
@@ -60,6 +60,8 @@
 		highlightSelected: true,
 		showBorder: true,
 		showTags: false,
+                
+                multiselection: false,
 
 		// Event handler for when a node is selected
 		onNodeSelected: undefined
@@ -73,6 +75,25 @@
 			$.removeData(this, 'plugin_' + pluginName);
 			$('#' + this._styleId).remove();
 		},
+                
+                /**
+                 * @param receiver can be either an array to which will be selected nodes added, 
+                 *        or a function with will be called with all selected nodes as paramater
+                 */
+                getSelectedNodes: function(receiver) {
+                        if ( $.isArray(receiver) ) {
+                                for (var i = 0; i < this.selectedNodes.length; i++) {
+                                    receiver.push(this.selectedNodes[i]);
+                                }
+                        } else if ( typeof(receiver) === 'function' ) {
+                                receiver(this.selectedNodes);
+                        }
+                },
+                               
+                deselectAllNodes: function() {
+                        this.selectedNodes = [];
+                        this._render();
+                },
 
 		_destroy: function() {
 
@@ -166,12 +187,16 @@
 		_setSelectedNode: function(node) {
 
 			if (!node) { return; }
-			
-			if (node === this.selectedNode) {
-				this.selectedNode = {};
+			var nodeIndex = $.inArray(node, this.selectedNodes);                        
+			if ( nodeIndex > -1 ) {
+                                this.selectedNodes.splice(nodeIndex, 1);
 			}
 			else {
-				this._triggerNodeSelectedEvent(this.selectedNode = node);
+                                if ( !this.options.multiselection ) {
+                                        this.selectedNodes = [];
+                                }
+                                this.selectedNodes.push(node);
+				this._triggerNodeSelectedEvent(node);
 			}
 			
 			this._render();
@@ -255,7 +280,7 @@
 
 				var treeItem = $(self._template.item)
 					.addClass('node-' + self._elementId)
-					.addClass((node === self.selectedNode) ? 'node-selected' : '')
+					.addClass(($.inArray(node, self.selectedNodes) > -1) ? 'node-selected' : '')
 					.attr('data-nodeid', node.nodeId)
 					.attr('style', self._buildStyleOverride(node));
 
@@ -333,19 +358,19 @@
 		},
 
 		// Define any node level style override for
-		// 1. selectedNode
+		// 1. selectedNodes
 		// 2. node|data assigned color overrides
 		_buildStyleOverride: function(node) {
 
 			var style = '';
-			if (this.options.highlightSelected && (node === this.selectedNode)) {
+			if (this.options.highlightSelected && ($.inArray(node, this.selectedNodes) > -1 )) {
 				style += 'color:' + this.options.selectedColor + ';';
 			}
 			else if (node.color) {
 				style += 'color:' + node.color + ';';
 			}
 
-			if (this.options.highlightSelected && (node === this.selectedNode)) {
+			if (this.options.highlightSelected && ($.inArray(node, this.selectedNodes) > -1)) {
 				style += 'background-color:' + this.options.selectedBackColor + ';';
 			}
 			else if (node.backColor) {
