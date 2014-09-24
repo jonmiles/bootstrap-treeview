@@ -34,7 +34,7 @@
 
 		this.tree = [];
 		this.nodes = [];
-		this.selectedNode = {};
+		this.selectedNodes = [];
 		
 		this._init(options);
 	};
@@ -47,7 +47,6 @@
 
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
-		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
 
 		color: undefined, // '#000000',
@@ -61,6 +60,8 @@
 		highlightSelected: true,
 		showBorder: true,
 		showTags: false,
+                
+                multiselection: false,
 
 		// Event handler for when a node is selected
 		onNodeSelected: undefined
@@ -74,6 +75,25 @@
 			$.removeData(this, 'plugin_' + pluginName);
 			$('#' + this._styleId).remove();
 		},
+                
+                /**
+                 * @param receiver can be either an array to which will be selected nodes added, 
+                 *        or a function with will be called with all selected nodes as paramater
+                 */
+                getSelectedNodes: function(receiver) {
+                        if ( $.isArray(receiver) ) {
+                                for (var i = 0; i < this.selectedNodes.length; i++) {
+                                    receiver.push(this.selectedNodes[i]);
+                                }
+                        } else if ( typeof(receiver) === 'function' ) {
+                                receiver(this.selectedNodes);
+                        }
+                },
+                               
+                deselectAllNodes: function() {
+                        this.selectedNodes = [];
+                        this._render();
+                },
 
 		_destroy: function() {
 
@@ -139,12 +159,7 @@
 				this._render();
 			}
 			else if (node) {
-				if (this._isSelectable(node)) {
-					this._setSelectedNode(node);
-				} else {
-					this._toggleNodes(node);
-					this._render();
-				}
+				this._setSelectedNode(node);
 			}
 		},
 
@@ -172,12 +187,16 @@
 		_setSelectedNode: function(node) {
 
 			if (!node) { return; }
-			
-			if (node === this.selectedNode) {
-				this.selectedNode = {};
+			var nodeIndex = $.inArray(node, this.selectedNodes);                        
+			if ( nodeIndex > -1 ) {
+                                this.selectedNodes.splice(nodeIndex, 1);
 			}
 			else {
-				this._triggerNodeSelectedEvent(this.selectedNode = node);
+                                if ( !this.options.multiselection ) {
+                                        this.selectedNodes = [];
+                                }
+                                this.selectedNodes.push(node);
+				this._triggerNodeSelectedEvent(node);
 			}
 			
 			this._render();
@@ -224,11 +243,6 @@
 			}
 		},
 
-		// Returns true if the node is selectable in the tree
-		_isSelectable: function (node) {
-			return node.selectable !== false;
-		},
-
 		_render: function() {
 
 			var self = this;
@@ -266,7 +280,7 @@
 
 				var treeItem = $(self._template.item)
 					.addClass('node-' + self._elementId)
-					.addClass((node === self.selectedNode) ? 'node-selected' : '')
+					.addClass(($.inArray(node, self.selectedNodes) > -1) ? 'node-selected' : '')
 					.attr('data-nodeid', node.nodeId)
 					.attr('style', self._buildStyleOverride(node));
 
@@ -279,29 +293,33 @@
 				// to facilitate tree structure navigation
 				if (node._nodes) {
 					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass('click-expand')
-							.addClass(self.options.expandIcon)
+						.append($(self._template.iconWrapper)
+							.append($(self._template.icon)
+								.addClass('click-expand')
+								.addClass(self.options.expandIcon))
 						);
 				}
 				else if (node.nodes) {
 					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass('click-collapse')
-							.addClass(self.options.collapseIcon)
+						.append($(self._template.iconWrapper)
+							.append($(self._template.icon)
+								.addClass('click-collapse')
+								.addClass(self.options.collapseIcon))
 						);
 				}
 				else {
 					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass(self.options.emptyIcon)
+						.append($(self._template.iconWrapper)
+							.append($(self._template.icon)
+								.addClass('glyphicon'))
 						);
 				}
 
 				// Add node icon
 				treeItem
-					.append($(self._template.icon)
-						.addClass(node.icon ? node.icon : self.options.nodeIcon)
+					.append($(self._template.iconWrapper)
+						.append($(self._template.icon)
+							.addClass(node.icon ? node.icon : self.options.nodeIcon))
 					);
 
 				// Add text
@@ -340,19 +358,19 @@
 		},
 
 		// Define any node level style override for
-		// 1. selectedNode
+		// 1. selectedNodes
 		// 2. node|data assigned color overrides
 		_buildStyleOverride: function(node) {
 
 			var style = '';
-			if (this.options.highlightSelected && (node === this.selectedNode)) {
+			if (this.options.highlightSelected && ($.inArray(node, this.selectedNodes) > -1 )) {
 				style += 'color:' + this.options.selectedColor + ';';
 			}
 			else if (node.color) {
 				style += 'color:' + node.color + ';';
 			}
 
-			if (this.options.highlightSelected && (node === this.selectedNode)) {
+			if (this.options.highlightSelected && ($.inArray(node, this.selectedNodes) > -1)) {
 				style += 'background-color:' + this.options.selectedBackColor + ';';
 			}
 			else if (node.backColor) {
@@ -401,13 +419,13 @@
 			list: '<ul class="list-group"></ul>',
 			item: '<li class="list-group-item"></li>',
 			indent: '<span class="indent"></span>',
-			expandCollapseIcon: '<span class="expand-collapse"></span>',
-			icon: '<span class="icon"></span>',
+			iconWrapper: '<span class="icon"></span>',
+			icon: '<i></i>',
 			link: '<a href="#" style="color:inherit;"></a>',
 			badge: '<span class="badge"></span>'
 		},
 
-		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.expand-collapse{width:1rem;height:1rem}span.icon{margin-left:10px;margin-right:5px}'
+		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 		// _css: '.list-group-item{cursor:pointer;}.list-group-item:hover{background-color:#f5f5f5;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 
 	};
