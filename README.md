@@ -257,12 +257,14 @@ Removes the tree view component. Removing attached events, internal attached obj
 
 Receiver can be either an array to which will be selected nodes added, or a function with will be called with all selected nodes as paramater
 
-  var selectedNodes = []
+	var selectedNodes = []
 	$('#tree').treeview('getSelectedNodes', [selectedNodes]);
+	
+or
 	var callback = function(selectedNodes) {
 	   //do something
-  }
-  $('#tree').treeview('getSelectedNodes', [callback]);
+	}
+  	$('#tree').treeview('getSelectedNodes', [callback]);
 
 ### deselectAllNodes
 
