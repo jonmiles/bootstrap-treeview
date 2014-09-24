@@ -261,6 +261,7 @@ Receiver can be either an array to which will be selected nodes added, or a func
 	$('#tree').treeview('getSelectedNodes', [selectedNodes]);
 	
 or
+
 	var callback = function(selectedNodes) {
 	   //do something
 	}
