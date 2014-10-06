@@ -305,8 +305,8 @@
 					);
 
 				// Add text
-				if (self.options.enableLinks) {
-					// Add hyperlink
+				if (self.options.enableLinks && node.href && node.href != null && node.href != "") {
+					// Add hyperlink if node.href is not empty
 					treeItem
 						.append($(self._template.link)
 							.attr('href', node.href)
