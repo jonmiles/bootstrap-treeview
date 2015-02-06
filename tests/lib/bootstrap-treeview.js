@@ -47,6 +47,7 @@
 
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
+		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
 
 		color: undefined, // '#000000',
@@ -138,7 +139,12 @@
 				this._render();
 			}
 			else if (node) {
-				this._setSelectedNode(node);
+				if (this._isSelectable(node)) {
+					this._setSelectedNode(node);
+				} else {
+					this._toggleNodes(node);
+					this._render();
+				}
 			}
 		},
 
@@ -218,6 +224,11 @@
 			}
 		},
 
+		// Returns true if the node is selectable in the tree
+		_isSelectable: function (node) {
+			return node.selectable !== false;
+		},
+
 		_render: function() {
 
 			var self = this;
@@ -268,33 +279,29 @@
 				// to facilitate tree structure navigation
 				if (node._nodes) {
 					treeItem
-						.append($(self._template.iconWrapper)
-							.append($(self._template.icon)
-								.addClass('click-expand')
-								.addClass(self.options.expandIcon))
+						.append($(self._template.expandCollapseIcon)
+							.addClass('click-expand')
+							.addClass(self.options.expandIcon)
 						);
 				}
 				else if (node.nodes) {
 					treeItem
-						.append($(self._template.iconWrapper)
-							.append($(self._template.icon)
-								.addClass('click-collapse')
-								.addClass(self.options.collapseIcon))
+						.append($(self._template.expandCollapseIcon)
+							.addClass('click-collapse')
+							.addClass(self.options.collapseIcon)
 						);
 				}
 				else {
 					treeItem
-						.append($(self._template.iconWrapper)
-							.append($(self._template.icon)
-								.addClass('glyphicon'))
+						.append($(self._template.expandCollapseIcon)
+							.addClass(self.options.emptyIcon)
 						);
 				}
 
 				// Add node icon
 				treeItem
-					.append($(self._template.iconWrapper)
-						.append($(self._template.icon)
-							.addClass(node.icon ? node.icon : self.options.nodeIcon))
+					.append($(self._template.icon)
+						.addClass(node.icon ? node.icon : self.options.nodeIcon)
 					);
 
 				// Add text
@@ -394,13 +401,13 @@
 			list: '<ul class="list-group"></ul>',
 			item: '<li class="list-group-item"></li>',
 			indent: '<span class="indent"></span>',
-			iconWrapper: '<span class="icon"></span>',
-			icon: '<i></i>',
+			expandCollapseIcon: '<span class="expand-collapse"></span>',
+			icon: '<span class="icon"></span>',
 			link: '<a href="#" style="color:inherit;"></a>',
 			badge: '<span class="badge"></span>'
 		},
 
-		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
+		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.expand-collapse{width:1rem;height:1rem}span.icon{margin-left:10px;margin-right:5px}'
 		// _css: '.list-group-item{cursor:pointer;}.list-group-item:hover{background-color:#f5f5f5;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 
 	};
