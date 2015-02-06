@@ -1,5 +1,5 @@
 /* =========================================================
- * bootstrap-treeview.js v1.0.0
+ * bootstrap-treeview.js v1.0.2
  * =========================================================
  * Copyright 2013 Jonathan Miles 
  * Project URL : http://www.jondmiles.com/bootstrap-treeview
@@ -407,7 +407,7 @@
 			badge: '<span class="badge"></span>'
 		},
 
-		_css: '.list-group-item{cursor:pointer;}span.indent{margin-left:10px;margin-right:10px}span.expand-collapse{width:1rem;height:1rem}span.icon{margin-left:10px;margin-right:5px}'
+		_css: '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
 		// _css: '.list-group-item{cursor:pointer;}.list-group-item:hover{background-color:#f5f5f5;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 
 	};

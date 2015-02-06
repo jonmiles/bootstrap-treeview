@@ -1,5 +1,5 @@
 /* =========================================================
- * bootstrap-treeview.css v1.0.0
+ * bootstrap-treeview.css v1.0.2
  * =========================================================
  * Copyright 2013 Jonathan Miles 
  * Project URL : http://www.jondmiles.com/bootstrap-treeview
@@ -17,21 +17,21 @@
  * limitations under the License.
  * ========================================================= */
 
-.list-group-item {
+.treeview .list-group-item {
 	cursor: pointer;
 }
 
-span.indent {
+.treeview span.indent {
 	margin-left: 10px;
 	margin-right: 10px;
 }
 
-span.expand-collapse {
+.treeview span.expand-collapse {
 	width: 1rem;
 	height: 1rem;
 }
 
-span.icon {
+.treeview span.icon {
 	margin-left: 10px;
 	margin-right: 5px;
 }
