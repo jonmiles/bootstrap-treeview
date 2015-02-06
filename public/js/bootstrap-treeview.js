@@ -111,6 +111,10 @@
 		_unsubscribeEvents: function() {
 
 			this.$element.off('click');
+
+			if (typeof (this.options.onNodeSelected) === 'function') {
+				this.$element.off('nodeSelected');
+			}
 		},
 
 		_subscribeEvents: function() {
