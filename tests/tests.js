@@ -302,4 +302,99 @@
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
 
+    test('Selecting a node (onNodeChange)', function(){
+        var nodeParam = null;
+        init({
+            data: data,
+            onNodeChange: function(event, node){
+                nodeParam = node;
+            }
+        });
+
+        var el = $('.list-group-item:first');
+        el.trigger('click');
+        ok(($('.node-selected').length === 1), 'There is only one selected node');
+        ok(nodeParam, 'onNodeChange was called');
+    });
+
+    test('Selecting and deselecting a node (onNodeChange)', function(){
+        var nodeParam = null;
+        init({
+            data: data,
+            onNodeChange: function(event, node){
+                nodeParam = node;
+            }
+        });
+
+        $('.list-group-item:first').trigger('click');
+        ok(nodeParam, 'onNodeChange was called');
+
+        // current node is deselected and the arg should be null
+        $('.list-group-item:first').trigger('click');
+        ok(nodeParam == null, 'onNodeChange was called');
+    });
+
+    test('onNodeChanging event (accept change)', function(){
+        var cbWorked = false;
+        var firstNodeA;
+        var firstNodeB;
+        var secondNode;
+
+        var tsChanging, tsChange;
+
+        init({
+            data: data,
+            onNodeChange: function(event, node){
+                tsChange = + new Date();
+                if(!firstNodeB){
+                    firstNodeB = node;
+                }
+            },
+            onNodeChanging: function(oldNode, newNode, accept){
+                tsChanging = +new Date();
+
+                //console.log('changing', oldNode, newNode, typeof accept);
+                firstNodeA = oldNode;
+                secondNode = newNode;
+                accept(true);
+            }
+        });
+
+        // select the first node.
+        $('.list-group-item:first').trigger('click');
+
+        ok(!firstNodeA.text, 'Empty "old" node');
+        ok((typeof tsChange == 'number') && (typeof tsChanging == 'number'), "Both events fired");
+        ok(tsChange >= tsChanging, "onNodeChanging is called before onNodeChange");
+
+        // switch to the second one
+        $('.list-group-item:eq(1)').trigger('click');
+        ok(firstNodeA.nodeId === firstNodeB.nodeId, 'Correct node reference(copy)');
+        ok(firstNodeA.nodeId !== secondNode.nodeId, 'Node sucessfuly changed');
+    });
+
+    test('onNodeChanging event (deny change)', function(){
+        var cbWorked = true;
+        var selectedNode = null;
+
+        init({
+            data: data,
+            onNodeChange: function(){
+                cbWorked = false;
+            },
+            onNodeChanging: function(oldNode, newNode, accept){
+                accept(false);
+            }
+        });
+
+        // select the first node.
+        var el = $('.list-group-item:first');
+        el.trigger('click');
+        ok(cbWorked, 'onNodeChange not fired');
+
+        // attempt to switch to the second one, selection will still not change
+        $('.list-group-item:eq(1)').trigger('click');
+        ok(cbWorked, 'onNodeChange still not fired');
+    });
+
 }());

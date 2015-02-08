@@ -274,6 +274,35 @@ and using jQuery .on method
 		
 
 
+### nodeChange
+Fired when a user selects/deselects a node. `node` argument can be the current node being selected or `null` in case of deselection.
+
+Example using options callback handler:
+
+	var options = {
+		onNodeChange: function(event, node) {
+			// Your logic goes here
+		}
+	}
+	$('#tree').treeview(options);
+
+and using jQuery .on method
+
+	$('#tree').on('nodeChange', function(event, node) {
+		// Your logic goes here
+	});
+		
+
+### nodeChanging
+Fired when a user attempts to change the current selected node. `oldNode` is the current selected node, `newNode` is the node being changed to, `accept` is a function which can be called with a boolean callback to accept or deny the change
+
+Example using options callback handler:
+
+	var options = {
+		onNodeChanging: function(oldNode, newNode, accept) {
+			// Your logic goes here
+		}
+	}
 
 ## Copyright and Licensing
 Copyright 2013 Jonathan Miles
