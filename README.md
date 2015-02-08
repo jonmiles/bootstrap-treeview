@@ -152,9 +152,26 @@ Array of Strings.  Optional
 
 Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges) 
 
-### Extendible
+## Extendible
 
 You can extend the node object by adding any number of additional key value pairs that you require for your application.  Remember this is the object which will be passed around during selection events.
+
+If you need some key/value pair to be added to node's HTML element, add `data-` prefix to the key:
+
+```javascript
+{
+  text: "file name",
+  'data-path': "path to file"
+}
+```
+
+will render like:
+
+```html
+<li ... data-path="path to file">
+  file name
+</li>
+```
 
 
 
