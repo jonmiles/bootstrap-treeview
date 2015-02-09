@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+      <meta charset="utf-8" />
     <title>Bootstrap Tree View</title>
-    <link href="./bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-    <!-- <link href="./css/bootstrap-treeview.css" rel="stylesheet"> -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!--<link href="../src/css/bootstrap-treeview.css" rel="stylesheet">--> 
   </head>
   <body>
   	<div class="container">
@@ -71,8 +72,10 @@
           <div id="treeview12" class=""></div>
         </div>
         <div class="col-sm-4">
-          <h2></h2>
-          <div id="treeview13" class=""></div>
+          <h2>ContextMenu</h2>
+          <div id="treeview13" class="">
+
+          </div>
         </div>
         <div class="col-sm-4">
           <h2></h2>
@@ -84,8 +87,8 @@
       <br/>
       <br/>
     </div>
-    <script src="./bower_components/jquery/dist/jquery.js"></script>
-  	<script src="./js/bootstrap-treeview.js"></script>
+    <script src="js/jquery-1.11.2.min.js"></script>
+  	<script src="../src/js/bootstrap-treeview.js"></script>
   	<script type="text/javascript">
 
   		$(function() {
@@ -100,6 +103,7 @@
                 text: 'Child 1',
                 href: '#child1',
                 tags: ['2'],
+                
                 nodes: [
                   {
                     text: 'Grandchild 1',
@@ -234,6 +238,8 @@
         });
 
         $('#treeview2').treeview({
+            selectable: false,
+            enableContextmenu: true,
           levels: 1,
           data: defaultData
         });
@@ -251,8 +257,8 @@
 
         $('#treeview5').treeview({
           color: "#428bca",
-          expandIcon: 'glyphicon glyphicon-chevron-right',
-          collapseIcon: 'glyphicon glyphicon-chevron-down',
+          expandIcon: 'glyphicon glyphicon-plus',
+          collapseIcon: 'glyphicon glyphicon-minus',
           nodeIcon: 'glyphicon glyphicon-bookmark',
           data: defaultData
         });
@@ -327,7 +333,37 @@
           data: json
         });
 
+
+        $('#treeview13').treeview({
+            selectable: false,
+            enableContextmenu: true,
+            contextmenu: {
+                "Create": function (node) {
+                    alert("Create-" + node.text)
+                },
+                "Delete": null,
+                "Updata": function (node) {
+                    alert("Updata-" + node.text);
+                    return false;
+                },
+                "-": null,
+                "Detail": function (node) {
+                    alert("Detail-" + node.text);
+                }
+            },
+            onContextmenuBefore: function (event, node, menu) {
+                alert(node.level);
+            },
+            onContextmenuAfter: function (event, node, menu) {
+
+            },
+            data: defaultData
+        });
+
+
   		});
+
+  		
   	</script>
   </body>
 </html>

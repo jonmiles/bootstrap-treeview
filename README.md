@@ -254,9 +254,9 @@ Boolean.  Default: false
 Whether or not to enable ContextMenu.
 
 ### contextmenu
-Boolean.  Default: false
+Object.  Default : {}
 
-ContextMenu data and function. Default : {}
+ContextMenu data and function. 
 
 Format as :
 
@@ -276,7 +276,7 @@ Format as :
 		}
 
 ### onContextmenuBefore
-menu show before
+menu show before return false can prevent the menu
 
 Example using options callback handler:
 
