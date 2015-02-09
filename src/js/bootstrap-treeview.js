@@ -1,8 +1,8 @@
 /* =========================================================
  * bootstrap-treeview.js v1.0.2
  * =========================================================
- * Copyright 2013 Jonathan Miles + fej121
- * Project URL : https://github.com/fej121/bootstrap-treeview
+ * Copyright 2013 Jonathan Miles 
+ * Project URL : http://www.jondmiles.com/bootstrap-treeview
  *	
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,20 +69,7 @@
 		selectable: true,
 	    //contextmenu
 		enableContextmenu: false,
-		contextmenu: {
-		    "Create": function (node) {
-		        alert("Create-" + node.text)
-		    },
-		    "Delete": null,
-		    "Updata": function (node) {
-		        alert("Updata-" + node.text);
-		        return false;
-		    },
-		    "-": null,
-		    "Detail": function (node) {
-		        alert("Detail-" + node.text);
-		    }
-		},
+		contextmenu: {},
 
 		// Event handler for when a node is selected
 		onNodeSelected: undefined,
