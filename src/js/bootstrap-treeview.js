@@ -26,7 +26,7 @@
 	var pluginName = 'treeview';
 
 	var Tree = function(element, options) {
-
+	    
 		this.$element = $(element);
 		this._element = element;
 		this._elementId = this._element.id;
@@ -35,6 +35,8 @@
 		this.tree = [];
 		this.nodes = [];
 		this.selectedNode = {};
+
+		this._contextmenu = undefined;
 		
 		this._init(options);
 	};
@@ -45,8 +47,9 @@
 
 		levels: 2,
 
-		expandIcon: 'glyphicon glyphicon-plus',
-		collapseIcon: 'glyphicon glyphicon-minus',
+		expandIcon: 'glyphicon glyphicon-chevron-right',
+		collapseIcon: 'glyphicon glyphicon-chevron-down',
+		
 		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
 
@@ -62,8 +65,18 @@
 		showBorder: true,
 		showTags: false,
 
+	    // global selectable
+		selectable: true,
+	    //contextmenu
+		enableContextmenu: false,
+		contextmenu: {},
+
 		// Event handler for when a node is selected
-		onNodeSelected: undefined
+		onNodeSelected: undefined,
+
+		onContextmenuBefore: undefined,
+		onContextmenuAfter: undefined
+	    
 	};
 
 	Tree.prototype = {
@@ -111,9 +124,17 @@
 		_unsubscribeEvents: function() {
 
 			this.$element.off('click');
+			this.$element.off('contextmenu');
 
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.off('nodeSelected');
+			}
+
+			if (typeof (this.options.onContextmenuBefore) === 'function') {
+			    this.$element.off('contextmenuBeforeEvent');
+			}
+			if (typeof (this.options.onContextmenuAfter) === 'function') {
+			    this.$element.off('contextmenuAfterEvent');
 			}
 		},
 
@@ -122,16 +143,133 @@
 			this._unsubscribeEvents();
 
 			this.$element.on('click', $.proxy(this._clickHandler, this));
-
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.on('nodeSelected', this.options.onNodeSelected);
 			}
+		    //right
+			this.$element.on('contextmenu', $.proxy(this._contextmenuHandler, this));
+
+			if (typeof (this.options.onContextmenuBefore) === 'function') {
+			    this.$element.on('contextmenuBeforeEvent', this.options.onContextmenuBefore);
+			}
+			if (typeof (this.options.onContextmenuAfter) === 'function') {
+			    this.$element.on('contextmenuAfterEvent', this.options.onContextmenuAfter);
+			}
 		},
 
+		_contextmenuHandler: function (event) {
+		    
+		    this._hideContext();
+		    if (this.options.enableContextmenu===true)
+		    {
+		        
+		        var target = $(event.target);
+                var node = this._findNode(target);
+
+		        this._contextmenu = $('<ul class="dropdown-menu contextmenu"></ul>');
+		        for (var key in this.options.contextmenu) {
+		            var temp = $('<li class="divider"></li>');
+		            if (key !== "-") {
+		                temp = $('<li ><a >' + key + '</a></li>');
+		                if ($.isFunction(this.options.contextmenu[key])) {
+		                    temp.on('click', $.proxy(this._contextmentClickHandler, this));
+		                }
+		                else {
+		                    temp = $('<li class="disabled"><a >' + key + '</a></li>');
+		                }
+		            }
+		            
+		            this._contextmenu.append(temp);
+		        }
+		        
+		        this._contextmenu.on('contextmenu', function (e) {
+		            e.stopPropagation();
+		        });
+		        this._contextmenu.on('click', function (e) {
+		            e.stopPropagation();
+		        });
+		        if (this._triggerContextmenuBeforeEvent(node, this._contextmenu)===false)
+		        {
+		            return false;
+		        }
+		        
+		        target.append(this._contextmenu);
+		        this._setPosition(event, this._contextmenu);
+		        this._triggerContextmenuAfterEvent(node, this._contextmenu);
+
+		        return false;
+		    }
+		    
+		    
+		},
+		_setPosition: function(e, $menu) {
+		    var mouseX = e.clientX
+				, mouseY = e.clientY
+				, boundsX = $(window).width()
+				, boundsY = $(window).height()
+				, menuWidth = $menu.outerWidth()
+				, menuHeight = $menu.outerHeight()
+				, Y, X, parentOffset;
+
+		    if (mouseY + menuHeight > boundsY) {
+		        Y = {"top": mouseY - menuHeight + $(window).scrollTop()};
+		    } else {
+		        Y = {"top": mouseY + $(window).scrollTop()};
+		    }
+
+		    if ((mouseX + menuWidth > boundsX) && ((mouseX - menuWidth) > 0)) {
+		        X = {"left": mouseX - menuWidth + $(window).scrollLeft()};
+		    } else {
+		        X = {"left": mouseX + $(window).scrollLeft()};
+		    }
+
+		    // If context-menu's parent is positioned using absolute or relative positioning,
+		    // the calculated mouse position will be incorrect.
+		    // Adjust the position of the menu by its offset parent position.
+		    parentOffset = $menu.offsetParent().offset();
+		    X.left = X.left - parentOffset.left;
+		    Y.top = Y.top - parentOffset.top;
+            
+		    $menu.css("top", Y.top);
+		    $menu.css("left", X.left);
+		    
+		    return $menu;
+		},
+		_hideContext: function () {
+		    if (this._contextmenu)
+		    {
+		        this._contextmenu.off('contextmenu');
+		        this._contextmenu.off('click');
+		        this._contextmenu.find('li').off("click");
+
+		        this._contextmenu.remove();
+		        this._contextmenu = undefined;
+		        return true;
+		    }
+		},
+		_contextmentClickHandler: function (event) {
+		    var self = $(event.target);
+		    var target = self.closest('.list-group-item'),
+				node = this._findNode(target);
+		    var func = this.options.contextmenu[self.html()];
+		    if ($.isFunction(func))
+		    {
+		        if (func(node) !== false)
+		        {
+		            this._hideContext();
+		        }
+		    }
+		    event.stopPropagation();
+		},
+	
 		_clickHandler: function(event) {
 
 			if (!this.options.enableLinks) { event.preventDefault(); }
-			
+			if (this._hideContext() === true)
+			{
+			    return;
+			}
+
 			var target = $(event.target),
 				classList = target.attr('class') ? target.attr('class').split(' ') : [],
 				node = this._findNode(target);
@@ -170,7 +308,19 @@
 
 			this.$element.trigger('nodeSelected', [$.extend(true, {}, node)]);
 		},
+	    
+		_triggerContextmenuBeforeEvent: function(node,menu) {
 
+		    return this.$element.triggerHandler('contextmenuBeforeEvent', [$.extend(true, {}, node), $.extend(true, {}, menu)]);
+		},
+		_triggerContextmenuAfterEvent: function (node, menu) {
+
+		    this.$element.trigger('contextmenuAfterEvent', [$.extend(true, {}, node)], [$.extend(true, {}, menu)]);
+		},
+		_triggerContextmenuClickEvent: function (node, menu) {
+
+		    return this.$element.trigger('contextmenuClickEvent', [$.extend(true, {}, node)], [$.extend(true, {}, menu)]);
+		},
 		// Handles selecting and unselecting of nodes, 
 		// as well as determining whether or not to trigger the nodeSelected event
 		_setSelectedNode: function(node) {
@@ -230,11 +380,11 @@
 
 		// Returns true if the node is selectable in the tree
 		_isSelectable: function (node) {
-			return node.selectable !== false;
+		    return node.selectable === true || this.options.selectable === true;
 		},
 
 		_render: function() {
-
+		    this._hideContext();
 			var self = this;
 
 			if (!self.initialized) {
@@ -265,7 +415,8 @@
 			var self = this;
 			$.each(nodes, function addNodes(id, node) {
 
-				node.nodeId = self.nodes.length;
+			    node.level = level-1;
+			    node.nodeId = self.nodes.length;
 				self.nodes.push(node);
 
 				var treeItem = $(self._template.item)
@@ -411,7 +562,7 @@
 			badge: '<span class="badge"></span>'
 		},
 
-		_css: '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
+		_css: '.treeview .list-group-item{cursor:pointer;position:relative;}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}.treeview .contextmenu{display:block;}'
 		// _css: '.list-group-item{cursor:pointer;}.list-group-item:hover{background-color:#f5f5f5;}span.indent{margin-left:10px;margin-right:10px}span.icon{margin-right:5px}'
 
 	};

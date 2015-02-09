@@ -156,6 +156,9 @@ Used in conjunction with global showTags option to add additional information to
 
 You can extend the node object by adding any number of additional key value pairs that you require for your application.  Remember this is the object which will be passed around during selection events.
 
+### level
+
+auto add, begin with 0.
 
 
 ## Options
@@ -240,7 +243,58 @@ Boolean.  Default: false
 
 Whether or not to display tags to the right of each node.  The values of which must be provided in the data structure on a per node basis.
 
+### selectable
+Boolean.  Default: false
 
+Global selectable.
+
+### enableContextmenu
+Boolean.  Default: false
+
+Whether or not to enable ContextMenu.
+
+### contextmenu
+Object.  Default : {}
+
+ContextMenu data and function. 
+
+Format as :
+
+		{
+		    "Create": function (node) {
+		        alert("Create-" + node.text)
+		    },
+		    "Delete": null,
+		    "Updata": function (node) {
+		        alert("Updata-" + node.text);
+		        return false;
+		    },
+		    "-": null,
+		    "Detail": function (node) {
+		        alert("Detail-" + node.text);
+		    }
+		}
+
+### onContextmenuBefore
+menu show before return false can prevent the menu
+
+Example using options callback handler:
+
+	onContextmenuBefore: function (event, node, menu) {
+                if(node.level<1){
+					return false;//can prevent the menu
+				}
+				
+     }
+
+### onContextmenuAfter
+menu show after
+
+Example using options callback handler:
+
+	onContextmenuAfter: function (event, node, menu) {
+				
+     }
 
 ## Methods
 
@@ -271,6 +325,10 @@ and using jQuery .on method
 	$('#tree').on('nodeSelected', function(event, node) {
 		// Your logic goes here
 	});
+
+
+
+
 		
 
 
