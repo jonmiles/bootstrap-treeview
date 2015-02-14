@@ -55,7 +55,7 @@ In order to define the hierarchical structure needed for the tree it's necessary
 
 Example
 
-```json
+```javascript
 var tree = [
   {
     text: "Parent 1",
@@ -93,7 +93,7 @@ var tree = [
 
 At the lowest level a tree node is a represented as a simple JavaScript object.  Just one required property `text` will build you a tree.
 
-```json
+```javascript
 {
   text: "Node 1"
 }
@@ -101,7 +101,7 @@ At the lowest level a tree node is a represented as a simple JavaScript object. 
 
 If you want to do more, here's the full node specification
 
-```json
+```javascript
 {
   text: "Node 1",
   icon: "glyphicon glyphicon-stop",
