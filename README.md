@@ -22,28 +22,31 @@ Sorry no support planned for Bootstrap 2.
 
 A full list of dependencies required for the bootstrap-treeview to function correctly.
 
-	<!-- Required Stylesheets -->
-    <link href="./css/bootstrap.css" rel="stylesheet">
+```html
+<!-- Required Stylesheets -->
+<link href="./css/bootstrap.css" rel="stylesheet">
 
-	<!-- Required Javascript -->
-    <script src="./js/jquery.js"></script>
-    <script src="./js/bootstrap-treeview.js"></script>
-
+<!-- Required Javascript -->
+<script src="./js/jquery.js"></script>
+<script src="./js/bootstrap-treeview.js"></script>
+```
 
 The component will bind to any existing DOM element.
 
-	<div id="tree"></div>
-
+```html
+<div id="tree"></div>
+```
 
 Basic usage may look something like this.
 
-	function getTree() {
-		// Some logic to retrieve, or generate tree structure
-		return data;
-	}
- 
-	$('#tree').treeview({data: getTree()});
+```javascript
+function getTree() {
+  // Some logic to retrieve, or generate tree structure
+  return data;
+}
 
+$('#tree').treeview({data: getTree()});
+```
 
 
 ## Data Structure
@@ -52,61 +55,67 @@ In order to define the hierarchical structure needed for the tree it's necessary
 
 Example
 
-	var tree = [
-	  {
-	    text: "Parent 1",
-	    nodes: [
-	      {
-	        text: "Child 1",
-	        nodes: [
-	          {
-	            text: "Grandchild 1"
-	          },
-	          {
-	            text: "Grandchild 2"
-	          }
-	        ]
-	      },
-	      {
-	        text: "Child 2"
-	      }
-	    ]
-	  },
-	  {
-	    text: "Parent 2"
-	  },
-	  {
-	    text: "Parent 3"
-	  },
-	  {
-	    text: "Parent 4"
-	  },
-	  {
-	    text: "Parent 5"
-	  }
-	];
+```json
+var tree = [
+  {
+    text: "Parent 1",
+    nodes: [
+      {
+        text: "Child 1",
+        nodes: [
+          {
+            text: "Grandchild 1"
+          },
+          {
+            text: "Grandchild 2"
+          }
+        ]
+      },
+      {
+        text: "Child 2"
+      }
+    ]
+  },
+  {
+    text: "Parent 2"
+  },
+  {
+    text: "Parent 3"
+  },
+  {
+    text: "Parent 4"
+  },
+  {
+    text: "Parent 5"
+  }
+];
+```
 
 At the lowest level a tree node is a represented as a simple JavaScript object.  Just one required property `text` will build you a tree.
 
-	{
-		text: "Node 1"
-	}
+```json
+{
+  text: "Node 1"
+}
+```
 
 If you want to do more, here's the full node specification
 
-	{
-		text: "Node 1", 
-		icon: "glyphicon glyphicon-stop",
-		color: "#000000",
-		backColor: "#FFFFFF",
-		href: "#node-1",
-		tags: ['available'],
-		nodes: [
-			{}, 
-			...
-		]
-	}
-
+```json
+{
+  text: "Node 1",
+  icon: "glyphicon glyphicon-stop",
+  color: "#000000",
+  backColor: "#FFFFFF",
+  href: "#node-1",
+  selectable: true,
+  tags: ['available'],
+  nodes: [
+    {},
+    ...
+  ]
+}
+```
 
 
 ## Node Properties
@@ -150,7 +159,7 @@ Whether of not a node is selectable in the tree. False indicates the node should
 ### tags
 Array of Strings.  Optional
 
-Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges) 
+Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges)
 
 ### Extendible
 
@@ -200,7 +209,7 @@ String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Boots
 
 Sets the icon to be used on an expandable tree node.
 
-### highlightSelected 
+### highlightSelected
 Boolean.  Default: true
 
 Whether or not to highlight the selected node.
@@ -210,7 +219,7 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the default background color activated when the users cursor hovers over a node.
 
-### levels 
+### levels
 Integer. Default: 2
 
 Sets the number of hierarchical levels deep the tree will be expanded to by default.
@@ -248,8 +257,9 @@ Whether or not to display tags to the right of each node.  The values of which m
 
 Removes the tree view component. Removing attached events, internal attached objects, and added HTML elements.
 
-	$('#tree').treeview('remove');
-
+```javascript
+$('#tree').treeview('remove');
+```
 
 
 ## Events
@@ -259,19 +269,22 @@ Fired when a user selects a node. You can bind to it using either the callback h
 
 Example using options callback handler:
 
-	var options = {
-		onNodeSelected: function(event, node) {
-			// Your logic goes here
-		}
-	}
-	$('#tree').treeview(options);
+```javascript
+var options = {
+  onNodeSelected: function(event, node) {
+    // Your logic goes here
+  }
+}
+$('#tree').treeview(options);
+```
 
 and using jQuery .on method
 
-	$('#tree').on('nodeSelected', function(event, node) {
-		// Your logic goes here
-	});
-		
+```javascript
+$('#tree').on('nodeSelected', function(event, node) {
+  // Your logic goes here
+});
+```
 
 
 
