@@ -32,8 +32,8 @@
 		this._elementId = this._element.id;
 		this._styleId = this._elementId + '-style';
 
-		this.tree = [];
-		this.nodes = [];
+		this._tree = [];
+		this._nodes = [];
 		
 		this._init(options);
 	};
@@ -94,7 +94,7 @@
 				if (typeof options.data === 'string') {
 					options.data = $.parseJSON(options.data);
 				}
-				this.tree = $.extend(true, [], options.data);
+				this._tree = $.extend(true, [], options.data);
 				delete options.data;
 			}
 
@@ -102,7 +102,7 @@
 
 			this._destroy();
 			this._subscribeEvents();
-			this._setInitialStates(this.tree, 0);
+			this._setInitialStates(this._tree, 0);
 			this._render();
 		},
 
@@ -121,7 +121,7 @@
 			$.each(nodes, function checkStates(index, node) {
 
 				// incremental nodeId
-				node.nodeId = self.nodes.length;
+				node.nodeId = self._nodes.length;
 
 				// where provided we shouuld preserve states
 				node.states = node.states || {};
@@ -142,7 +142,7 @@
 				}
 
 				// index nodes in a flattened structure for use later
-				self.nodes.push(node);
+				self._nodes.push(node);
 
 				// recurse child nodes and transverse the tree
 				if (node.nodes) {
@@ -197,7 +197,7 @@
 		_findNode: function(target) {
 
 			var nodeId = target.closest('li.list-group-item').attr('data-nodeid'),
-				node = this.nodes[nodeId];
+				node = this._nodes[nodeId];
 
 			if (!node) {
 				console.log('Error: node does not exist');
@@ -266,7 +266,7 @@
 			self.$element.empty().append(self.$wrapper.empty());
 
 			// Build tree
-			self._buildTree(self.tree, 0);
+			self._buildTree(self._tree, 0);
 		},
 
 		// Starting from the root node, and recursing down the 
