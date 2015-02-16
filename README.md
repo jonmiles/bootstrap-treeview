@@ -114,6 +114,10 @@ If you want to do more, here's the full node specification
   backColor: "#FFFFFF",
   href: "#node-1",
   selectable: true,
+  states: {
+  	expanded: true,
+  	selected: true
+  },
   tags: ['available'],
   nodes: [
     {},
@@ -128,12 +132,12 @@ If you want to do more, here's the full node specification
 The following properties are defined to allow node level overrides, such as node specific icons, colours and tags.
 
 ### text
-String.  Mandatory
+`String` `Mandatory`
 
 The text value displayed for a given tree node, typically to the right of the nodes icon.
 
 ### icon
-String.  Optional
+`String` `Optional`
 
 The icon displayed on a given node, typically to the left of the text.
 
@@ -142,27 +146,42 @@ For simplicity we directly leverage [Bootstraps Glyphicons support](http://getbo
 By providing the base class you retain full control over the icons used.  If you want to use your own then just add your class to this icon field.
 
 ### color
-String.  Optional
+`String` `Optional`
 
 The foreground color used on a given node, overrides global color option.
 
 ### backColor
-String.  Optional
+`String` `Optional`
 
 The background color used on a given node, overrides global color option.
 
 ### href
-String.  Optional
+`String` `Optional`
 
 Used in conjunction with global enableLinks option to specify anchor tag URL on a given node.
 
 ### selectable
-Boolean.  Default: true
+`Boolean` `Default: true`
 
-Whether of not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
+Whether or not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
+
+### states
+`Object` `Optional`
+
+Describes a node's initial state.
+
+### states.expanded
+`Boolean` `Default: false`
+
+Whether or not a node is expanded i.e. open.  Takes precedence over global option levels.
+
+### states.selected
+`Boolean` `Default: false`
+
+Whether or not a node is selected.
 
 ### tags
-Array of Strings.  Optional
+`Array of Strings`  `Optional`
 
 Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges)
 

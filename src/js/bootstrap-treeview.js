@@ -32,9 +32,8 @@
 		this._elementId = this._element.id;
 		this._styleId = this._elementId + '-style';
 
-		this.tree = [];
-		this.nodes = [];
-		this.selectedNode = {};
+		this._tree = [];
+		this._nodes = [];
 		
 		this._init(options);
 	};
@@ -95,17 +94,61 @@
 				if (typeof options.data === 'string') {
 					options.data = $.parseJSON(options.data);
 				}
-				this.tree = $.extend(true, [], options.data);
+				this._tree = $.extend(true, [], options.data);
 				delete options.data;
 			}
 
 			this.options = $.extend({}, Tree.defaults, options);
 
-			this._setInitialLevels(this.tree, 0);
-
 			this._destroy();
 			this._subscribeEvents();
+			this._setInitialStates(this._tree, 0);
 			this._render();
+		},
+
+		/* 
+			Recurse the tree structure and ensure all nodes have
+			valid initial states.  User defined states will be preserved.
+			For performance we also take this opportunity to 
+			index nodes in a flattened structure
+		*/
+		_setInitialStates: function (nodes, level) {
+
+			if (!nodes) { return; }
+			level += 1;
+
+			var self = this;
+			$.each(nodes, function checkStates(index, node) {
+
+				// incremental nodeId
+				node.nodeId = self._nodes.length;
+
+				// where provided we shouuld preserve states
+				node.states = node.states || {};
+
+				// set expanded state; if not provided based on levels
+				if (!node.states.hasOwnProperty('expanded')) {
+					if (level < self.options.levels) {
+						node.states.expanded = true;
+					}
+					else {
+						node.states.expanded = false;
+					}
+				}
+
+				// set selected state; unless set always false
+				if (!node.states.hasOwnProperty('selected')) {
+					node.states.selected = false;
+				}
+
+				// index nodes in a flattened structure for use later
+				self._nodes.push(node);
+
+				// recurse child nodes and transverse the tree
+				if (node.nodes) {
+					self._setInitialStates(node.nodes, level);
+				}
+			});
 		},
 
 		_unsubscribeEvents: function() {
@@ -138,16 +181,13 @@
 
 			if ((classList.indexOf('click-expand') != -1) ||
 					(classList.indexOf('click-collapse') != -1)) {
-				// Expand or collapse node by toggling child node visibility
-				this._toggleNodes(node);
-				this._render();
+				this._toggleExpanded(node);
 			}
 			else if (node) {
 				if (this._isSelectable(node)) {
-					this._setSelectedNode(node);
+					this._toggleSelected(node);
 				} else {
-					this._toggleNodes(node);
-					this._render();
+					this._toggleExpanded(node);
 				}
 			}
 		},
@@ -157,7 +197,7 @@
 		_findNode: function(target) {
 
 			var nodeId = target.closest('li.list-group-item').attr('data-nodeid'),
-				node = this.nodes[nodeId];
+				node = this._nodes[nodeId];
 
 			if (!node) {
 				console.log('Error: node does not exist');
@@ -171,61 +211,36 @@
 			this.$element.trigger('nodeSelected', [$.extend(true, {}, node)]);
 		},
 
-		// Handles selecting and unselecting of nodes, 
-		// as well as determining whether or not to trigger the nodeSelected event
-		_setSelectedNode: function(node) {
+		_toggleExpanded: function (node) {
 
 			if (!node) { return; }
-			
-			if (node === this.selectedNode) {
-				this.selectedNode = {};
+
+			if (node.states.expanded) {
+				node.states.expanded = false;
+				// TODO trigger node expanded event #52
 			}
 			else {
-				this._triggerNodeSelectedEvent(this.selectedNode = node);
+				node.states.expanded = true;
+				// TODO trigger node collapsed event #52
 			}
-			
+
 			this._render();
 		},
 
-		// On initialization recurses the entire tree structure 
-		// setting expanded / collapsed states based on initial levels
-		_setInitialLevels: function(nodes, level) {
+		_toggleSelected: function (node) {
 
-			if (!nodes) { return; }
-			level += 1;
-
-			var self = this;
-			$.each(nodes, function addNodes(id, node) {
-				
-				if (level >= self.options.levels) {
-					self._toggleNodes(node);
-				}
-
-				// Need to traverse both nodes and _nodes to ensure 
-				// all levels collapsed beyond levels
-				var nodes = node.nodes ? node.nodes : node._nodes ? node._nodes : undefined;
-				if (nodes) {
-					return self._setInitialLevels(nodes, level);
-				}
-			});
-		},
-
-		// Toggle renaming nodes -> _nodes, _nodes -> nodes
-		// to simulate expanding or collapsing a node.
-		_toggleNodes: function(node) {
-
-			if (!node.nodes && !node._nodes) {
-				return;
-			}
-
-			if (node.nodes) {
-				node._nodes = node.nodes;
-				delete node.nodes;
+			if (!node) { return; }
+			
+			if (node.states.selected) {
+				node.states.selected = false;
+				// TODO trigger node unselected #23
 			}
 			else {
-				node.nodes = node._nodes;
-				delete node._nodes;
+				node.states.selected = true;
+				this._triggerNodeSelectedEvent(node);
 			}
+			
+			this._render();
 		},
 
 		// Returns true if the node is selectable in the tree
@@ -251,8 +266,7 @@
 			self.$element.empty().append(self.$wrapper.empty());
 
 			// Build tree
-			self.nodes = [];
-			self._buildTree(self.tree, 0);
+			self._buildTree(self._tree, 0);
 		},
 
 		// Starting from the root node, and recursing down the 
@@ -265,12 +279,9 @@
 			var self = this;
 			$.each(nodes, function addNodes(id, node) {
 
-				node.nodeId = self.nodes.length;
-				self.nodes.push(node);
-
 				var treeItem = $(self._template.item)
 					.addClass('node-' + self._elementId)
-					.addClass((node === self.selectedNode) ? 'node-selected' : '')
+					.addClass(node.states.selected ? 'node-selected' : '')
 					.attr('data-nodeid', node.nodeId)
 					.attr('style', self._buildStyleOverride(node));
 
@@ -280,20 +291,21 @@
 				}
 
 				// Add expand, collapse or empty spacer icons 
-				// to facilitate tree structure navigation
-				if (node._nodes) {
-					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass('click-expand')
-							.addClass(self.options.expandIcon)
-						);
-				}
-				else if (node.nodes) {
-					treeItem
-						.append($(self._template.expandCollapseIcon)
-							.addClass('click-collapse')
-							.addClass(self.options.collapseIcon)
-						);
+				if (node.nodes) {
+					if (!node.states.expanded) {
+						treeItem
+							.append($(self._template.expandCollapseIcon)
+								.addClass('click-expand')
+								.addClass(self.options.expandIcon)
+							);
+					}
+					else {
+						treeItem
+							.append($(self._template.expandCollapseIcon)
+								.addClass('click-collapse')
+								.addClass(self.options.collapseIcon)
+							);
+					}
 				}
 				else {
 					treeItem
@@ -337,7 +349,8 @@
 				self.$wrapper.append(treeItem);
 
 				// Recursively add child ndoes
-				if (node.nodes) {
+				// console.log(node.text + ' ' + node.states.expanded);
+				if (node.nodes && node.states.expanded) {
 					return self._buildTree(node.nodes, level);
 				}
 			});
@@ -349,18 +362,13 @@
 		_buildStyleOverride: function(node) {
 
 			var style = '';
-			if (this.options.highlightSelected && (node === this.selectedNode)) {
-				style += 'color:' + this.options.selectedColor + ';';
+			if (this.options.highlightSelected && (node.states.selected)) {
+				style += 'color:' + this.options.selectedColor + 
+					';background-color:' + this.options.selectedBackColor + ';';
 			}
 			else if (node.color) {
-				style += 'color:' + node.color + ';';
-			}
-
-			if (this.options.highlightSelected && (node === this.selectedNode)) {
-				style += 'background-color:' + this.options.selectedBackColor + ';';
-			}
-			else if (node.backColor) {
-				style += 'background-color:' + node.backColor + ';';
+				style += 'color:' + node.color + 
+					';background-color:' + node.backColor + ';';
 			}
 
 			return style;
