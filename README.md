@@ -2,6 +2,8 @@
 
 ---
 
+![Bower version](https://img.shields.io/bower/v/bootstrap-treeview.svg?style=flat)
+
 A simple and elegant solution to displaying hierarchical tree structures (i.e. a Tree View) while levering the best that Twitter Bootstrap has to offer.
 
 ![Bootstrap Tree View Default](https://raw.github.com/jondmiles/bootstrap-treeview/master/screenshot/default.PNG)
