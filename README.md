@@ -3,7 +3,9 @@
 ---
 
 ![Bower version](https://img.shields.io/bower/v/bootstrap-treeview.svg?style=flat)
+[![npm version](https://img.shields.io/npm/v/bootstrap-treeview.svg?style=flat)](https://www.npmjs.com/package/bootstrap-treeview)
 [![Build Status](https://img.shields.io/travis/jonmiles/bootstrap-treeview/master.svg?style=flat)](https://travis-ci.org/jonmiles/bootstrap-treeview)
+[![devDependency Status](https://img.shields.io/david/dev/jonmiles/bootstrap-treeview.svg?style=flat)](https://david-dm.org/jonmiles/bootstrap-treeeview#info=devDependencies)
 
 A simple and elegant solution to displaying hierarchical tree structures (i.e. a Tree View) while levering the best that Twitter Bootstrap has to offer.
 
