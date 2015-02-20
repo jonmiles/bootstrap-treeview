@@ -7,7 +7,7 @@
 [![Build Status](https://img.shields.io/travis/jonmiles/bootstrap-treeview/master.svg?style=flat)](https://travis-ci.org/jonmiles/bootstrap-treeview)
 [![devDependency Status](https://img.shields.io/david/dev/jonmiles/bootstrap-treeview.svg?style=flat)](https://david-dm.org/jonmiles/bootstrap-treeeview#info=devDependencies)
 
-A simple and elegant solution to displaying hierarchical tree structures (i.e. a Tree View) while levering the best that Twitter Bootstrap has to offer.
+A simple and elegant solution to displaying hierarchical tree structures (i.e. a Tree View) while leveraging the best that Twitter Bootstrap has to offer.
 
 ![Bootstrap Tree View Default](https://raw.github.com/jondmiles/bootstrap-treeview/master/screenshot/default.PNG)
 
