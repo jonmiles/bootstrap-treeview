@@ -62,7 +62,8 @@
 		showTags: false,
 
 		// Event handler for when a node is selected
-		onNodeSelected: undefined
+		onNodeSelected: undefined,
+		onNodeUnselected: undefined
 	};
 
 	Tree.prototype = {
@@ -158,6 +159,10 @@
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.off('nodeSelected');
 			}
+
+			if (typeof (this.options.onNodeUnselected) === 'function') {
+				this.$element.off('nodeUnselected');
+			}
 		},
 
 		_subscribeEvents: function() {
@@ -168,6 +173,10 @@
 
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.on('nodeSelected', this.options.onNodeSelected);
+			}
+
+			if (typeof (this.options.onNodeUnselected) === 'function') {
+				this.$element.on('nodeUnselected', this.options.onNodeUnselected);
 			}
 		},
 
@@ -205,12 +214,6 @@
 			return node;
 		},
 
-		// Actually triggers the nodeSelected event
-		_triggerNodeSelectedEvent: function(node) {
-
-			this.$element.trigger('nodeSelected', [$.extend(true, {}, node)]);
-		},
-
 		_toggleExpanded: function (node) {
 
 			if (!node) { return; }
@@ -233,11 +236,11 @@
 			
 			if (node.states.selected) {
 				node.states.selected = false;
-				// TODO trigger node unselected #23
+				this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
 			}
 			else {
 				node.states.selected = true;
-				this._triggerNodeSelectedEvent(node);
+				this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
 			}
 			
 			this._render();
