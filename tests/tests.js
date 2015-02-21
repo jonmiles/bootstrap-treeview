@@ -102,6 +102,8 @@
 		equal(options.highlightSelected, true, 'highlightSelected defaults ok');
 		equal(options.showBorder, true, 'showBorder defaults ok');
 		equal(options.showTags, false, 'showTags defatuls ok');
+		equal(options.onNodeCollapsed, null, 'onNodeCollapsed default ok');
+		equal(options.onNodeExpanded, null, 'onNodeExpanded default ok');
 		equal(options.onNodeSelected, null, 'onNodeSelected default ok');
 		equal(options.onNodeUnselected, null, 'onNodeUnselected default ok');
 
@@ -122,6 +124,8 @@
 			highlightSelected: false,
 			showBorder: false,
 			showTags: true,
+			onNodeCollapsed: function () {},
+			onNodeExpanded: function () {},
 			onNodeSelected: function () {},
 			onNodeUnselected: function () {}
 		};
@@ -143,6 +147,8 @@
 		equal(options.highlightSelected, false, 'highlightSelected set ok');
 		equal(options.showBorder, false, 'showBorder set ok');
 		equal(options.showTags, true, 'showTags set ok');
+		equal(typeof options.onNodeCollapsed, 'function', 'onNodeCollapsed set ok');
+		equal(typeof options.onNodeExpanded, 'function', 'onNodeExpanded set ok');
 		equal(typeof options.onNodeSelected, 'function', 'onNodeSelected set ok');
 		equal(typeof options.onNodeUnselected, 'function', 'onNodeUnselected set ok');
 	});
@@ -185,22 +191,44 @@
 
 	test('Expanding a node', function () {
 
-		init({levels:1,data:data});
+		var cbWorked, onWorked = false;
+		init({
+			data: data,
+			onNodeExpanded: function(/*event, date*/) {
+				cbWorked = true;
+			}
+		})
+		.on('nodeExpanded', function(/*event, date*/) {
+			onWorked = true;
+		});
 
 		var nodeCount = $('.list-group-item').length;
 		var el = $('.click-expand:first');
 		el.trigger('click');
 		ok(($('.list-group-item').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
+		ok(cbWorked, 'onNodeExpanded function was called');
+		ok(onWorked, 'nodeExpanded was fired');
 	});
 
 	test('Collapsing a node', function () {
 
-		init({levels:2,data:data});
+		var cbWorked, onWorked = false;
+		init({
+			data: data,
+			onNodeCollapsed: function(/*event, date*/) {
+				cbWorked = true;
+			}
+		})
+		.on('nodeCollapsed', function(/*event, date*/) {
+			onWorked = true;
+		});
 
 		var nodeCount = $('.list-group-item').length;
 		var el = $('.click-collapse:first');
 		el.trigger('click');
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
+		ok(cbWorked, 'onNodeCollapsed function was called');
+		ok(onWorked, 'nodeCollapsed was fired');
 	});
 
 	test('Selecting a node', function () {
