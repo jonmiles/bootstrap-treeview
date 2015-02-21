@@ -312,12 +312,13 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
-#### nodeSelected (event, node) 
-When a node is selected.
+`nodeExpanded (event, node)` - A node is expanded.
 
-#### nodeUnselected (event, node)
-When a node is unselected.
+`nodeCollapsed (event, node)`  - A node is collapsed.
 
+`nodeSelected (event, node)`  - A node is selected.
+
+`nodeUnselected (event, node)`  - A node is unselected.  
 
 
 
