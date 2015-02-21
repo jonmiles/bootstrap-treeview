@@ -103,6 +103,7 @@
 		equal(options.showBorder, true, 'showBorder defaults ok');
 		equal(options.showTags, false, 'showTags defatuls ok');
 		equal(options.onNodeSelected, null, 'onNodeSelected default ok');
+		equal(options.onNodeUnselected, null, 'onNodeUnselected default ok');
 
 		// Then test user options are correctly set
 		var opts = {
@@ -121,7 +122,8 @@
 			highlightSelected: false,
 			showBorder: false,
 			showTags: true,
-			onNodeSelected: function () {}
+			onNodeSelected: function () {},
+			onNodeUnselected: function () {}
 		};
 
 		options = getOptions(init(opts));
@@ -142,6 +144,7 @@
 		equal(options.showBorder, false, 'showBorder set ok');
 		equal(options.showTags, true, 'showTags set ok');
 		equal(typeof options.onNodeSelected, 'function', 'onNodeSelected set ok');
+		equal(typeof options.onNodeUnselected, 'function', 'onNodeUnselected set ok');
 	});
 
 	test('Links enabled', function () {
@@ -227,11 +230,11 @@
 		var cbWorked, onWorked = false;
 		init({
 			data: data,
-			onNodeSelected: function(/*event, date*/) {
+			onNodeUnselected: function(/*event, date*/) {
 				cbWorked = true;
 			}
 		})
-		.on('nodeSelected', function(/*event, date*/) {
+		.on('nodeUnselected', function(/*event, date*/) {
 			onWorked = true;
 		});
 
@@ -246,8 +249,8 @@
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Node is correctly unselected : class "node-selected" removed');
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
-		ok(!cbWorked, 'onNodeSelected was not called');
-		ok(!onWorked, 'nodeSelected was not fired');
+		ok(cbWorked, 'onNodeUnselected function was called');
+		ok(onWorked, 'nodeUnselected was fired');
 	});
 
 	test('Clicking a non-selectable, colllapsed node expands the node', function () {

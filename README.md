@@ -288,27 +288,36 @@ $('#tree').treeview('remove');
 
 ## Events
 
-### nodeSelected
-Fired when a user selects a node. You can bind to it using either the callback handler or the standard jQuery .on method
+You can bind to any event defined below by either using an options callback handler, or the standard jQuery .on method.
 
 Example using options callback handler:
 
 ```javascript
-var options = {
-  onNodeSelected: function(event, node) {
+$('#tree').treeview({
+  // The naming convention for callback's is to prepend with `on` 
+  // an capitalize the first letter of the event name
+  // e.g. nodeSelected -> onNodeSelected
+  onNodeSelected: function(event, data) {
     // Your logic goes here
-  }
-}
-$('#tree').treeview(options);
+  });
 ```
 
 and using jQuery .on method
 
 ```javascript
-$('#tree').on('nodeSelected', function(event, node) {
+$('#tree').on('nodeSelected', function(event, data) {
   // Your logic goes here
 });
 ```
+
+### List of Events
+
+#### nodeSelected (event, node) 
+When a node is selected.
+
+#### nodeUnselected (event, node)
+When a node is unselected.
+
 
 
 

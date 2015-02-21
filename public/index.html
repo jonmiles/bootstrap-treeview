@@ -57,12 +57,25 @@
           <div id="treeview10" class=""></div>
         </div>
         <div class="col-sm-4">
-          <h2>Events</h2>
-          <div id="treeview11" class=""></div>
+          
+        </div>
+        <div class="col-sm-4">
+          
+        </div>
+      </div>
+      <div class="row">
+        <h2>Events</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div id="treeview-events" class=""></div>
         </div>
         <div class="col-sm-4">
           <h2>Output</h2>
-          <div id="event_output"></div>
+          <div id="event-output"></div>
+        </div>
+        <div class="col-sm-4">
+          <!-- <h2>Output</h2>
+          <div id="event_output"></div> -->
         </div>
       </div>
       <div class="row">
@@ -310,11 +323,14 @@
           data: defaultData
         });
 
-        $('#treeview11').treeview({
+        $('#treeview-events').treeview({
           color: "#428bca",
           data: defaultData,
           onNodeSelected: function(event, node) {
-            $('#event_output').prepend('<p>You clicked ' + node.text + '</p>');
+            $('#event-output').prepend('<p>' + node.text + ' was selected</p>');
+          },
+          onNodeUnselected: function (event, node) {
+            $('#event-output').prepend('<p>' + node.text + ' was unselected</p>');
           }
         });
 
