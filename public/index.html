@@ -326,6 +326,12 @@
         $('#treeview-events').treeview({
           color: "#428bca",
           data: defaultData,
+          onNodeCollapsed: function(event, node) {
+            $('#event-output').prepend('<p>' + node.text + ' was collapsed</p>');
+          },
+          onNodeExpanded: function (event, node) {
+            $('#event-output').prepend('<p>' + node.text + ' was expanded</p>');
+          },
           onNodeSelected: function(event, node) {
             $('#event-output').prepend('<p>' + node.text + ' was selected</p>');
           },

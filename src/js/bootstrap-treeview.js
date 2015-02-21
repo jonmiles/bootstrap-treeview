@@ -61,7 +61,9 @@
 		showBorder: true,
 		showTags: false,
 
-		// Event handler for when a node is selected
+		// Event handlers
+		onNodeCollapsed: undefined,
+		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
 		onNodeUnselected: undefined
 	};
@@ -156,6 +158,14 @@
 
 			this.$element.off('click');
 
+			if (typeof (this.options.onNodeCollapsed) === 'function') {
+				this.$element.off('nodeCollapsed');
+			}
+
+			if (typeof (this.options.onNodeExpanded) === 'function') {
+				this.$element.off('nodeExpanded');
+			}
+
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.off('nodeSelected');
 			}
@@ -170,6 +180,14 @@
 			this._unsubscribeEvents();
 
 			this.$element.on('click', $.proxy(this._clickHandler, this));
+
+			if (typeof (this.options.onNodeCollapsed) === 'function') {
+				this.$element.on('nodeCollapsed', this.options.onNodeCollapsed);
+			}
+
+			if (typeof (this.options.onNodeExpanded) === 'function') {
+				this.$element.on('nodeExpanded', this.options.onNodeExpanded);
+			}
 
 			if (typeof (this.options.onNodeSelected) === 'function') {
 				this.$element.on('nodeSelected', this.options.onNodeSelected);
@@ -220,11 +238,11 @@
 
 			if (node.states.expanded) {
 				node.states.expanded = false;
-				// TODO trigger node expanded event #52
+				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}
 			else {
 				node.states.expanded = true;
-				// TODO trigger node collapsed event #52
+				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
 			}
 
 			this._render();

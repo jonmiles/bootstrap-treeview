@@ -312,9 +312,9 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
-`nodeExpanded (event, node)` - A node is expanded.
-
 `nodeCollapsed (event, node)`  - A node is collapsed.
+
+`nodeExpanded (event, node)` - A node is expanded.
 
 `nodeSelected (event, node)`  - A node is selected.
 
