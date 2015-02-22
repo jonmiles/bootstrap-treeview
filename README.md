@@ -277,7 +277,26 @@ Whether or not to display tags to the right of each node.  The values of which m
 
 ## Methods
 
-### remove
+### search(pattern, options)
+
+Search the tree view for nodes that match a given string, highlighting them in the tree.
+
+```javascript
+$('#tree').treeview('search', [ 'Parent', {
+  ignoreCase: true,
+  exactMatch: false
+});
+```
+
+### clearSearch()
+
+Clear the tree view of any previous search results e.g. remove their highlighted state.
+
+```javascript
+$('#tree').treeview('clearSearch');
+```
+
+### remove()
 
 Removes the tree view component. Removing attached events, internal attached objects, and added HTML elements.
 
@@ -294,7 +313,7 @@ Example using options callback handler:
 
 ```javascript
 $('#tree').treeview({
-  // The naming convention for callback's is to prepend with `on` 
+  // The naming convention for callback's is to prepend with `on`
   // an capitalize the first letter of the event name
   // e.g. nodeSelected -> onNodeSelected
   onNodeSelected: function(event, data) {
