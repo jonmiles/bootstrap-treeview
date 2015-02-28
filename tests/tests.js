@@ -9,7 +9,7 @@
 	}
 
 	function getOptions(el) {
-		return el.data('plugin_treeview').options;
+		return el.data().treeview.options;
 	}
 
 	var data = [
@@ -154,7 +154,6 @@
 	});
 
 	test('Links enabled', function () {
-
 		init({enableLinks:true, data:data});
 		ok($('.list-group-item:first').children('a').length, 'Links are enabled');
 		
@@ -163,7 +162,6 @@
 	module('Data');
 
 	test('Accepts JSON', function () {
-
 		var el = init({levels:1,data:json});
 		equal($(el.selector + ' ul li').length, 5, 'Correct number of root nodes');
 
@@ -173,8 +171,7 @@
 
 	test('Is chainable', function () {
 		var el = init();
-		ok(el.addClass('test'), 'Is chainable');
-		equal(el.attr('class'), 'treeview test', 'Test class was added');
+		equal(el.addClass('test').attr('class'), 'treeview test', 'Is chainable');
 	});
 
 	test('Correct initial levels shown', function () {
