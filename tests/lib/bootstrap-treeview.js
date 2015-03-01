@@ -86,7 +86,8 @@
 
 		this.destroy();
 		this.subscribeEvents();
-		this.setInitialStates(this.tree, 0);
+		this.setInitialStates({ nodes: this.tree }, 0);
+		console.log(this.nodes);
 		this.render();
 	};
 
@@ -116,18 +117,22 @@
 		For performance we also take this opportunity to 
 		index nodes in a flattened structure
 	*/
-	Tree.prototype.setInitialStates = function (nodes, level) {
+	Tree.prototype.setInitialStates = function (node, level) {
 
-		if (!nodes) { return; }
+		if (!node.nodes) { return; }
 		level += 1;
 
+		var parent = node;
 		var _this = this;
-		$.each(nodes, function checkStates(index, node) {
+		$.each(node.nodes, function checkStates(index, node) {
 
-			// incremental nodeId
+			// nodeId : unique, incremental identifier
 			node.nodeId = _this.nodes.length;
 
-			// if not provided set selectable default
+			// parentId : transversing up the tree
+			node.parentId = parent.nodeId || null;
+
+			// if not provided set selectable default value
 			if (!node.hasOwnProperty('selectable')) {
 				node.selectable = true;	
 			}
@@ -155,7 +160,7 @@
 
 			// recurse child nodes and transverse the tree
 			if (node.nodes) {
-				_this.setInitialStates(node.nodes, level);
+				_this.setInitialStates(node, level);
 			}
 		});
 	};
