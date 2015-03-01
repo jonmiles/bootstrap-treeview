@@ -277,14 +277,37 @@ Whether or not to display tags to the right of each node.  The values of which m
 
 ## Methods
 
-### remove
+### getNode(nodeId)
+
+Returns a single node object that matches the given node id.
+
+```javascript
+$('#tree').treeview('getNode', nodeId);
+```
+
+### getParent(node)
+
+Returns the parent node of a given node, if valid otherwise returns undefined.
+
+```javascript
+$('#tree').treeview('getParent', node);
+```
+
+### getSiblings(node)
+
+Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
+
+```javascript
+$('#tree').treeview('getSiblings', node);
+```
+
+### remove()
 
 Removes the tree view component. Removing attached events, internal attached objects, and added HTML elements.
 
 ```javascript
 $('#tree').treeview('remove');
 ```
-
 
 ## Events
 

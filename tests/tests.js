@@ -158,6 +158,7 @@
 		ok($('.list-group-item:first').children('a').length, 'Links are enabled');
 		
 	});
+	
 
 	module('Data');
 
@@ -166,6 +167,7 @@
 		equal($(el.selector + ' ul li').length, 5, 'Correct number of root nodes');
 
 	});
+
 
 	module('Behaviour');
 
@@ -330,4 +332,45 @@
 		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
 
+
+	module('Methods');
+
+	test('getNode', function () {
+		var $tree = init({ data: data });
+		var nodeParent1 = $tree.treeview('getNode', 0);
+		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", for "Parent 1"');
+	});
+
+	test('getParent', function () {
+		var $tree = init({ data: data });
+		var nodeParent1 = $tree.treeview('getNode', 0);
+		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
+	});
+
+	test('getSiblings', function () {
+		var $tree = init({ data: data });
+
+		// Test root level which uses the this.tree
+		var nodeParent1 = $tree.treeview('getNode', 0);
+		var nodeParent1Siblings = $tree.treeview('getSiblings', nodeParent1);
+		var isArray = (nodeParent1Siblings instanceof Array);
+		var countOK = nodeParent1Siblings.length === 4;
+		var resultsOK = nodeParent1Siblings[0].text === 'Parent 2';
+		resultsOK = resultsOK && nodeParent1Siblings[1].text === 'Parent 3';
+		resultsOK = resultsOK && nodeParent1Siblings[2].text === 'Parent 4';
+		resultsOK = resultsOK && nodeParent1Siblings[3].text === 'Parent 5';
+		ok(isArray, 'Correct siblings for "Parent 1" [root] : is array');
+		ok(countOK, 'Correct siblings for "Parent 1" [root] : count OK');
+		ok(resultsOK, 'Correct siblings for "Parent 1" [root] : results OK');
+
+		// Test non root level, which uses getParent.nodes
+		var nodeChild1 = $tree.treeview('getNode', 1);
+		var nodeChild1Siblings = $tree.treeview('getSiblings', nodeChild1);
+		var isArray = (nodeChild1Siblings instanceof Array);
+		var countOK = nodeChild1Siblings.length === 1;
+		var results = nodeChild1Siblings[0].text === 'Child 2'
+		ok(isArray, 'Correct siblings for "Child 1" [non root] : is array');
+		ok(countOK, 'Correct siblings for "Child 1" [non root] : count OK');
+		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
+	})
 }());

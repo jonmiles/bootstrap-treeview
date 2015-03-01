@@ -65,8 +65,11 @@
 
 		return {
 			options: this.options,
-			init: this.init,
-			remove: this.remove
+			init: $.proxy(this.init, this),
+			remove: $.proxy(this.remove, this),
+			getNode: $.proxy(this.getNode, this),
+			getParent: $.proxy(this.getParent, this),
+			getSiblings: $.proxy(this.getSiblings, this)
 		};
 	};
 
@@ -87,7 +90,6 @@
 		this.destroy();
 		this.subscribeEvents();
 		this.setInitialStates({ nodes: this.tree }, 0);
-		console.log(this.nodes);
 		this.render();
 	};
 
@@ -109,6 +111,50 @@
 
 		// Reset this.initialized flag
 		this.initialized = false;
+	};
+
+	Tree.prototype.unsubscribeEvents = function () {
+
+		this.$element.off('click');
+
+		if (typeof (this.options.onNodeCollapsed) === 'function') {
+			this.$element.off('nodeCollapsed');
+		}
+
+		if (typeof (this.options.onNodeExpanded) === 'function') {
+			this.$element.off('nodeExpanded');
+		}
+
+		if (typeof (this.options.onNodeSelected) === 'function') {
+			this.$element.off('nodeSelected');
+		}
+
+		if (typeof (this.options.onNodeUnselected) === 'function') {
+			this.$element.off('nodeUnselected');
+		}
+	};
+
+	Tree.prototype.subscribeEvents = function () {
+
+		this.unsubscribeEvents();
+
+		this.$element.on('click', $.proxy(this.clickHandler, this));
+
+		if (typeof (this.options.onNodeCollapsed) === 'function') {
+			this.$element.on('nodeCollapsed', this.options.onNodeCollapsed);
+		}
+
+		if (typeof (this.options.onNodeExpanded) === 'function') {
+			this.$element.on('nodeExpanded', this.options.onNodeExpanded);
+		}
+
+		if (typeof (this.options.onNodeSelected) === 'function') {
+			this.$element.on('nodeSelected', this.options.onNodeSelected);
+		}
+
+		if (typeof (this.options.onNodeUnselected) === 'function') {
+			this.$element.on('nodeUnselected', this.options.onNodeUnselected);
+		}
 	};
 
 	/* 
@@ -165,48 +211,35 @@
 		});
 	};
 
-	Tree.prototype.unsubscribeEvents = function () {
-
-		this.$element.off('click');
-
-		if (typeof (this.options.onNodeCollapsed) === 'function') {
-			this.$element.off('nodeCollapsed');
-		}
-
-		if (typeof (this.options.onNodeExpanded) === 'function') {
-			this.$element.off('nodeExpanded');
-		}
-
-		if (typeof (this.options.onNodeSelected) === 'function') {
-			this.$element.off('nodeSelected');
-		}
-
-		if (typeof (this.options.onNodeUnselected) === 'function') {
-			this.$element.off('nodeUnselected');
-		}
+	/** 
+		Returns a single node object that matches the given node id.
+		@param {Number} nodeId - A node's unique identifier
+		@return {Object} node - Matching node
+	*/
+	Tree.prototype.getNode = function (nodeId) {
+		return this.nodes[nodeId];
 	};
 
-	Tree.prototype.subscribeEvents = function () {
+	/**
+		Returns the parent node of a given node, if valid otherwise returns undefined.
+		@param {Object} node - A valid node object
+		@returns {Object} parent - The parent node
+	*/
+	Tree.prototype.getParent = function (node) {
+		return this.nodes[node.parentId];
+	};
 
-		this.unsubscribeEvents();
-
-		this.$element.on('click', $.proxy(this.clickHandler, this));
-
-		if (typeof (this.options.onNodeCollapsed) === 'function') {
-			this.$element.on('nodeCollapsed', this.options.onNodeCollapsed);
-		}
-
-		if (typeof (this.options.onNodeExpanded) === 'function') {
-			this.$element.on('nodeExpanded', this.options.onNodeExpanded);
-		}
-
-		if (typeof (this.options.onNodeSelected) === 'function') {
-			this.$element.on('nodeSelected', this.options.onNodeSelected);
-		}
-
-		if (typeof (this.options.onNodeUnselected) === 'function') {
-			this.$element.on('nodeUnselected', this.options.onNodeUnselected);
-		}
+	/**
+		Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
+		@param {Object} node - A valid node object
+		@returns {Array} siblings - Sibling nodes
+	*/
+	Tree.prototype.getSiblings = function (node) {
+		var parent = this.getParent(node);
+		var nodes = parent ? parent.nodes : this.tree;
+		return nodes.filter(function (obj) {
+				return obj.nodeId !== node.nodeId;
+			});
 	};
 
 	Tree.prototype.clickHandler = function (event) {
@@ -456,7 +489,7 @@
 	// Prevent against multiple instantiations,
 	// handle updates and method calls
 	$.fn[pluginName] = function (options, args) {
-		
+
 		var result;
 		
 		this.each(function () {
@@ -469,19 +502,14 @@
 					logError('No such method : ' + options);
 				}
 				else {
-					if (typeof args === 'string') {
-						args = [args];
+					if (!(args instanceof Array)) {
+						args = [ args ];
 					}
 					result = _this[options].apply(_this, args);
 				}
 			}
 			else {
-				// if (!_this) {
-					$.data(this, pluginName, new Tree(this, $.extend(true, {}, options)));
-				// }
-				// else {
-				// 	_this.init(options);
-				// }
+				$.data(this, pluginName, new Tree(this, $.extend(true, {}, options)));
 			}
 		});
 
