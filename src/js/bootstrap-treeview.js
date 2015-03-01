@@ -17,7 +17,7 @@
  * limitations under the License.
  * ========================================================= */
 
-;(function($, window, document, undefined) {
+;(function ($, window, document, undefined) {
 
 	/*global jQuery, console*/
 
@@ -55,7 +55,7 @@
 		onNodeUnselected: undefined
 	};
 
-	var Tree = function(element, options) {
+	var Tree = function (element, options) {
 
 		this.$element = $(element);
 		this.elementId = element.id;
@@ -70,7 +70,7 @@
 		};
 	};
 
-	Tree.prototype.init = function(options) {
+	Tree.prototype.init = function (options) {
 		
 		this.tree = [];
 		this.nodes = [];
@@ -91,13 +91,13 @@
 		this.render();
 	};
 
-	Tree.prototype.remove = function() {
+	Tree.prototype.remove = function () {
 		this.destroy();
 		$.removeData(this, pluginName);
 		$('#' + this.styleId).remove();
 	};
 
-	Tree.prototype.destroy = function() {
+	Tree.prototype.destroy = function () {
 
 		if (!this.initialized) return;
 
@@ -165,7 +165,7 @@
 		});
 	};
 
-	Tree.prototype.unsubscribeEvents = function() {
+	Tree.prototype.unsubscribeEvents = function () {
 
 		this.$element.off('click');
 
@@ -186,7 +186,7 @@
 		}
 	};
 
-	Tree.prototype.subscribeEvents = function() {
+	Tree.prototype.subscribeEvents = function () {
 
 		this.unsubscribeEvents();
 
@@ -209,7 +209,7 @@
 		}
 	};
 
-	Tree.prototype.clickHandler = function(event) {
+	Tree.prototype.clickHandler = function (event) {
 
 		if (!this.options.enableLinks) { event.preventDefault(); }
 		
@@ -232,7 +232,7 @@
 
 	// Looks up the DOM for the closest parent list item to retrieve the 
 	// data attribute nodeid, which is used to lookup the node in the flattened structure.
-	Tree.prototype.findNode = function(target) {
+	Tree.prototype.findNode = function (target) {
 
 		var nodeId = target.closest('li.list-group-item').attr('data-nodeid'),
 			node = this.nodes[nodeId];
@@ -275,7 +275,7 @@
 		this.render();
 	};
 
-	Tree.prototype.render = function() {
+	Tree.prototype.render = function () {
 
 		if (!this.initialized) {
 
@@ -296,7 +296,7 @@
 
 	// Starting from the root node, and recursing down the 
 	// structure we build the tree one node at a time
-	Tree.prototype.buildTree = function(nodes, level) {
+	Tree.prototype.buildTree = function (nodes, level) {
 
 		if (!nodes) { return; }
 		level += 1;
@@ -384,7 +384,7 @@
 	// Define any node level style override for
 	// 1. selectedNode
 	// 2. node|data assigned color overrides
-	Tree.prototype.buildStyleOverride = function(node) {
+	Tree.prototype.buildStyleOverride = function (node) {
 
 		var style = '';
 		if (this.options.highlightSelected && (node.states.selected)) {
@@ -400,7 +400,7 @@
 	};
 
 	// Add inline style into head 
-	Tree.prototype.injectStyle = function() {
+	Tree.prototype.injectStyle = function () {
 
 		if (this.options.injectStyle && !document.getElementById(this.styleId)) {
 			$('<style type="text/css" id="' + this.styleId + '"> ' + this.buildStyle() + ' </style>').appendTo('head');
@@ -408,7 +408,7 @@
 	};
 
 	// Construct trees style based on user options
-	Tree.prototype.buildStyle = function() {
+	Tree.prototype.buildStyle = function () {
 
 		var style = '.node-' + this.elementId + '{';
 		if (this.options.color) {
@@ -447,7 +447,7 @@
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
 		
 
-	var logError = function(message) {
+	var logError = function (message) {
         if(window.console) {
             window.console.error(message);
         }
@@ -455,11 +455,11 @@
 
 	// Prevent against multiple instantiations,
 	// handle updates and method calls
-	$.fn[pluginName] = function(options, args) {
+	$.fn[pluginName] = function (options, args) {
 		
 		var result;
 		
-		this.each(function() {
+		this.each(function () {
 			var _this = $.data(this, pluginName);
 			if (typeof options === 'string') {
 				if (!_this) {
