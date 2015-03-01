@@ -130,7 +130,7 @@
 			node.nodeId = _this.nodes.length;
 
 			// parentId : transversing up the tree
-			node.parentId = parent.nodeId || null;
+			node.parentId = parent.nodeId;
 
 			// if not provided set selectable default value
 			if (!node.hasOwnProperty('selectable')) {
