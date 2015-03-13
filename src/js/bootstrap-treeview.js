@@ -61,6 +61,8 @@
 		highlightSelected: true,
 		showBorder: true,
 		showTags: false,
+        showTooltip: false,
+	    tooltipPlacement: 'top',
 
 		// Event handler for when a node is selected
 		onNodeSelected: undefined
@@ -253,6 +255,10 @@
 			// Build tree
 			self.nodes = [];
 			self._buildTree(self.tree, 0);
+
+			if (self.options.showTooltip) {
+			    self.$wrapper.find('li[title]').tooltip();
+			}
 		},
 
 		// Starting from the root node, and recursing down the 
@@ -272,6 +278,8 @@
 					.addClass('node-' + self._elementId)
 					.addClass((node === self.selectedNode) ? 'node-selected' : '')
 					.attr('data-nodeid', node.nodeId)
+                    .attr('title', node.tooltip)
+                    .attr('data-placement', self.options.tooltipPlacement)
 					.attr('style', self._buildStyleOverride(node));
 
 				// Add indent/spacer to mimic tree structure
