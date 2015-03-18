@@ -156,9 +156,9 @@
 	test('Links enabled', function () {
 		init({enableLinks:true, data:data});
 		ok($('.list-group-item:first').children('a').length, 'Links are enabled');
-		
+
 	});
-	
+
 
 	module('Data');
 
@@ -324,6 +324,7 @@
 
 		var nodeCount = $('.list-group-item').length;
 		var el = $('.list-group-item:first');
+		// console.log(el);
 		el.trigger('click');
 		el = $('.list-group-item:first');
 		ok(!el.hasClass('node-selected'), 'Node should not be selected');
@@ -372,5 +373,35 @@
 		ok(isArray, 'Correct siblings for "Child 1" [non root] : is array');
 		ok(countOK, 'Correct siblings for "Child 1" [non root] : count OK');
 		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
-	})
+	});
+
+
+	test('search', function () {
+		var $tree = init({ data: data });
+
+		// Case sensitive, exact match
+		var result = $tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
+		equal(result.length, 1, 'Search "Parent 1" case sensitive, exact match - returns 1 result');
+
+		// Case sensitive, like
+		result = $tree.treeview('search', [ 'Parent', { ignoreCase: false, exactMatch: false } ]);
+		equal(result.length, 5, 'Search "Parent" case sensitive, exact match - returns 5 results');
+
+		// Case insensitive, exact match
+		result = $tree.treeview('search', [ 'parent 1', { ignoreCase: true, exactMatch: true } ]);
+		equal(result.length, 1, 'Search "parent 1" case insensitive, exact match - returns 1 result');
+
+		// Case insensitive, like
+		result = $tree.treeview('search', [ 'parent', { ignoreCase: true, exactMatch: false } ]);
+		equal(result.length, 5, 'Search "parent" case insensitive, exact match - returns 5 results')
+	});
+
+	test('clearSearch', function () {
+		var $tree = init({ data: data });
+		$tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
+		equal($tree.find('.search-result').length, 1, 'Search results highlighted');
+		$tree.treeview('clearSearch');
+		equal($tree.find('.search-result').length, 0, 'Search results cleared');
+	});
+
 }());
