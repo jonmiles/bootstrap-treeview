@@ -54,7 +54,9 @@
 		onNodeCollapsed: undefined,
 		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
-		onNodeUnselected: undefined
+		onNodeUnselected: undefined,
+		onSearchComplete: undefined,
+		onSearchCleared: undefined
 	};
 
 	var Tree = function (element, options) {
@@ -136,6 +138,14 @@
 		if (typeof (this.options.onNodeUnselected) === 'function') {
 			this.$element.off('nodeUnselected');
 		}
+
+		if (typeof (this.options.onSearhComplete) === 'function') {
+			this.$element.off('searchComplete');
+		}
+
+		if (typeof (this.options.onSearchCleared) === 'function') {
+			this.$element.off('searchCleared');
+		}
 	};
 
 	Tree.prototype.subscribeEvents = function () {
@@ -158,6 +168,14 @@
 
 		if (typeof (this.options.onNodeUnselected) === 'function') {
 			this.$element.on('nodeUnselected', this.options.onNodeUnselected);
+		}
+
+		if (typeof (this.options.onSearchComplete) === 'function') {
+			this.$element.on('searchComplete', this.options.onSearchComplete);
+		}
+
+		if (typeof (this.options.onSearchCleared) === 'function') {
+			this.$element.on('searchCleared', this.options.onSearchCleared);
 		}
 	};
 
@@ -508,7 +526,7 @@
 
 		this.clearSearch();
 
-		var nodes = [];
+		var results = [];
 		if (pattern && pattern.length > 0) {
 
 			if (options.exactMatch) {
@@ -520,25 +538,31 @@
 				modifier += 'i';
 			}
 
-			nodes = this.findNodes(pattern, modifier);
-			$.each(nodes, function (index, node) {
+			results = this.findNodes(pattern, modifier);
+			$.each(results, function (index, node) {
 				node.searchResult = true;
 			})
 
 			this.render();
 		}
 
-		return nodes;
+		this.$element.trigger('searchComplete', $.extend(true, {}, results));
+
+		return results;
 	};
 
 	/**
 		Clears previous search results
 	*/
 	Tree.prototype.clearSearch = function () {
-		$.each(this.findNodes('true', 'g', 'searchResult'), function (index, node) {
+
+		var results = $.each(this.findNodes('true', 'g', 'searchResult'), function (index, node) {
 			node.searchResult = false;
 		});
+
 		this.render();
+
+		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
 	/**

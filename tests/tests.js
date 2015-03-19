@@ -377,7 +377,16 @@
 
 
 	test('search', function () {
-		var $tree = init({ data: data });
+		var cbWorked, onWorked = false;
+		var $tree = init({
+			data: data,
+			onSearchComplete: function(/*event, results*/) {
+				cbWorked = true;
+			}
+		})
+		.on('searchComplete', function(/*event, results*/) {
+			onWorked = true;
+		});
 
 		// Case sensitive, exact match
 		var result = $tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
@@ -394,14 +403,33 @@
 		// Case insensitive, like
 		result = $tree.treeview('search', [ 'parent', { ignoreCase: true, exactMatch: false } ]);
 		equal(result.length, 5, 'Search "parent" case insensitive, exact match - returns 5 results')
+
+		// Check events fire
+		ok(cbWorked, 'onSearchComplete function was called');
+		ok(onWorked, 'searchComplete was fired');
 	});
 
 	test('clearSearch', function () {
-		var $tree = init({ data: data });
+		var cbWorked, onWorked = false;
+		var $tree = init({
+			data: data,
+			onSearchCleared: function(/*event, results*/) {
+				cbWorked = true;
+			}
+		})
+		.on('searchCleared', function(/*event, results*/) {
+			onWorked = true;
+		});
+
+		// Check results are cleared
 		$tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
 		equal($tree.find('.search-result').length, 1, 'Search results highlighted');
 		$tree.treeview('clearSearch');
 		equal($tree.find('.search-result').length, 0, 'Search results cleared');
+
+		// Check events fire
+		ok(cbWorked, 'onSearchCleared function was called');
+		ok(onWorked, 'searchCleared was fired');
 	});
 
 }());

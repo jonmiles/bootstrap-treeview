@@ -285,6 +285,8 @@ Clear the tree view of any previous search results e.g. remove their highlighted
 $('#tree').treeview('clearSearch');
 ```
 
+Triggers `searchCleared` event
+
 ### getNode(nodeId)
 
 Returns a single node object that matches the given node id.
@@ -330,6 +332,8 @@ $('#tree').treeview('search', [ 'Parent', {
 }]);
 ```
 
+Triggers `searchComplete` event
+
 ## Events
 
 You can bind to any event defined below by either using an options callback handler, or the standard jQuery .on method.
@@ -363,6 +367,10 @@ $('#tree').on('nodeSelected', function(event, data) {
 `nodeSelected (event, node)`  - A node is selected.
 
 `nodeUnselected (event, node)`  - A node is unselected.  
+
+`searchComplete (event, results)`  - After a search completes
+
+`searchCleared (event, results)`  - After search results are cleared
 
 
 
