@@ -319,7 +319,9 @@ $('#tree').treeview('remove');
 
 ### search(pattern, options)
 
-Search the tree view for nodes that match a given string, highlighting them in the tree.
+Searches the tree view for nodes that match a given string, highlighting them in the tree.  
+
+Returns an array of matching nodes.
 
 ```javascript
 $('#tree').treeview('search', [ 'Parent', {

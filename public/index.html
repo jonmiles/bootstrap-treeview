@@ -57,13 +57,14 @@
           <div id="treeview10" class=""></div>
         </div>
         <div class="col-sm-4">
-          
+
         </div>
         <div class="col-sm-4">
-          
+
         </div>
       </div>
       <div class="row">
+        <hr>
         <h2>Events</h2>
         <div class="col-sm-4">
           <h2>Input</h2>
@@ -79,6 +80,43 @@
         </div>
       </div>
       <div class="row">
+        <hr>
+        <h2>Search</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <!-- <form> -->
+            <div class="form-group">
+              <label for="input-search" class="sr-only">Search Tree:</label>
+              <input type="input" class="form-control" id="input-search" placeholder="Type to search..." value="">
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="checkbox" id="chk-ignore-case" value="false">
+                Ignore Case
+              </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="checkbox" id="chk-exact-match" value="false">
+                Exact Match
+              </label>
+            </div>
+            <button type="button" class="btn btn-success" id="btn-search">Search</button>
+            <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
+          <!-- </form> -->
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-search" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Results</h2>
+          <div id="search-output"></div>
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Data</h2>
         <div class="col-sm-4">
           <h2>JSON Data</h2>
           <div id="treeview12" class=""></div>
@@ -257,7 +295,7 @@
         });
 
         $('#treeview4').treeview({
-          
+
           color: "#428bca",
           data: defaultData
         });
@@ -295,7 +333,7 @@
           borderColor: "red",
           showBorder: false,
           showTags: true,
-          highlightSelected: true, 
+          highlightSelected: true,
           selectedColor: "yellow",
           selectedBackColor: "darkorange",
           data: defaultData
@@ -311,7 +349,7 @@
           borderColor: "red",
           showBorder: false,
           showTags: true,
-          highlightSelected: true, 
+          highlightSelected: true,
           selectedColor: "yellow",
           selectedBackColor: "darkorange",
           data: alternateData
@@ -324,7 +362,6 @@
         });
 
         $('#treeview-events').treeview({
-          color: "#428bca",
           data: defaultData,
           onNodeCollapsed: function(event, node) {
             $('#event-output').prepend('<p>' + node.text + ' was collapsed</p>');
@@ -340,15 +377,39 @@
           }
         });
 
-        // $('#treeview11').on('nodeSelected', function (event, node) {
-        //   $('#event_output').prepend('<p>You clicked ' + node.text + '</p>');
-        // });
 
-
-        $('#treeview12').treeview({
-          data: json
+        var $searchTree = $('#treeview-search').treeview({
+          data: defaultData,
         });
 
+        var search = function(e) {
+          var pattern = $('#input-search').val();
+          var options = {
+            ignoreCase: $('#chk-ignore-case').is(':checked'),
+            exactMatch: $('#chk-exact-match').is(':checked')
+          };
+          var results = $searchTree.treeview('search', [ pattern, options ]);
+
+          var output = '<p>' + results.length + ' matches found</p>';
+          $.each(results, function (index, result) {
+            output += '<p>- ' + result.text + '</p>';
+          });
+          $('#search-output').html(output);
+        }
+
+        $('#btn-search').on('click', search);
+        $('#input-search').on('keyup', search);
+
+        $('#btn-clear-search').on('click', function (e) {
+          $searchTree.treeview('clearSearch');
+          $('#input-search').val('');
+          $('#search-output').html('');
+        });
+
+
+        var $tree = $('#treeview12').treeview({
+          data: json
+        });
   		});
   	</script>
   </body>
