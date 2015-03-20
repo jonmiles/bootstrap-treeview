@@ -1,9 +1,9 @@
 /* =========================================================
  * bootstrap-treeview.js v1.0.2
  * =========================================================
- * Copyright 2013 Jonathan Miles 
+ * Copyright 2013 Jonathan Miles
  * Project URL : http://www.jondmiles.com/bootstrap-treeview
- *	
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,6 +42,8 @@
 		onhoverColor: '#F5F5F5',
 		selectedColor: '#FFFFFF',
 		selectedBackColor: '#428bca',
+		searchResultColor: '#E5E313',
+		searchResultBackColor: undefined, //'#FFFFFF',
 
 		enableLinks: false,
 		highlightSelected: true,
@@ -52,7 +54,9 @@
 		onNodeCollapsed: undefined,
 		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
-		onNodeUnselected: undefined
+		onNodeUnselected: undefined,
+		onSearchComplete: undefined,
+		onSearchCleared: undefined
 	};
 
 	var Tree = function (element, options) {
@@ -60,7 +64,7 @@
 		this.$element = $(element);
 		this.elementId = element.id;
 		this.styleId = this.elementId + '-style';
-		
+
 		this.init(options);
 
 		return {
@@ -69,12 +73,14 @@
 			remove: $.proxy(this.remove, this),
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
-			getSiblings: $.proxy(this.getSiblings, this)
+			getSiblings: $.proxy(this.getSiblings, this),
+			search: $.proxy(this.search, this),
+			clearSearch: $.proxy(this.clearSearch, this)
 		};
 	};
 
 	Tree.prototype.init = function (options) {
-		
+
 		this.tree = [];
 		this.nodes = [];
 
@@ -132,6 +138,14 @@
 		if (typeof (this.options.onNodeUnselected) === 'function') {
 			this.$element.off('nodeUnselected');
 		}
+
+		if (typeof (this.options.onSearhComplete) === 'function') {
+			this.$element.off('searchComplete');
+		}
+
+		if (typeof (this.options.onSearchCleared) === 'function') {
+			this.$element.off('searchCleared');
+		}
 	};
 
 	Tree.prototype.subscribeEvents = function () {
@@ -155,12 +169,20 @@
 		if (typeof (this.options.onNodeUnselected) === 'function') {
 			this.$element.on('nodeUnselected', this.options.onNodeUnselected);
 		}
+
+		if (typeof (this.options.onSearchComplete) === 'function') {
+			this.$element.on('searchComplete', this.options.onSearchComplete);
+		}
+
+		if (typeof (this.options.onSearchCleared) === 'function') {
+			this.$element.on('searchCleared', this.options.onSearchCleared);
+		}
 	};
 
-	/* 
+	/*
 		Recurse the tree structure and ensure all nodes have
 		valid initial states.  User defined states will be preserved.
-		For performance we also take this opportunity to 
+		For performance we also take this opportunity to
 		index nodes in a flattened structure
 	*/
 	Tree.prototype.setInitialStates = function (node, level) {
@@ -180,7 +202,7 @@
 
 			// if not provided set selectable default value
 			if (!node.hasOwnProperty('selectable')) {
-				node.selectable = true;	
+				node.selectable = true;
 			}
 
 			// where provided we shouuld preserve states
@@ -211,7 +233,7 @@
 		});
 	};
 
-	/** 
+	/**
 		Returns a single node object that matches the given node id.
 		@param {Number} nodeId - A node's unique identifier
 		@return {Object} node - Matching node
@@ -245,7 +267,7 @@
 	Tree.prototype.clickHandler = function (event) {
 
 		if (!this.options.enableLinks) { event.preventDefault(); }
-		
+
 		var target = $(event.target),
 			classList = target.attr('class') ? target.attr('class').split(' ') : [],
 			node = this.findNode(target);
@@ -263,7 +285,7 @@
 		}
 	};
 
-	// Looks up the DOM for the closest parent list item to retrieve the 
+	// Looks up the DOM for the closest parent list item to retrieve the
 	// data attribute nodeid, which is used to lookup the node in the flattened structure.
 	Tree.prototype.findNode = function (target) {
 
@@ -295,7 +317,7 @@
 	Tree.prototype.toggleSelected = function (node) {
 
 		if (!node) { return; }
-		
+
 		if (node.states.selected) {
 			node.states.selected = false;
 			this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
@@ -304,7 +326,7 @@
 			node.states.selected = true;
 			this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
 		}
-		
+
 		this.render();
 	};
 
@@ -317,7 +339,7 @@
 			this.$wrapper = $(this.template.list);
 
 			this.injectStyle();
-			
+
 			this.initialized = true;
 		}
 
@@ -327,7 +349,7 @@
 		this.buildTree(this.tree, 0);
 	};
 
-	// Starting from the root node, and recursing down the 
+	// Starting from the root node, and recursing down the
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
 
@@ -340,6 +362,7 @@
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
 				.addClass(node.states.selected ? 'node-selected' : '')
+				.addClass(node.searchResult ? 'search-result' : '')
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
@@ -348,7 +371,7 @@
 				treeItem.append(_this.template.indent);
 			}
 
-			// Add expand, collapse or empty spacer icons 
+			// Add expand, collapse or empty spacer icons
 			if (node.nodes) {
 				if (!node.states.expanded) {
 						treeItem
@@ -419,20 +442,32 @@
 	// 2. node|data assigned color overrides
 	Tree.prototype.buildStyleOverride = function (node) {
 
-		var style = '';
+		var color = node.color;
+		var backColor = node.backColor;
+
 		if (this.options.highlightSelected && (node.states.selected)) {
-			style += 'color:' + this.options.selectedColor + 
-				';background-color:' + this.options.selectedBackColor + ';';
-		}
-		else if (node.color) {
-			style += 'color:' + node.color + 
-				';background-color:' + node.backColor + ';';
+			if (this.options.selectedColor) {
+				color = this.options.selectedColor;
+			}
+			if (this.options.selectedBackColor) {
+				backColor = this.options.selectedBackColor;
+			}
 		}
 
-		return style;
+		if (node.searchResult) {
+			if (this.options.searchResultColor) {
+				color = this.options.searchResultColor;
+			}
+			if (this.options.searchResultBackColor) {
+				backColor = this.options.searchResultBackColor;
+			}
+		}
+
+		return 'color:' + color +
+			';background-color:' + backColor + ';';
 	};
 
-	// Add inline style into head 
+	// Add inline style into head
 	Tree.prototype.injectStyle = function () {
 
 		if (this.options.injectStyle && !document.getElementById(this.styleId)) {
@@ -478,7 +513,103 @@
 	};
 
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
-		
+
+
+
+	/**
+		Searches the tree for nodes (text) that match given criteria
+		@param {String} pattern - A given string to match against
+		@param {optional Object} options - Search criteria options
+		@return {Array} nodes - Matching nodes
+	*/
+	Tree.prototype.search = function (pattern, options) {
+
+		this.clearSearch();
+
+		var results = [];
+		if (pattern && pattern.length > 0) {
+
+			if (options.exactMatch) {
+				pattern = '^' + pattern + '$';
+			}
+
+			var modifier = 'g';
+			if (options.ignoreCase) {
+				modifier += 'i';
+			}
+
+			results = this.findNodes(pattern, modifier);
+			$.each(results, function (index, node) {
+				node.searchResult = true;
+			})
+
+			this.render();
+		}
+
+		this.$element.trigger('searchComplete', $.extend(true, {}, results));
+
+		return results;
+	};
+
+	/**
+		Clears previous search results
+	*/
+	Tree.prototype.clearSearch = function () {
+
+		var results = $.each(this.findNodes('true', 'g', 'searchResult'), function (index, node) {
+			node.searchResult = false;
+		});
+
+		this.render();
+
+		this.$element.trigger('searchCleared', $.extend(true, {}, results));
+	};
+
+	/**
+		Find nodes that match a given criteria
+		@param {String} pattern - A given string to match against
+		@param {optional String} modifier - Valid RegEx modifiers
+		@param {optional String} attribute - Attribute to compare pattern against
+		@return {Array} nodes - Nodes that match your criteria
+	*/
+	Tree.prototype.findNodes = function (pattern, modifier, attribute) {
+
+		modifier = modifier || 'g';
+		attribute = attribute || 'text';
+
+		var _this = this;
+		return $.grep(this.nodes, function (node) {
+			var val = _this.getNodeValue(node, attribute);
+			if (typeof val === 'string') {
+				return val.match(new RegExp(pattern, modifier));
+			}
+		});
+	};
+
+	/**
+		Recursive find for retrieving nested attributes values
+		All values are return as strings, unless invalid
+		@param {Object} obj - Typically a node, could be any object
+		@param {String} attr - Identifies an object property using dot notation
+		@return {String} value - Matching attributes string representation
+	*/
+	Tree.prototype.getNodeValue = function (obj, attr) {
+		var index = attr.indexOf('.');
+		if (index > 0) {
+			var _obj = obj[attr.substring(0, index)];
+			var _attr = attr.substring(index + 1, attr.length);
+			return this.getNodeValue(_obj, _attr);
+		}
+		else {
+			if (obj.hasOwnProperty(attr)) {
+				return obj[attr].toString();
+			}
+			else {
+				return undefined;
+			}
+		}
+	};
+
 
 	var logError = function (message) {
         if(window.console) {
@@ -491,7 +622,7 @@
 	$.fn[pluginName] = function (options, args) {
 
 		var result;
-		
+
 		this.each(function () {
 			var _this = $.data(this, pluginName);
 			if (typeof options === 'string') {
