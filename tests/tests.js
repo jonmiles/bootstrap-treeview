@@ -375,6 +375,25 @@
 		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
 	});
 
+	test('selectNode', function () {
+		var $tree = init({ data: data });
+
+		$tree.treeview('selectNode', 0);
+		var el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Node is selected');
+		ok(($('.node-selected').length === 1), 'There is only one selected node');
+	});
+
+	test('unselectNode', function () {
+		var $tree = init({ data: data });
+
+		$tree.treeview('selectNode', 0);
+		$tree.treeview('unselectNode', 0);
+		var el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Node is not selected');
+		ok(($('.node-selected').length === 0), 'There are no selected nodes');
+	});
+
 
 	test('search', function () {
 		var cbWorked, onWorked = false;

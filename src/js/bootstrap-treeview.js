@@ -74,6 +74,8 @@
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
+			selectNode: $.proxy(this.selectNode, this),
+			unselectNode: $.proxy(this.unselectNode, this),
 			search: $.proxy(this.search, this),
 			clearSearch: $.proxy(this.clearSearch, this)
 		};
@@ -231,37 +233,6 @@
 				_this.setInitialStates(node, level);
 			}
 		});
-	};
-
-	/**
-		Returns a single node object that matches the given node id.
-		@param {Number} nodeId - A node's unique identifier
-		@return {Object} node - Matching node
-	*/
-	Tree.prototype.getNode = function (nodeId) {
-		return this.nodes[nodeId];
-	};
-
-	/**
-		Returns the parent node of a given node, if valid otherwise returns undefined.
-		@param {Object} node - A valid node object
-		@returns {Object} parent - The parent node
-	*/
-	Tree.prototype.getParent = function (node) {
-		return this.nodes[node.parentId];
-	};
-
-	/**
-		Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
-		@param {Object} node - A valid node object
-		@returns {Array} siblings - Sibling nodes
-	*/
-	Tree.prototype.getSiblings = function (node) {
-		var parent = this.getParent(node);
-		var nodes = parent ? parent.nodes : this.tree;
-		return nodes.filter(function (obj) {
-				return obj.nodeId !== node.nodeId;
-			});
 	};
 
 	Tree.prototype.clickHandler = function (event) {
@@ -514,6 +485,56 @@
 
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
 
+
+
+	/**
+		Returns a single node object that matches the given node id.
+		@param {Number} nodeId - A node's unique identifier
+		@return {Object} node - Matching node
+	*/
+	Tree.prototype.getNode = function (nodeId) {
+		return this.nodes[nodeId];
+	};
+
+	/**
+		Returns the parent node of a given node, if valid otherwise returns undefined.
+		@param {Object} node - A valid node object
+		@returns {Object} parent - The parent node
+	*/
+	Tree.prototype.getParent = function (node) {
+		return this.nodes[node.parentId];
+	};
+
+	/**
+		Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
+		@param {Object} node - A valid node object
+		@returns {Array} siblings - Sibling nodes
+	*/
+	Tree.prototype.getSiblings = function (node) {
+		var parent = this.getParent(node);
+		var nodes = parent ? parent.nodes : this.tree;
+		return nodes.filter(function (obj) {
+				return obj.nodeId !== node.nodeId;
+			});
+	};
+
+	/**
+		Set a node state to selected
+		@param {Number} nodeId - A node's unique identifier
+	*/
+	Tree.prototype.selectNode = function (nodeId) {
+		this.nodes[nodeId].states.selected = true;
+		this.render();
+	};
+
+	/**
+		Set a node state to unselected
+		@param {Number} nodeId - A node's unique identifier
+	*/
+	Tree.prototype.unselectNode = function (nodeId) {
+		this.nodes[nodeId].states.selected = false;
+		this.render();
+	};
 
 
 	/**
