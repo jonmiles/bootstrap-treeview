@@ -334,6 +334,26 @@ $('#tree').treeview('search', [ 'Parent', {
 
 Triggers `searchComplete` event
 
+### selectNode(nodeId)
+
+Set a node's state to selected
+
+```javascript
+$('#tree').treeview('selectNode', nodeId);
+```
+
+Triggers `nodeSelected` event
+
+### unselectNode(nodeId)
+
+Set a node's state to unselected
+
+```javascript
+$('#tree').treeview('unselectNode', nodeId);
+```
+
+Triggers `nodeUnselected` event
+
 ## Events
 
 You can bind to any event defined below by either using an options callback handler, or the standard jQuery .on method.
