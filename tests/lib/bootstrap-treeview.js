@@ -584,10 +584,9 @@
 	};
 
 	Tree.prototype.expandLevels = function (nodes, level) {
-		if (level === 0) return;
 		var _this = this;
 		$.each(nodes, function (index, node) {
-			node.states.expanded = true;
+			node.states.expanded = (level > 0) ? true : false;
 			if (node.nodes) {
 				_this.expandLevels(node.nodes, level-1);
 			}
