@@ -344,14 +344,15 @@
 
 	test('getParent', function () {
 		var $tree = init({ data: data });
-		var nodeParent1 = $tree.treeview('getNode', 0);
-		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
+		var nodeChild1 = $tree.treeview('getNode', 1);
+		var parentNode = $tree.treeview('getParent', nodeChild1);
+		equal(parentNode.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
 	});
 
 	test('getSiblings', function () {
 		var $tree = init({ data: data });
 
-		// Test root level which uses the this.tree
+		// Test root level, internally uses the this.tree
 		var nodeParent1 = $tree.treeview('getNode', 0);
 		var nodeParent1Siblings = $tree.treeview('getSiblings', nodeParent1);
 		var isArray = (nodeParent1Siblings instanceof Array);
@@ -364,7 +365,7 @@
 		ok(countOK, 'Correct siblings for "Parent 1" [root] : count OK');
 		ok(resultsOK, 'Correct siblings for "Parent 1" [root] : results OK');
 
-		// Test non root level, which uses getParent.nodes
+		// Test non root level, internally uses getParent.nodes
 		var nodeChild1 = $tree.treeview('getNode', 1);
 		var nodeChild1Siblings = $tree.treeview('getSiblings', nodeChild1);
 		var isArray = (nodeChild1Siblings instanceof Array);
