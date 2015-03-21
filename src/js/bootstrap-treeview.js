@@ -68,14 +68,31 @@
 		this.init(options);
 
 		return {
+
+			// Options (public access)
 			options: this.options,
+
+			// Initialize / destroy methods
 			init: $.proxy(this.init, this),
 			remove: $.proxy(this.remove, this),
+
+			// Get methods
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
+
+			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
 			unselectNode: $.proxy(this.unselectNode, this),
+
+			// Expand / collapse methods
+			collapseAll: $.proxy(this.collapseAll, this),
+			collapseNode: $.proxy(this.collapseNode, this),
+			expandAll: $.proxy(this.expandAll, this),
+			expandNode: $.proxy(this.expandNode, this),
+			toggleNodeExpanded: $.proxy(this.toggleNodeExpanded, this),
+
+			// Search methods
 			search: $.proxy(this.search, this),
 			clearSearch: $.proxy(this.clearSearch, this)
 		};
@@ -245,13 +262,13 @@
 
 		if ((classList.indexOf('click-expand') != -1) ||
 				(classList.indexOf('click-collapse') != -1)) {
-			this.toggleExpanded(node);
+			this.toggleExpandedState(node);
 		}
 		else if (node) {
 			if (node.selectable) {
-				this.toggleSelected(node);
+				this.toggleSelectedState(node);
 			} else {
-				this.toggleExpanded(node);
+				this.toggleExpandedState(node);
 			}
 		}
 	};
@@ -269,23 +286,28 @@
 		return node;
 	};
 
-	Tree.prototype.toggleExpanded = function (node) {
-
-		if (!node) { return; }
-
-		if (node.states.expanded) {
-			node.states.expanded = false;
-			this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
-		}
-		else {
-			node.states.expanded = true;
-			this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
-		}
-
+	Tree.prototype.toggleExpandedState = function (node, silent) {
+		if (!node) return;
+		this.setExpandedState(node, !node.states.expanded, silent);
 		this.render();
 	};
 
-	Tree.prototype.toggleSelected = function (node) {
+	Tree.prototype.setExpandedState = function (node, state, silent) {
+		if (state) {
+			node.states.expanded = true;
+			if (!silent) {
+				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
+			}
+		}
+		else {
+			node.states.expanded = false;
+			if (!silent) {
+				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+			}
+		}
+	};
+
+	Tree.prototype.toggleSelectedState = function (node) {
 
 		if (!node) { return; }
 
@@ -486,7 +508,6 @@
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
 
 
-
 	/**
 		Returns a single node object that matches the given node id.
 		@param {Number} nodeId - A node's unique identifier
@@ -517,6 +538,101 @@
 				return obj.nodeId !== node.nodeId;
 			});
 	};
+
+
+	/**
+		Collapse all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.collapseAll = function (options) {
+		var silent = this.isSilent(options);
+
+		$.each(this.nodes, $.proxy(function (index, node) {
+			this.setExpandedState(node, false, silent);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Collapse a given tree node
+		@param {Object|Number} identifier - node or node id
+		@param {optional Object} options
+	*/
+	Tree.prototype.collapseNode = function (identifier, options) {
+		var silent = this.isSilent(options);
+		this.setExpandedState(this.identifyNode(identifier), false, silent);
+		this.render();
+	};
+
+	/**
+		Expand all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.expandAll = function (options) {
+		var silent = this.isSilent(options);
+
+		if (options && options.levels) {
+			this.expandLevels(this.tree, options.levels, silent);
+		}
+		else {
+			$.each(this.nodes, $.proxy(function (index, node) {
+				this.setExpandedState(node, true, silent);
+			}, this));
+		}
+
+		this.render();
+	};
+
+	/**
+		Expand a given tree node
+		@param {Object|Number} identifier - node or node id
+		@param {optional Object} options
+	*/
+	Tree.prototype.expandNode = function (identifier, options) {
+		var silent = this.isSilent(options);
+
+		var node = this.identifyNode(identifier);
+		this.setExpandedState(node, true, silent);
+
+		if (node.nodes && (options && options.levels)) {
+			this.expandLevels(node.nodes, options.levels-1, silent);
+		}
+
+		this.render();
+	};
+
+	Tree.prototype.expandLevels = function (nodes, level, silent) {
+		$.each(nodes, $.proxy(function (index, node) {
+			this.setExpandedState(node, (level > 0) ? true : false)
+			if (node.nodes) {
+				this.expandLevels(node.nodes, level-1, silent);
+			}
+		}, this));
+	}
+
+	/**
+		Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
+		@param {Object|Number} identifier = node or node id
+		@param {optional Object} options 
+	*/
+	Tree.prototype.toggleNodeExpanded = function (identifier, options) {
+		this.toggleExpandedState(this.identifyNode(identifier),
+															this.isSilent(options));
+	}
+
+	Tree.prototype.identifyNode = function (identifier) {
+		return ((typeof identifier) === 'number') ?
+						this.nodes[identifier] :
+						identifier;
+	}
+
+	Tree.prototype.isSilent = function (options) {
+		return (options && options.hasOwnProperty('silent')) ?
+						options.silent :
+						false;
+	}
+
 
 	/**
 		Set a node state to selected

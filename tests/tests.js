@@ -390,6 +390,59 @@
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
 	});
 
+	test('expandAll / collapseAll', function () {
+		var $tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
+
+		$tree.treeview('expandAll');
+		equal($($tree.selector + ' ul li').length, 9, 'Expand all works, all 9 nodes displayed');
+
+		$tree.treeview('collapseAll');
+		equal($($tree.selector + ' ul li').length, 5, 'Collapse all works, 5 original root nodes displayed');
+
+		$tree.treeview('expandAll', { levels: 1 });
+		equal($($tree.selector + ' ul li').length, 7, 'Expand all (levels = 1) works, correctly displayed 7 nodes');
+	});
+
+	test('expandNode / collapseNode / toggleExpanded', function () {
+		var $tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
+
+		$tree.treeview('expandNode', 0);
+		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by id) works, 7 nodes displayed');
+
+		$tree.treeview('collapseNode', 0);
+		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by id) works, 5 original nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', 0);
+		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by id) works, 7 nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', 0);
+		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
+
+		$tree.treeview('expandNode', [ 0, { levels: 2 } ]);
+		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
+
+		$tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Reset to collapsed state, 5 root nodes displayed');
+
+		var nodeParent1 = $tree.treeview('getNode', 0);
+		$tree.treeview('expandNode', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by node) works, 7 nodes displayed');
+
+		$tree.treeview('collapseNode', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by node) works, 5 original nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by node) works, 7 nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
+
+		$tree.treeview('expandNode', [ nodeParent1, { levels: 2 } ]);
+		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
+	});
+
 	test('search', function () {
 		var cbWorked, onWorked = false;
 		var $tree = init({

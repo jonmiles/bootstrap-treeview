@@ -287,6 +287,46 @@ $('#tree').treeview('clearSearch');
 
 Triggers `searchCleared` event
 
+### collapseAll(options)
+
+Collapse all tree nodes, collapsing the entire tree.
+
+```javascript
+$('#tree').treeview('collapseAll', { silent: true });
+```
+
+Triggers `nodeCollapsed` event; pass silent to suppress events.
+
+### collapseNode(node | nodeId, options)
+
+Collapse a given tree node, accepts node or nodeId
+
+```javascript
+$('#tree').treeview('collapseNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeCollapsed` event; pass silent to suppress events.
+
+### expandAll(options)
+
+Expand all tree nodes.  Optionally can be expanded to any given number of levels.
+
+```javascript
+$('#tree').treeview('expandAll', { levels: 2, silent: true });
+```
+
+Triggers `nodeExpanded` event; pass silent to suppress events.
+
+### expandNode(node | nodeId, options)
+
+Expand a given tree node, accepts node or nodeId.  Optionally can be expanded to any given number of levels.
+
+```javascript
+$('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
+```
+
+Triggers `nodeExpanded` event; pass silent to suppress events.
+
 ### getNode(nodeId)
 
 Returns a single node object that matches the given node id.
@@ -343,6 +383,16 @@ $('#tree').treeview('selectNode', nodeId);
 ```
 
 Triggers `nodeSelected` event
+
+### toggleNodeExpanded(node | nodeId, options)
+
+Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
+
+```javascript
+$('#tree').treeview('toggleNodeExpanded', [ nodeId, { silent: true } ]);
+```
+
+Triggers either `nodeExpanded` or `nodeCollapsed` event; pass silent to suppress events.
 
 ### unselectNode(nodeId)
 
