@@ -286,20 +286,25 @@
 		return node;
 	};
 
-	Tree.prototype.toggleExpandedState = function (node) {
+	Tree.prototype.toggleExpandedState = function (node, silent) {
+		if (!node) return;
+		this.setExpandedState(node, !node.states.expanded, silent);
+		this.render();
+	};
 
-		if (!node) { return; }
-
-		if (node.states.expanded) {
-			node.states.expanded = false;
-			this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+	Tree.prototype.setExpandedState = function (node, state, silent) {
+		if (state) {
+			node.states.expanded = true;
+			if (!silent) {
+				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
+			}
 		}
 		else {
-			node.states.expanded = true;
-			this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
+			node.states.expanded = false;
+			if (!silent) {
+				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+			}
 		}
-
-		this.render();
 	};
 
 	Tree.prototype.toggleSelectedState = function (node) {
@@ -537,76 +542,95 @@
 
 	/**
 		Collapse all tree nodes
+		@param {optional Object} options
 	*/
-	Tree.prototype.collapseAll = function () {
-		$.each(this.nodes, function (index, node) {
-			node.states.expanded = false;
-		});
+	Tree.prototype.collapseAll = function (options) {
+		var silent = this.isSilent(options);
+
+		$.each(this.nodes, $.proxy(function (index, node) {
+			this.setExpandedState(node, false, silent);
+		}, this));
+
 		this.render();
 	};
 
 	/**
 		Collapse a given tree node
 		@param {Object|Number} identifier - node or node id
+		@param {optional Object} options
 	*/
-	Tree.prototype.collapseNode = function (identifier) {
-		this.identifyNode(identifier).states.expanded = false;
+	Tree.prototype.collapseNode = function (identifier, options) {
+		var silent = this.isSilent(options);
+		this.setExpandedState(this.identifyNode(identifier), false, silent);
 		this.render();
 	};
 
 	/**
 		Expand all tree nodes
+		@param {optional Object} options
 	*/
-	Tree.prototype.expandAll = function (levels) {
-		if (levels) {
-			this.expandLevels(this.tree, levels);
+	Tree.prototype.expandAll = function (options) {
+		var silent = this.isSilent(options);
+
+		if (options && options.levels) {
+			this.expandLevels(this.tree, options.levels, silent);
 		}
 		else {
-			$.each(this.nodes, function (index, node) {
-				node.states.expanded = true;
-			});
+			$.each(this.nodes, $.proxy(function (index, node) {
+				this.setExpandedState(node, true, silent);
+			}, this));
 		}
+
 		this.render();
 	};
 
 	/**
 		Expand a given tree node
 		@param {Object|Number} identifier - node or node id
-		@param {optional Number} levels - number of levels to expand to
+		@param {optional Object} options
 	*/
-	Tree.prototype.expandNode = function (identifier, levels) {
+	Tree.prototype.expandNode = function (identifier, options) {
+		var silent = this.isSilent(options);
+
 		var node = this.identifyNode(identifier);
-		node.states.expanded = true;
-		if (levels && node.nodes) {
-			this.expandLevels(node.nodes, levels-1);
+		this.setExpandedState(node, true, silent);
+
+		if (node.nodes && (options && options.levels)) {
+			this.expandLevels(node.nodes, options.levels-1, silent);
 		}
+
 		this.render();
 	};
 
-	Tree.prototype.expandLevels = function (nodes, level) {
-		var _this = this;
-		$.each(nodes, function (index, node) {
-			node.states.expanded = (level > 0) ? true : false;
+	Tree.prototype.expandLevels = function (nodes, level, silent) {
+		$.each(nodes, $.proxy(function (index, node) {
+			this.setExpandedState(node, (level > 0) ? true : false)
 			if (node.nodes) {
-				_this.expandLevels(node.nodes, level-1);
+				this.expandLevels(node.nodes, level-1, silent);
 			}
-		});
+		}, this));
 	}
 
 	/**
 		Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
 		@param {Object|Number} identifier = node or node id
+		@param {optional Object} options 
 	*/
-	Tree.prototype.toggleNodeExpanded = function (identifier) {
-		var node = this.identifyNode(identifier)
-		node.states.expanded = !node.states.expanded;
-		this.render();
+	Tree.prototype.toggleNodeExpanded = function (identifier, options) {
+		this.toggleExpandedState(this.identifyNode(identifier),
+															this.isSilent(options));
 	}
 
 	Tree.prototype.identifyNode = function (identifier) {
 		return ((typeof identifier) === 'number') ?
 						this.nodes[identifier] :
 						identifier;
+	}
+
+	Tree.prototype.isSilent = function (options) {
+		return (options && options.hasOwnProperty('silent')) ?
+						options.silent :
+						false;
 	}
 
 

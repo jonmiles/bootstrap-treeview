@@ -472,7 +472,7 @@
 
         $('#btn-expand-node.expand-node').on('click', function (e) {
           var levels = $('#select-expand-node-levels').val();
-          $expandibleTree.treeview('expandNode', [ expandibleNode[0], levels ]);
+          $expandibleTree.treeview('expandNode', [ expandibleNode[0], { levels: levels } ]);
         });
 
         $('#btn-collapse-node.expand-node').on('click', function (e) {
@@ -486,7 +486,7 @@
         // Expand/collapse all
         $('#btn-expand-all').on('click', function (e) {
           var levels = $('#select-expand-all-levels').val();
-          $expandibleTree.treeview('expandAll', levels);
+          $expandibleTree.treeview('expandAll', { levels: levels });
         });
 
         $('#btn-collapse-all').on('click', function (e) {

@@ -400,7 +400,7 @@
 		$tree.treeview('collapseAll');
 		equal($($tree.selector + ' ul li').length, 5, 'Collapse all works, 5 original root nodes displayed');
 
-		$tree.treeview('expandAll', 1);
+		$tree.treeview('expandAll', { levels: 1 });
 		equal($($tree.selector + ' ul li').length, 7, 'Expand all (levels = 1) works, correctly displayed 7 nodes');
 	});
 
@@ -420,7 +420,7 @@
 		$tree.treeview('toggleNodeExpanded', 0);
 		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
 
-		$tree.treeview('expandNode', [ 0, 2 ]);
+		$tree.treeview('expandNode', [ 0, { levels: 2 } ]);
 		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
 
 		$tree = init({ data: data, levels: 1 });
@@ -439,7 +439,7 @@
 		$tree.treeview('toggleNodeExpanded', nodeParent1);
 		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
 
-		$tree.treeview('expandNode', [ nodeParent1, 2 ]);
+		$tree.treeview('expandNode', [ nodeParent1, { levels: 2 } ]);
 		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
 	});
 
