@@ -335,7 +335,7 @@ Returns a single node object that matches the given node id.
 $('#tree').treeview('getNode', nodeId);
 ```
 
-### getParent(node)
+### getParent(node | nodeId)
 
 Returns the parent node of a given node, if valid otherwise returns undefined.
 
@@ -343,7 +343,7 @@ Returns the parent node of a given node, if valid otherwise returns undefined.
 $('#tree').treeview('getParent', node);
 ```
 
-### getSiblings(node)
+### getSiblings(node | nodeId)
 
 Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
 

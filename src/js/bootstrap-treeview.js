@@ -519,19 +519,21 @@
 
 	/**
 		Returns the parent node of a given node, if valid otherwise returns undefined.
-		@param {Object} node - A valid node object
+		@param {Object|Number} identifier - A valid node or node id
 		@returns {Object} parent - The parent node
 	*/
-	Tree.prototype.getParent = function (node) {
+	Tree.prototype.getParent = function (identifier) {
+		var node = this.identifyNode(identifier);
 		return this.nodes[node.parentId];
 	};
 
 	/**
 		Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
-		@param {Object} node - A valid node object
+		@param {Object|Number} identifier - A valid node or node id
 		@returns {Array} siblings - Sibling nodes
 	*/
-	Tree.prototype.getSiblings = function (node) {
+	Tree.prototype.getSiblings = function (identifier) {
+		var node = this.identifyNode(identifier);
 		var parent = this.getParent(node);
 		var nodes = parent ? parent.nodes : this.tree;
 		return nodes.filter(function (obj) {
@@ -556,7 +558,7 @@
 
 	/**
 		Collapse a given tree node
-		@param {Object|Number} identifier - node or node id
+		@param {Object|Number} identifier - A valid node or node id
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseNode = function (identifier, options) {
@@ -586,7 +588,7 @@
 
 	/**
 		Expand a given tree node
-		@param {Object|Number} identifier - node or node id
+		@param {Object|Number} identifier - A valid node or node id
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (identifier, options) {
@@ -613,8 +615,8 @@
 
 	/**
 		Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
-		@param {Object|Number} identifier = node or node id
-		@param {optional Object} options 
+		@param {Object|Number} identifier - A valid node or node id
+		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeExpanded = function (identifier, options) {
 		this.toggleExpandedState(this.identifyNode(identifier),
