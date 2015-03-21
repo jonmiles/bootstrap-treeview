@@ -378,16 +378,52 @@
 
 	test('selectNode / unselectNode', function () {
 		var $tree = init({ data: data });
+		var el;
+		var nodeId = 0;
+		var node = $tree.treeview('getNode', 0);
 
-		$tree.treeview('selectNode', 0);
-		var el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Node is selected');
-		ok(($('.node-selected').length === 1), 'There is only one selected node');
-
-		$tree.treeview('unselectNode', 0);
+		// Select node using node id
+		$tree.treeview('selectNode', nodeId);
 		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Node is no longer selected');
-		ok(($('.node-selected').length === 0), 'There are no selected nodes');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by id) : Node is selected');
+		ok(($('.node-selected').length === 1), 'Select node (by id) : There is only one selected node');
+
+		// Unselect node using node id
+		$tree.treeview('unselectNode', nodeId);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Select node (by id) : Node is no longer selected');
+		ok(($('.node-selected').length === 0), 'Select node (by id) : There are no selected nodes');
+
+		// Select node using node
+		$tree.treeview('selectNode', node);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by node) : Node is selected');
+		ok(($('.node-selected').length === 1), 'Select node (by node) : There is only one selected node');
+
+		// Unselect node using node id
+		$tree.treeview('unselectNode', node);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Select node (by node) : Node is no longer selected');
+		ok(($('.node-selected').length === 0), 'Select node (by node) : There are no selected nodes');
+	});
+
+	test('toggleNodeSelected', function () {
+		var $tree = init({ data: data });
+		var el;
+		var nodeId = 0;
+		var node = $tree.treeview('getNode', 0);
+
+		// Toggle selected using node id
+		$tree.treeview('toggleNodeSelected', nodeId);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Toggle node (by id) : Node is selected');
+		ok(($('.node-selected').length === 1), 'Toggle node (by id) : There is only one selected node');
+
+		// Toggle selected using node
+		$tree.treeview('toggleNodeSelected', node);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Toggle node (by node) : Node is unselected');
+		ok(($('.node-selected').length === 0), 'Toggle node (by node) : There are no selected nodes');
 	});
 
 	test('expandAll / collapseAll', function () {

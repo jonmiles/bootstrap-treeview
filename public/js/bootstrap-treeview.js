@@ -84,6 +84,7 @@
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
 			unselectNode: $.proxy(this.unselectNode, this),
+			toggleNodeSelected: $.proxy(this.toggleNodeSelected, this),
 
 			// Expand / collapse methods
 			collapseAll: $.proxy(this.collapseAll, this),
@@ -307,20 +308,25 @@
 		}
 	};
 
-	Tree.prototype.toggleSelectedState = function (node) {
-
+	Tree.prototype.toggleSelectedState = function (node, silent) {
 		if (!node) { return; }
+		this.setSelectedState(node, !node.states.selected, silent);
+		this.render();
+	};
 
-		if (node.states.selected) {
-			node.states.selected = false;
-			this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
+	Tree.prototype.setSelectedState = function (node, state, silent) {
+		if (state) {
+			node.states.selected = true;
+			if (!silent) {
+				this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
+			}
 		}
 		else {
-			node.states.selected = true;
-			this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
+			node.states.selected = false;
+			if (!silent) {
+				this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
+			}
 		}
-
-		this.render();
 	};
 
 	Tree.prototype.render = function () {
@@ -543,6 +549,39 @@
 
 
 	/**
+		Set a node state to selected
+		@param {Object|Number} identifier - A valid node or node id
+		@param {optional Object} options
+	*/
+	Tree.prototype.selectNode = function (identifier, options) {
+		var silent = this.isSilent(options);
+		this.setSelectedState(this.identifyNode(identifier), true, silent);
+		this.render();
+	};
+
+	/**
+		Set a node state to unselected
+		@param {Object|Number} identifier - A valid node or node id
+		@param {optional Object} options
+	*/
+	Tree.prototype.unselectNode = function (identifier, options) {
+		var silent = this.isSilent(options);
+		this.setSelectedState(this.identifyNode(identifier), false, silent);
+		this.render();
+	};
+
+	/**
+		Toggles a node selected state; selecting if unselected, unselecting if selected.
+		@param {Object|Number} identifier - A valid node or node id
+		@param {optional Object} options
+	*/
+	Tree.prototype.toggleNodeSelected = function (identifier, options) {
+		this.toggleSelectedState(this.identifyNode(identifier),
+															this.isSilent(options));
+	};
+
+
+	/**
 		Collapse all tree nodes
 		@param {optional Object} options
 	*/
@@ -611,7 +650,7 @@
 				this.expandLevels(node.nodes, level-1, silent);
 			}
 		}, this));
-	}
+	};
 
 	/**
 		Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
@@ -621,37 +660,18 @@
 	Tree.prototype.toggleNodeExpanded = function (identifier, options) {
 		this.toggleExpandedState(this.identifyNode(identifier),
 															this.isSilent(options));
-	}
+	};
 
 	Tree.prototype.identifyNode = function (identifier) {
 		return ((typeof identifier) === 'number') ?
 						this.nodes[identifier] :
 						identifier;
-	}
+	};
 
 	Tree.prototype.isSilent = function (options) {
 		return (options && options.hasOwnProperty('silent')) ?
 						options.silent :
 						false;
-	}
-
-
-	/**
-		Set a node state to selected
-		@param {Number} nodeId - A node's unique identifier
-	*/
-	Tree.prototype.selectNode = function (nodeId) {
-		this.nodes[nodeId].states.selected = true;
-		this.render();
-	};
-
-	/**
-		Set a node state to unselected
-		@param {Number} nodeId - A node's unique identifier
-	*/
-	Tree.prototype.unselectNode = function (nodeId) {
-		this.nodes[nodeId].states.selected = false;
-		this.render();
 	};
 
 

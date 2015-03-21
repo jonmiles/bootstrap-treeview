@@ -374,15 +374,15 @@ $('#tree').treeview('search', [ 'Parent', {
 
 Triggers `searchComplete` event
 
-### selectNode(nodeId)
+### selectNode(node | nodeId, options)
 
-Set a node's state to selected
+Selects a given tree node, accepts node or nodeId.
 
 ```javascript
-$('#tree').treeview('selectNode', nodeId);
+$('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
 ```
 
-Triggers `nodeSelected` event
+Triggers `nodeSelected` event; pass silent to suppress events.
 
 ### toggleNodeExpanded(node | nodeId, options)
 
@@ -394,15 +394,25 @@ $('#tree').treeview('toggleNodeExpanded', [ nodeId, { silent: true } ]);
 
 Triggers either `nodeExpanded` or `nodeCollapsed` event; pass silent to suppress events.
 
-### unselectNode(nodeId)
+### toggleNodeSelected(node | nodeId, options)
 
-Set a node's state to unselected
+Toggles a node selected state; selecting if unselected, unselecting if selected.
 
 ```javascript
-$('#tree').treeview('unselectNode', nodeId);
+$('#tree').treeview('toggleNodeSelected', [ nodeId, { silent: true } ]);
 ```
 
-Triggers `nodeUnselected` event
+Triggers either `nodeSelected` or `nodeUnselected` event; pass silent to suppress events.
+
+### unselectNode(node | nodeId, options)
+
+Unselects a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('unselectNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeUnselected` event; pass silent to suppress events.
 
 ## Events
 

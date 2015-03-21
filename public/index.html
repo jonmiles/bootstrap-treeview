@@ -116,6 +116,32 @@
       </div>
       <div class="row">
         <hr>
+        <h2>Select / Unselect Methods</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-select-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-select-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="form-group">
+              <button type="button" class="btn btn-success select-node" id="btn-select-node">Select Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger select-node" id="btn-unselect-node">Unselect Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary select-node" id="btn-toggle-selected">Toggle Node</button>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-selectable" class=""></div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+      </div>
+      <div class="row">
+        <hr>
         <h2>Expand / Collapse Methods</h2>
         <div class="col-sm-4">
           <h2>Input</h2>
@@ -138,7 +164,7 @@
             <button type="button" class="btn btn-danger expand-node" id="btn-collapse-node">Collapse Node</button>
           </div>
           <div class="form-group">
-            <button type="button" class="btn btn-primary expand-node" id="btn-toggle-node">Toggle Node</button>
+            <button type="button" class="btn btn-primary expand-node" id="btn-toggle-expanded">Toggle Node</button>
           </div>
           <hr>
           <div class="form-group row">
@@ -425,6 +451,7 @@
         });
 
 
+
         var $searchTree = $('#treeview-search').treeview({
           data: defaultData,
         });
@@ -455,6 +482,35 @@
 
 
 
+        var $selectableTree = $('#treeview-selectable').treeview({
+          data: defaultData
+        });
+
+        var findSelectableNode = function() {
+          return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        };
+        var selectableNode = findSelectableNode();
+
+        // Select/unselect/toggle nodes
+        $('#input-select-node').on('keyup', function (e) {
+          selectableNode = findSelectableNode();
+          $('.select-node').prop('disabled', !(selectableNode.length === 1));
+        });
+
+        $('#btn-select-node.select-node').on('click', function (e) {
+          $selectableTree.treeview('selectNode', selectableNode[0]);
+        });
+
+        $('#btn-unselect-node.select-node').on('click', function (e) {
+          $selectableTree.treeview('unselectNode', selectableNode[0]);
+        });
+
+        $('#btn-toggle-selected.select-node').on('click', function (e) {
+          $selectableTree.treeview('toggleNodeSelected', selectableNode[0]);
+        });
+
+
+
         var $expandibleTree = $('#treeview-expandible').treeview({
           data: defaultData
         });
@@ -479,7 +535,7 @@
           $expandibleTree.treeview('collapseNode', expandibleNode[0]);
         });
 
-        $('#btn-toggle-node.expand-node').on('click', function (e) {
+        $('#btn-toggle-expanded.expand-node').on('click', function (e) {
           $expandibleTree.treeview('toggleNodeExpanded', expandibleNode[0]);
         });
 
