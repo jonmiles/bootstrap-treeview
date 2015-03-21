@@ -289,7 +289,7 @@ Triggers `searchCleared` event
 
 ### collapseAll()
 
-Collapses all tree nodes, collapsing the entire tree.
+Collapse all tree nodes, collapsing the entire tree.
 
 ```javascript
 $('#tree').treeview('collapseAll');
@@ -297,9 +297,9 @@ $('#tree').treeview('collapseAll');
 
 Triggers `nodeCollapsed` event
 
-### collapseNode(nodeId | node)
+### collapseNode(node | nodeId)
 
-Collapses a given tree node, accepts either a node id or node object.
+Collapse a given tree node, accepts node or nodeId
 
 ```javascript
 $('#tree').treeview('collapseNode', nodeId);
@@ -309,7 +309,7 @@ Triggers `nodeCollapsed` event
 
 ### expandAll([levels])
 
-Expands all tree nodes.  Optionally can be expanded to any given number of levels.
+Expand all tree nodes.  Optionally can be expanded to any given number of levels.
 
 ```javascript
 $('#tree').treeview('expandAll', levels);
@@ -317,9 +317,9 @@ $('#tree').treeview('expandAll', levels);
 
 Triggers `nodeExpanded` event
 
-### expandNode(nodeId | node, [levels])
+### expandNode(node | nodeId, [levels])
 
-Expand a tree node, accepts either a node if or node object.  Optionally can be expanded to any given number of levels.
+Expand a given tree node, accepts node or nodeId.  Optionally can be expanded to any given number of levels.
 
 ```javascript
 $('#tree').treeview('expandNode', [ nodeId, levels]);
@@ -384,12 +384,12 @@ $('#tree').treeview('selectNode', nodeId);
 
 Triggers `nodeSelected` event
 
-### toggleExpanded(nodeId | node)
+### toggleNodeExpanded(node | nodeId)
 
 Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
 
 ```javascript
-$('#tree').treeview('toggleExpanded', nodeId);
+$('#tree').treeview('toggleNodeExpanded', nodeId);
 ```
 
 Triggers either `nodeExpanded` or `nodeCollapsed` event

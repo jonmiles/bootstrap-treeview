@@ -392,7 +392,6 @@
 
 	test('expandAll / collapseAll', function () {
 		var $tree = init({ data: data, levels: 1 });
-
 		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
 
 		$tree.treeview('expandAll');
@@ -407,7 +406,6 @@
 
 	test('expandNode / collapseNode / toggleExpanded', function () {
 		var $tree = init({ data: data, levels: 1 });
-
 		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
 
 		$tree.treeview('expandNode', 0);
@@ -416,29 +414,32 @@
 		$tree.treeview('collapseNode', 0);
 		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by id) works, 5 original nodes displayed');
 
-		$tree.treeeview('toggleNode', 0);
+		$tree.treeview('toggleNodeExpanded', 0);
 		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by id) works, 7 nodes displayed');
 
-		$tree.treeview('toggleNode', 0);
+		$tree.treeview('toggleNodeExpanded', 0);
 		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
 
-		$tree.treeview('expandNode', [ 0, 2]);
+		$tree.treeview('expandNode', [ 0, 2 ]);
 		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
 
+		$tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Reset to collapsed state, 5 root nodes displayed');
+
 		var nodeParent1 = $tree.treeview('getNode', 0);
-		$tree.treeeview('expandNode', nodeParent1);
+		$tree.treeview('expandNode', nodeParent1);
 		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by node) works, 7 nodes displayed');
 
 		$tree.treeview('collapseNode', nodeParent1);
 		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by node) works, 5 original nodes displayed');
 
-		$tree.treeeview('toggleNode', nodeParent1);
+		$tree.treeview('toggleNodeExpanded', nodeParent1);
 		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by node) works, 7 nodes displayed');
 
-		$tree.treeview('toggleNode', nodeParent1);
+		$tree.treeview('toggleNodeExpanded', nodeParent1);
 		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
 
-		$tree.treeview('expandNode', [ nodeParent1, 2]);
+		$tree.treeview('expandNode', [ nodeParent1, 2 ]);
 		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
 	});
 
