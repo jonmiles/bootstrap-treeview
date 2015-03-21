@@ -116,6 +116,53 @@
       </div>
       <div class="row">
         <hr>
+        <h2>Expand / Collapse Methods</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-expand-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-expand-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success expand-node" id="btn-expand-node">Expand Node</button>
+            </div>
+            <div class="col-sm-6">
+              <select class="form-control" id="select-expand-node-levels">
+                <option>1</option>
+                <option>2</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger expand-node" id="btn-collapse-node">Collapse Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary expand-node" id="btn-toggle-node">Toggle Node</button>
+          </div>
+          <hr>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success" id="btn-expand-all">Expand All</button>
+            </div>
+            <div class="col-sm-6">
+              <select class="form-control" id="select-expand-all-levels">
+                <option>1</option>
+                <option>2</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger" id="btn-collapse-all">Collapse All</button>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-expandible" class=""></div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+      </div>
+      <div class="row">
+        <hr>
         <h2>Data</h2>
         <div class="col-sm-4">
           <h2>JSON Data</h2>
@@ -405,6 +452,47 @@
           $('#input-search').val('');
           $('#search-output').html('');
         });
+
+
+
+        var $expandibleTree = $('#treeview-expandible').treeview({
+          data: defaultData
+        });
+
+        var findExpandibleNode = function() {
+          return $expandibleTree.treeview('search', [ $('#input-expand-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        };
+        var expandibleNode = findExpandibleNode();
+
+        // Expand/collapse/toggle nodes
+        $('#input-expand-node').on('keyup', function (e) {
+          expandibleNode = findExpandibleNode();
+          $('.expand-node').prop('disabled', !(expandibleNode.length === 1));
+        });
+
+        $('#btn-expand-node.expand-node').on('click', function (e) {
+          var levels = $('#select-expand-node-levels').val();
+          $expandibleTree.treeview('expandNode', [ expandibleNode[0], levels ]);
+        });
+
+        $('#btn-collapse-node.expand-node').on('click', function (e) {
+          $expandibleTree.treeview('collapseNode', expandibleNode[0]);
+        });
+
+        $('#btn-toggle-node.expand-node').on('click', function (e) {
+          $expandibleTree.treeview('toggleNodeExpanded', expandibleNode[0]);
+        });
+
+        // Expand/collapse all
+        $('#btn-expand-all').on('click', function (e) {
+          var levels = $('#select-expand-all-levels').val();
+          $expandibleTree.treeview('expandAll', levels);
+        });
+
+        $('#btn-collapse-all').on('click', function (e) {
+          $expandibleTree.treeview('collapseAll');
+        });
+
 
 
         var $tree = $('#treeview12').treeview({
