@@ -238,20 +238,25 @@ Boolean.  Default: true
 
 Whether or not to highlight the selected node.
 
-### onhoverColor
-String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
-
-Sets the default background color activated when the users cursor hovers over a node.
-
 ### levels
 Integer. Default: 2
 
 Sets the number of hierarchical levels deep the tree will be expanded to by default.
 
+### multiSelect
+Boolean.  Default: false
+
+Whether or not multiple nodes can be selected at the same time.
+
 ### nodeIcon
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
+
+### onhoverColor
+String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
+
+Sets the default background color activated when the users cursor hovers over a node.
 
 ### selectedColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
