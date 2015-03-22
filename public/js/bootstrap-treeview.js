@@ -160,7 +160,7 @@
 			this.$element.off('nodeUnselected');
 		}
 
-		if (typeof (this.options.onSearhComplete) === 'function') {
+		if (typeof (this.options.onSearchComplete) === 'function') {
 			this.$element.off('searchComplete');
 		}
 
