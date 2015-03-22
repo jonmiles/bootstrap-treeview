@@ -428,7 +428,7 @@ Example using options callback handler:
 ```javascript
 $('#tree').treeview({
   // The naming convention for callback's is to prepend with `on`
-  // an capitalize the first letter of the event name
+  // and capitalize the first letter of the event name
   // e.g. nodeSelected -> onNodeSelected
   onNodeSelected: function(event, data) {
     // Your logic goes here
