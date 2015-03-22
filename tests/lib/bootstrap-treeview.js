@@ -49,6 +49,7 @@
 		highlightSelected: true,
 		showBorder: true,
 		showTags: false,
+		multiSelect: false,
 
 		// Event handlers
 		onNodeCollapsed: undefined,
@@ -294,13 +295,18 @@
 	};
 
 	Tree.prototype.setExpandedState = function (node, state, silent) {
+
 		if (state) {
+
+			// Expand a node
 			node.states.expanded = true;
 			if (!silent) {
 				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
 			}
 		}
 		else {
+
+			// Collapse a node
 			node.states.expanded = false;
 			if (!silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
@@ -315,13 +321,25 @@
 	};
 
 	Tree.prototype.setSelectedState = function (node, state, silent) {
+
 		if (state) {
+
+			// If multiSelect false, unselect previously selected
+			if (!this.options.multiSelect) {
+				$.each(this.findNodes('true', 'g', 'states.selected'), $.proxy(function (index, node) {
+					this.setSelectedState(node, false, silent);
+				}, this));
+			}
+
+			// Continue selecting node
 			node.states.selected = true;
 			if (!silent) {
 				this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
 			}
 		}
 		else {
+
+			// Unselect node
 			node.states.selected = false;
 			if (!silent) {
 				this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );

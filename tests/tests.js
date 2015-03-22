@@ -87,21 +87,22 @@
 		var el = init(),
 			options = getOptions(el);
 		ok(options, 'Defaults created ok');
-		equal(options.levels, 2, 'levels defaults ok');
-		equal(options.expandIcon, 'glyphicon glyphicon-plus', 'expandIcon defaults ok');
-		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon defaults ok');
-		equal(options.emptyIcon, 'glyphicon', 'emptyIcon defaults ok');
-		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon defaults ok');
-		equal(options.color, undefined, 'color defaults ok');
-		equal(options.backColor, undefined, 'backColor defaults ok');
-		equal(options.borderColor, undefined, 'borderColor defaults ok');
-		equal(options.onhoverColor, '#F5F5F5', 'onhoverColor defaults ok');
-		equal(options.selectedColor, '#FFFFFF', 'selectedColor defaults ok');
-		equal(options.selectedBackColor, '#428bca', 'selectedBackColor defaults ok');
-		equal(options.enableLinks, false, 'enableLinks defaults ok');
-		equal(options.highlightSelected, true, 'highlightSelected defaults ok');
-		equal(options.showBorder, true, 'showBorder defaults ok');
-		equal(options.showTags, false, 'showTags defatuls ok');
+		equal(options.levels, 2, 'levels default ok');
+		equal(options.expandIcon, 'glyphicon glyphicon-plus', 'expandIcon default ok');
+		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon default ok');
+		equal(options.emptyIcon, 'glyphicon', 'emptyIcon default ok');
+		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon default ok');
+		equal(options.color, undefined, 'color default ok');
+		equal(options.backColor, undefined, 'backColor default ok');
+		equal(options.borderColor, undefined, 'borderColor default ok');
+		equal(options.onhoverColor, '#F5F5F5', 'onhoverColor default ok');
+		equal(options.selectedColor, '#FFFFFF', 'selectedColor default ok');
+		equal(options.selectedBackColor, '#428bca', 'selectedBackColor default ok');
+		equal(options.enableLinks, false, 'enableLinks default ok');
+		equal(options.highlightSelected, true, 'highlightSelected default ok');
+		equal(options.showBorder, true, 'showBorder default ok');
+		equal(options.showTags, false, 'showTags default ok');
+		equal(options.multiSelect, false, 'multiSelect default ok');
 		equal(options.onNodeCollapsed, null, 'onNodeCollapsed default ok');
 		equal(options.onNodeExpanded, null, 'onNodeExpanded default ok');
 		equal(options.onNodeSelected, null, 'onNodeSelected default ok');
@@ -124,6 +125,7 @@
 			highlightSelected: false,
 			showBorder: false,
 			showTags: true,
+			multiSelect: true,
 			onNodeCollapsed: function () {},
 			onNodeExpanded: function () {},
 			onNodeSelected: function () {},
@@ -147,6 +149,7 @@
 		equal(options.highlightSelected, false, 'highlightSelected set ok');
 		equal(options.showBorder, false, 'showBorder set ok');
 		equal(options.showTags, true, 'showTags set ok');
+		equal(options.multiSelect, true, 'multiSelect set ok');
 		equal(typeof options.onNodeCollapsed, 'function', 'onNodeCollapsed set ok');
 		equal(typeof options.onNodeExpanded, 'function', 'onNodeExpanded set ok');
 		equal(typeof options.onNodeSelected, 'function', 'onNodeSelected set ok');
@@ -250,6 +253,24 @@
 		ok(($('.node-selected').length === 1), 'There is only one selected node');
 		ok(cbWorked, 'onNodeSelected function was called');
 		ok(onWorked, 'nodeSelected was fired');
+	});
+
+	test('Selecting multiple nodes (multiSelect true)', function () {
+
+		init({
+			data: data,
+			multiSelect: true
+		});
+
+		var $firstEl = $('.list-group-item:nth-child(1)').trigger('click');
+		var $secondEl = $('.list-group-item:nth-child(2)').trigger('click');
+
+		$firstEl = $('.list-group-item:nth-child(1)');
+		$secondEl = $('.list-group-item:nth-child(2)');
+
+		ok(($firstEl.attr('class').split(' ').indexOf('node-selected') !== -1), 'First node is correctly selected : class "node-selected" added');
+		ok(($secondEl.attr('class').split(' ').indexOf('node-selected') !== -1), 'Second node is correctly selected : class "node-selected" added');
+		ok(($('.node-selected').length === 2), 'There are two selected nodes');
 	});
 
 	test('Unselecting a node', function () {
