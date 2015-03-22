@@ -42,11 +42,12 @@
 		onhoverColor: '#F5F5F5',
 		selectedColor: '#FFFFFF',
 		selectedBackColor: '#428bca',
-		searchResultColor: '#E5E313',
+		searchResultColor: '#D9534F',
 		searchResultBackColor: undefined, //'#FFFFFF',
 
 		enableLinks: false,
 		highlightSelected: true,
+		highlightSearchResults: true,
 		showBorder: true,
 		showTags: false,
 		multiSelect: false,
@@ -462,7 +463,7 @@
 		var color = node.color;
 		var backColor = node.backColor;
 
-		if (this.options.highlightSelected && (node.states.selected)) {
+		if (this.options.highlightSelected && node.states.selected) {
 			if (this.options.selectedColor) {
 				color = this.options.selectedColor;
 			}
@@ -471,7 +472,7 @@
 			}
 		}
 
-		if (node.searchResult) {
+		if (this.options.highlightSearchResults && node.searchResult) {
 			if (this.options.searchResultColor) {
 				color = this.options.searchResultColor;
 			}

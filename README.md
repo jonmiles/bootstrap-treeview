@@ -233,6 +233,11 @@ String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Boots
 
 Sets the icon to be used on an expandable tree node.
 
+### highlightSearchResults
+Boolean.  Default: true
+
+Whether or not to highlight search results.
+
 ### highlightSelected
 Boolean.  Default: true
 
@@ -258,15 +263,25 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the default background color activated when the users cursor hovers over a node.
 
-### selectedColor
-String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
+### searchResultBackColor
+String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: undefined, inherits.
+
+Sets the background color of the selected node.
+
+### searchResultColor
+String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#D9534F'.
 
 Sets the foreground color of the selected node.
 
 ### selectedBackColor
-String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
+String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#428bca'.
 
 Sets the background color of the selected node.
+
+### selectedColor
+String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
+
+Sets the foreground color of the selected node.
 
 ### showBorder
 Boolean.  Default: true

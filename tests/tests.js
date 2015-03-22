@@ -98,8 +98,11 @@
 		equal(options.onhoverColor, '#F5F5F5', 'onhoverColor default ok');
 		equal(options.selectedColor, '#FFFFFF', 'selectedColor default ok');
 		equal(options.selectedBackColor, '#428bca', 'selectedBackColor default ok');
+		equal(options.searchResultColor, '#D9534F', 'searchResultColor default ok');
+		equal(options.searchResultBackColor, undefined, 'searchResultBackColor default ok');
 		equal(options.enableLinks, false, 'enableLinks default ok');
 		equal(options.highlightSelected, true, 'highlightSelected default ok');
+		equal(options.highlightSearchResults, true, 'highlightSearchResults default ok');
 		equal(options.showBorder, true, 'showBorder default ok');
 		equal(options.showTags, false, 'showTags default ok');
 		equal(options.multiSelect, false, 'multiSelect default ok');
@@ -121,8 +124,11 @@
 			onhoverColor: 'orange',
 			selectedColor: 'yellow',
 			selectedBackColor: 'darkorange',
+			searchResultColor: 'yellow',
+			searchResultBackColor: 'darkorange',
 			enableLinks: true,
 			highlightSelected: false,
+			highlightSearchResults: true,
 			showBorder: false,
 			showTags: true,
 			multiSelect: true,
@@ -145,8 +151,11 @@
 		equal(options.onhoverColor, 'orange', 'onhoverColor set ok');
 		equal(options.selectedColor, 'yellow', 'selectedColor set ok');
 		equal(options.selectedBackColor, 'darkorange', 'selectedBackColor set ok');
+		equal(options.searchResultColor, 'yellow', 'searchResultColor set ok');
+		equal(options.searchResultBackColor, 'darkorange', 'searchResultBackColor set ok');
 		equal(options.enableLinks, true, 'enableLinks set ok');
 		equal(options.highlightSelected, false, 'highlightSelected set ok');
+		equal(options.highlightSearchResults, true, 'highlightSearchResults set ok');
 		equal(options.showBorder, false, 'showBorder set ok');
 		equal(options.showTags, true, 'showTags set ok');
 		equal(options.multiSelect, true, 'multiSelect set ok');
