@@ -110,6 +110,8 @@
 		equal(options.onNodeExpanded, null, 'onNodeExpanded default ok');
 		equal(options.onNodeSelected, null, 'onNodeSelected default ok');
 		equal(options.onNodeUnselected, null, 'onNodeUnselected default ok');
+		equal(options.onSearchComplete, null, 'onSearchComplete default ok');
+		equal(options.onSearchCleared, null, 'onSearchCleared default ok');
 
 		// Then test user options are correctly set
 		var opts = {
@@ -135,7 +137,9 @@
 			onNodeCollapsed: function () {},
 			onNodeExpanded: function () {},
 			onNodeSelected: function () {},
-			onNodeUnselected: function () {}
+			onNodeUnselected: function () {},
+			onSearchComplete: function () {},
+			onSearchCleared: function () {}
 		};
 
 		options = getOptions(init(opts));
@@ -163,6 +167,8 @@
 		equal(typeof options.onNodeExpanded, 'function', 'onNodeExpanded set ok');
 		equal(typeof options.onNodeSelected, 'function', 'onNodeSelected set ok');
 		equal(typeof options.onNodeUnselected, 'function', 'onNodeUnselected set ok');
+		equal(typeof options.onSearchComplete, 'function', 'onSearchComplete set ok');
+		equal(typeof options.onSearchCleared, 'function', 'onSearchCleared set ok');
 	});
 
 	test('Links enabled', function () {
