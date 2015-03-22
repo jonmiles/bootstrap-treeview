@@ -788,12 +788,11 @@
 		}
 	};
 
-
 	var logError = function (message) {
-        if(window.console) {
-            window.console.error(message);
-        }
-    };
+    if(window.console) {
+        window.console.error(message);
+    }
+  };
 
 	// Prevent against multiple instantiations,
 	// handle updates and method calls
@@ -816,6 +815,10 @@
 					}
 					result = _this[options].apply(_this, args);
 				}
+			}
+			else if (typeof options === 'boolean') {
+				console.log('test true');
+				result = _this;
 			}
 			else {
 				$.data(this, pluginName, new Tree(this, $.extend(true, {}, options)));

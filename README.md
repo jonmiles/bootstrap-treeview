@@ -297,6 +297,36 @@ Whether or not to display tags to the right of each node.  The values of which m
 
 ## Methods
 
+Methods provide a way of interacting with the plugin programmatically.  For example, expanding a node is possible via the expandNode method.
+
+You can invoke methods in one of two ways, using either:
+
+#### 1. The plugin's wrapper
+
+The plugin's wrapper works as a proxy for accessing the underlying methods.
+
+```javascript
+$('#tree').treeview('methodName', args)
+```
+> Limitation, multiple arguments must be passed as an array of arguments.
+
+#### 2. The treeview directly
+
+You can get an instance of the treeview using one of the two following methods.
+
+```javascript
+// This special method returns an instance of the treeview.
+$('#tree').treeview(true)
+  .methodName(args);
+
+// The instance is also saved in the DOM elements data, and accessible using the plugin's id 'treeview'.
+$('#tree').data('treeview')
+  .methodName(args);
+```
+> A better approach, if you plan a lot of interaction.
+
+The following is a list of all available methods, enjoy!
+
 ### clearSearch()
 
 Clear the tree view of any previous search results e.g. remove their highlighted state.
