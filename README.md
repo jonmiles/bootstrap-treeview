@@ -134,7 +134,7 @@ If you want to do more, here's the full node specification
   backColor: "#FFFFFF",
   href: "#node-1",
   selectable: true,
-  states: {
+  state: {
   	expanded: true,
   	selected: true
   },
@@ -184,17 +184,17 @@ Used in conjunction with global enableLinks option to specify anchor tag URL on 
 
 Whether or not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
 
-#### states
+#### state
 `Object` `Optional`
 
 Describes a node's initial state.
 
-#### states.expanded
+#### state.expanded
 `Boolean` `Default: false`
 
 Whether or not a node is expanded i.e. open.  Takes precedence over global option levels.
 
-#### states.selected
+#### state.selected
 `Boolean` `Default: false`
 
 Whether or not a node is selected.

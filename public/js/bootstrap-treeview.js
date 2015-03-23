@@ -228,21 +228,21 @@
 			}
 
 			// where provided we shouuld preserve states
-			node.states = node.states || {};
+			node.state = node.state || {};
 
 			// set expanded state; if not provided based on levels
-			if (!node.states.hasOwnProperty('expanded')) {
+			if (!node.state.hasOwnProperty('expanded')) {
 				if (level < _this.options.levels) {
-					node.states.expanded = true;
+					node.state.expanded = true;
 				}
 				else {
-					node.states.expanded = false;
+					node.state.expanded = false;
 				}
 			}
 
 			// set selected state; unless set always false
-			if (!node.states.hasOwnProperty('selected')) {
-				node.states.selected = false;
+			if (!node.state.hasOwnProperty('selected')) {
+				node.state.selected = false;
 			}
 
 			// index nodes in a flattened structure for use later
@@ -291,7 +291,7 @@
 
 	Tree.prototype.toggleExpandedState = function (node, silent) {
 		if (!node) return;
-		this.setExpandedState(node, !node.states.expanded, silent);
+		this.setExpandedState(node, !node.state.expanded, silent);
 		this.render();
 	};
 
@@ -300,7 +300,7 @@
 		if (state) {
 
 			// Expand a node
-			node.states.expanded = true;
+			node.state.expanded = true;
 			if (!silent) {
 				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
 			}
@@ -308,7 +308,7 @@
 		else {
 
 			// Collapse a node
-			node.states.expanded = false;
+			node.state.expanded = false;
 			if (!silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}
@@ -317,7 +317,7 @@
 
 	Tree.prototype.toggleSelectedState = function (node, silent) {
 		if (!node) { return; }
-		this.setSelectedState(node, !node.states.selected, silent);
+		this.setSelectedState(node, !node.state.selected, silent);
 		this.render();
 	};
 
@@ -327,13 +327,13 @@
 
 			// If multiSelect false, unselect previously selected
 			if (!this.options.multiSelect) {
-				$.each(this.findNodes('true', 'g', 'states.selected'), $.proxy(function (index, node) {
+				$.each(this.findNodes('true', 'g', 'state.selected'), $.proxy(function (index, node) {
 					this.setSelectedState(node, false, silent);
 				}, this));
 			}
 
 			// Continue selecting node
-			node.states.selected = true;
+			node.state.selected = true;
 			if (!silent) {
 				this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
 			}
@@ -341,7 +341,7 @@
 		else {
 
 			// Unselect node
-			node.states.selected = false;
+			node.state.selected = false;
 			if (!silent) {
 				this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
 			}
@@ -379,7 +379,7 @@
 
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
-				.addClass(node.states.selected ? 'node-selected' : '')
+				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '')
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
@@ -391,7 +391,7 @@
 
 			// Add expand, collapse or empty spacer icons
 			if (node.nodes) {
-				if (!node.states.expanded) {
+				if (!node.state.expanded) {
 						treeItem
 							.append($(_this.template.expandCollapseIcon)
 								.addClass('click-expand')
@@ -448,8 +448,8 @@
 			_this.$wrapper.append(treeItem);
 
 			// Recursively add child ndoes
-			// console.log(node.text + ' ' + node.states.expanded);
-			if (node.nodes && node.states.expanded) {
+			// console.log(node.text + ' ' + node.state.expanded);
+			if (node.nodes && node.state.expanded) {
 				return _this.buildTree(node.nodes, level);
 			}
 		});
@@ -463,7 +463,7 @@
 		var color = node.color;
 		var backColor = node.backColor;
 
-		if (this.options.highlightSelected && node.states.selected) {
+		if (this.options.highlightSelected && node.state.selected) {
 			if (this.options.selectedColor) {
 				color = this.options.selectedColor;
 			}
@@ -817,7 +817,6 @@
 				}
 			}
 			else if (typeof options === 'boolean') {
-				console.log('test true');
 				result = _this;
 			}
 			else {
