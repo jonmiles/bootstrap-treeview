@@ -13,17 +13,37 @@ A simple and elegant solution to displaying hierarchical tree structures (i.e. a
 
 <!--For full documentation and examples, please visit [Bootstrap Tree View Website](http://www.jondmiles.com/bootstrap-treeview/ "Click to visit Bootstrap Tree View")-->
 
-## Requirements
+## Dependencies
 
-
-Where provided these are the actual versions bootstrap-treeview has been tested against.  Other versions should work but you use them as your own risk.
+Where provided these are the actual versions bootstrap-treeview has been tested against.  Other versions should work but you use them at your own risk.
 
 - [Bootstrap v3.3.4](http://getbootstrap.com/)
 - [jQuery v2.1.3](http://jquery.com/)
 
-Sorry no support planned for Bootstrap 2.
 
-## Usage
+## Getting Started
+
+### Install
+
+You can install using bower (recommended):
+
+```javascript
+$ bower install bootstrap-treeview
+```
+
+or npm:
+
+```javascript
+$ npm install bootstrap-treeview
+```
+
+or manually, using one of the following downloads.
+
+- [Source code (.zip)](https://github.com/jonmiles/bootstrap-treeview/archive/v1.1.1.zip)
+- [Source code (.gz)](https://github.com/jonmiles/bootstrap-treeview/archive/v1.1.1.gz)
+
+
+### Usage
 
 A full list of dependencies required for the bootstrap-treeview to function correctly.
 
@@ -193,6 +213,22 @@ You can extend the node object by adding any number of additional key value pair
 
 ## Options
 
+Options allow you to customise the treeview's default appearance and behaviour.  They are passed to the plugin on initialization, as an object.
+
+```javascript
+// Example: initializing the treeview 
+// expanded to 5 levels
+// with a background color of green
+$('#tree').treeview({
+  data: data,         // data is not optional
+  levels: 5,
+  backColor: 'green'
+});
+```
+You can pass a new options object to the treeview at any time but this will have the effect of re-initializing the treeview. 
+
+The following is a list of all available options.
+
 ### data
 Array of Objects.  No default, expects data
 
@@ -319,13 +355,14 @@ You can get an instance of the treeview using one of the two following methods.
 $('#tree').treeview(true)
   .methodName(args);
 
-// The instance is also saved in the DOM elements data, and accessible using the plugin's id 'treeview'.
+// The instance is also saved in the DOM elements data, 
+// and accessible using the plugin's id 'treeview'.
 $('#tree').data('treeview')
   .methodName(args);
 ```
 > A better approach, if you plan a lot of interaction.
 
-The following is a list of all available methods, enjoy!
+The following is a list of all available methods.
 
 ### clearSearch()
 
@@ -465,6 +502,8 @@ $('#tree').treeview('unselectNode', [ nodeId, { silent: true } ]);
 Triggers `nodeUnselected` event; pass silent to suppress events.
 
 ## Events
+
+Events are provided so that your application can respond to changes in the treeview's state.  For example, if you want to update a display when a node is selected use the `nodeSelected` event.
 
 You can bind to any event defined below by either using an options callback handler, or the standard jQuery .on method.
 
