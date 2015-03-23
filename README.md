@@ -116,7 +116,7 @@ var tree = [
 ];
 ```
 
-At the lowest level a tree node is a represented as a simple JavaScript object.  Just one required property `text` will build you a tree.
+At the lowest level a tree node is a represented as a simple JavaScript object.  This one required property `text` will build you a tree.
 
 ```javascript
 {
@@ -146,17 +146,16 @@ If you want to do more, here's the full node specification
 }
 ```
 
-
-## Node Properties
+### Node Properties
 
 The following properties are defined to allow node level overrides, such as node specific icons, colours and tags.
 
-### text
+#### text
 `String` `Mandatory`
 
 The text value displayed for a given tree node, typically to the right of the nodes icon.
 
-### icon
+#### icon
 `String` `Optional`
 
 The icon displayed on a given node, typically to the left of the text.
@@ -165,42 +164,42 @@ For simplicity we directly leverage [Bootstraps Glyphicons support](http://getbo
 
 By providing the base class you retain full control over the icons used.  If you want to use your own then just add your class to this icon field.
 
-### color
+#### color
 `String` `Optional`
 
 The foreground color used on a given node, overrides global color option.
 
-### backColor
+#### backColor
 `String` `Optional`
 
 The background color used on a given node, overrides global color option.
 
-### href
+#### href
 `String` `Optional`
 
 Used in conjunction with global enableLinks option to specify anchor tag URL on a given node.
 
-### selectable
+#### selectable
 `Boolean` `Default: true`
 
 Whether or not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
 
-### states
+#### states
 `Object` `Optional`
 
 Describes a node's initial state.
 
-### states.expanded
+#### states.expanded
 `Boolean` `Default: false`
 
 Whether or not a node is expanded i.e. open.  Takes precedence over global option levels.
 
-### states.selected
+#### states.selected
 `Boolean` `Default: false`
 
 Whether or not a node is selected.
 
-### tags
+#### tags
 `Array of Strings`  `Optional`
 
 Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges)
@@ -227,104 +226,106 @@ $('#tree').treeview({
 ```
 You can pass a new options object to the treeview at any time but this will have the effect of re-initializing the treeview. 
 
+### List of Options
+
 The following is a list of all available options.
 
-### data
+#### data
 Array of Objects.  No default, expects data
 
 This is the core data to be displayed by the tree view.
 
-### backColor
+#### backColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: inherits from Bootstrap.css.
 
 Sets the default background color used by all nodes, except when overridden on a per node basis in data.
 
-### borderColor
+#### borderColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: inherits from Bootstrap.css.
 
 Sets the border color for the component; set showBorder to false if you don't want a visible border.
 
-### collapseIcon
+#### collapseIcon
 String, class name(s).  Default: "glyphicon glyphicon-minus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the icon to be used on a collapsible tree node.
 
-### color
+#### color
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: inherits from Bootstrap.css.
 
 Sets the default foreground color used by all nodes, except when overridden on a per node basis in data.
 
-### emptyIcon
+#### emptyIcon
 String, class name(s).  Default: "glyphicon" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the icon to be used on a tree node with no child nodes.
 
-### enableLinks
+#### enableLinks
 Boolean.  Default: false
 
 Whether or not to present node text as a hyperlink.  The href value of which must be provided in the data structure on a per node basis.
 
-### expandIcon
+#### expandIcon
 String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the icon to be used on an expandable tree node.
 
-### highlightSearchResults
+#### highlightSearchResults
 Boolean.  Default: true
 
 Whether or not to highlight search results.
 
-### highlightSelected
+#### highlightSelected
 Boolean.  Default: true
 
 Whether or not to highlight the selected node.
 
-### levels
+#### levels
 Integer. Default: 2
 
 Sets the number of hierarchical levels deep the tree will be expanded to by default.
 
-### multiSelect
+#### multiSelect
 Boolean.  Default: false
 
 Whether or not multiple nodes can be selected at the same time.
 
-### nodeIcon
+#### nodeIcon
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
 
-### onhoverColor
+#### onhoverColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
 
 Sets the default background color activated when the users cursor hovers over a node.
 
-### searchResultBackColor
+#### searchResultBackColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: undefined, inherits.
 
 Sets the background color of the selected node.
 
-### searchResultColor
+#### searchResultColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#D9534F'.
 
 Sets the foreground color of the selected node.
 
-### selectedBackColor
+#### selectedBackColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#428bca'.
 
 Sets the background color of the selected node.
 
-### selectedColor
+#### selectedColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#FFFFFF'.
 
 Sets the foreground color of the selected node.
 
-### showBorder
+#### showBorder
 Boolean.  Default: true
 
 Whether or not to display a border around nodes.
 
-### showTags
+#### showTags
 Boolean.  Default: false
 
 Whether or not to display tags to the right of each node.  The values of which must be provided in the data structure on a per node basis.
@@ -362,9 +363,11 @@ $('#tree').data('treeview')
 ```
 > A better approach, if you plan a lot of interaction.
 
+### List of Methods
+
 The following is a list of all available methods.
 
-### clearSearch()
+#### clearSearch()
 
 Clear the tree view of any previous search results e.g. remove their highlighted state.
 
@@ -374,7 +377,7 @@ $('#tree').treeview('clearSearch');
 
 Triggers `searchCleared` event
 
-### collapseAll(options)
+#### collapseAll(options)
 
 Collapse all tree nodes, collapsing the entire tree.
 
@@ -384,7 +387,7 @@ $('#tree').treeview('collapseAll', { silent: true });
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
 
-### collapseNode(node | nodeId, options)
+#### collapseNode(node | nodeId, options)
 
 Collapse a given tree node, accepts node or nodeId
 
@@ -394,7 +397,7 @@ $('#tree').treeview('collapseNode', [ nodeId, { silent: true } ]);
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
 
-### expandAll(options)
+#### expandAll(options)
 
 Expand all tree nodes.  Optionally can be expanded to any given number of levels.
 
@@ -404,7 +407,7 @@ $('#tree').treeview('expandAll', { levels: 2, silent: true });
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
-### expandNode(node | nodeId, options)
+#### expandNode(node | nodeId, options)
 
 Expand a given tree node, accepts node or nodeId.  Optionally can be expanded to any given number of levels.
 
@@ -414,7 +417,7 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
-### getNode(nodeId)
+#### getNode(nodeId)
 
 Returns a single node object that matches the given node id.
 
@@ -422,7 +425,7 @@ Returns a single node object that matches the given node id.
 $('#tree').treeview('getNode', nodeId);
 ```
 
-### getParent(node | nodeId)
+#### getParent(node | nodeId)
 
 Returns the parent node of a given node, if valid otherwise returns undefined.
 
@@ -430,7 +433,7 @@ Returns the parent node of a given node, if valid otherwise returns undefined.
 $('#tree').treeview('getParent', node);
 ```
 
-### getSiblings(node | nodeId)
+#### getSiblings(node | nodeId)
 
 Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
 
@@ -438,7 +441,7 @@ Returns an array of sibling nodes for a given node, if valid otherwise returns u
 $('#tree').treeview('getSiblings', node);
 ```
 
-### remove()
+#### remove()
 
 Removes the tree view component. Removing attached events, internal attached objects, and added HTML elements.
 
@@ -446,7 +449,7 @@ Removes the tree view component. Removing attached events, internal attached obj
 $('#tree').treeview('remove');
 ```
 
-### search(pattern, options)
+#### search(pattern, options)
 
 Searches the tree view for nodes that match a given string, highlighting them in the tree.  
 
@@ -461,7 +464,7 @@ $('#tree').treeview('search', [ 'Parent', {
 
 Triggers `searchComplete` event
 
-### selectNode(node | nodeId, options)
+#### selectNode(node | nodeId, options)
 
 Selects a given tree node, accepts node or nodeId.
 
@@ -471,7 +474,7 @@ $('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
 
 Triggers `nodeSelected` event; pass silent to suppress events.
 
-### toggleNodeExpanded(node | nodeId, options)
+#### toggleNodeExpanded(node | nodeId, options)
 
 Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
 
@@ -481,7 +484,7 @@ $('#tree').treeview('toggleNodeExpanded', [ nodeId, { silent: true } ]);
 
 Triggers either `nodeExpanded` or `nodeCollapsed` event; pass silent to suppress events.
 
-### toggleNodeSelected(node | nodeId, options)
+#### toggleNodeSelected(node | nodeId, options)
 
 Toggles a node selected state; selecting if unselected, unselecting if selected.
 
@@ -491,7 +494,7 @@ $('#tree').treeview('toggleNodeSelected', [ nodeId, { silent: true } ]);
 
 Triggers either `nodeSelected` or `nodeUnselected` event; pass silent to suppress events.
 
-### unselectNode(node | nodeId, options)
+#### unselectNode(node | nodeId, options)
 
 Unselects a given tree node, accepts node or nodeId.
 
