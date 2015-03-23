@@ -8,7 +8,7 @@
   <body>
   	<div class="container">
     	<h1>Bootstrap Tree View</h1>
-      <br/>
+      <br>
       <div class="row">
         <div class="col-sm-4">
           <h2>Default</h2>
@@ -39,7 +39,7 @@
       </div>
       <div class="row">
         <div class="col-sm-4">
-          <h2>Without Border</h2>
+          <h2>No Border</h2>
           <div id="treeview7" class=""></div>
         </div>
         <div class="col-sm-4">
@@ -65,23 +65,7 @@
       </div>
       <div class="row">
         <hr>
-        <h2>Events</h2>
-        <div class="col-sm-4">
-          <h2>Input</h2>
-          <div id="treeview-events" class=""></div>
-        </div>
-        <div class="col-sm-4">
-          <h2>Output</h2>
-          <div id="event-output"></div>
-        </div>
-        <div class="col-sm-4">
-          <!-- <h2>Output</h2>
-          <div id="event_output"></div> -->
-        </div>
-      </div>
-      <div class="row">
-        <hr>
-        <h2>Search</h2>
+        <h2>Searchable Tree</h2>
         <div class="col-sm-4">
           <h2>Input</h2>
           <!-- <form> -->
@@ -107,7 +91,7 @@
         </div>
         <div class="col-sm-4">
           <h2>Tree</h2>
-          <div id="treeview-search" class=""></div>
+          <div id="treeview-searchable" class=""></div>
         </div>
         <div class="col-sm-4">
           <h2>Results</h2>
@@ -116,7 +100,7 @@
       </div>
       <div class="row">
         <hr>
-        <h2>Select / Unselect Methods</h2>
+        <h2>Selectable Tree</h2>
         <div class="col-sm-4">
           <h2>Input</h2>
           <div class="form-group">
@@ -142,7 +126,7 @@
       </div>
       <div class="row">
         <hr>
-        <h2>Expand / Collapse Methods</h2>
+        <h2>Expandible Tree</h2>
         <div class="col-sm-4">
           <h2>Input</h2>
           <div class="form-group">
@@ -185,6 +169,22 @@
           <div id="treeview-expandible" class=""></div>
         </div>
         <div class="col-sm-4">
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Events</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div id="treeview-events" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Output</h2>
+          <div id="event-output"></div>
+        </div>
+        <div class="col-sm-4">
+          <!-- <h2>Output</h2>
+          <div id="event_output"></div> -->
         </div>
       </div>
       <div class="row">
@@ -452,7 +452,7 @@
 
 
 
-        var $searchTree = $('#treeview-search').treeview({
+        var $searchableTree = $('#treeview-searchable').treeview({
           data: defaultData,
         });
 
@@ -462,7 +462,7 @@
             ignoreCase: $('#chk-ignore-case').is(':checked'),
             exactMatch: $('#chk-exact-match').is(':checked')
           };
-          var results = $searchTree.treeview('search', [ pattern, options ]);
+          var results = $searchableTree.treeview('search', [ pattern, options ]);
 
           var output = '<p>' + results.length + ' matches found</p>';
           $.each(results, function (index, result) {
@@ -475,7 +475,7 @@
         $('#input-search').on('keyup', search);
 
         $('#btn-clear-search').on('click', function (e) {
-          $searchTree.treeview('clearSearch');
+          $searchableTree.treeview('clearSearch');
           $('#input-search').val('');
           $('#search-output').html('');
         });
