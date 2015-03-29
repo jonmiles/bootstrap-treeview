@@ -37,7 +37,7 @@ or using npm:
 $ npm install bootstrap-treeview
 ```
 
-or [download](https://github.com/jonmiles/bootstrap-treeview/releases/tag/v1.1.1) manually.
+or [download](https://github.com/jonmiles/bootstrap-treeview/releases/tag/v1.1.0) manually.
 
 
 
