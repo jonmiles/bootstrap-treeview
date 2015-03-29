@@ -8,7 +8,7 @@
   <body>
   	<div class="container">
     	<h1>Bootstrap Tree View</h1>
-      <br/>
+      <br>
       <div class="row">
         <div class="col-sm-4">
           <h2>Default</h2>
@@ -39,7 +39,7 @@
       </div>
       <div class="row">
         <div class="col-sm-4">
-          <h2>Without Border</h2>
+          <h2>No Border</h2>
           <div id="treeview7" class=""></div>
         </div>
         <div class="col-sm-4">
@@ -57,15 +57,139 @@
           <div id="treeview10" class=""></div>
         </div>
         <div class="col-sm-4">
-          <h2>Events</h2>
-          <div id="treeview11" class=""></div>
+
         </div>
         <div class="col-sm-4">
-          <h2>Output</h2>
-          <div id="event_output"></div>
+
         </div>
       </div>
       <div class="row">
+        <hr>
+        <h2>Searchable Tree</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <!-- <form> -->
+            <div class="form-group">
+              <label for="input-search" class="sr-only">Search Tree:</label>
+              <input type="input" class="form-control" id="input-search" placeholder="Type to search..." value="">
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="checkbox" id="chk-ignore-case" value="false">
+                Ignore Case
+              </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="checkbox" id="chk-exact-match" value="false">
+                Exact Match
+              </label>
+            </div>
+            <button type="button" class="btn btn-success" id="btn-search">Search</button>
+            <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
+          <!-- </form> -->
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-searchable" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Results</h2>
+          <div id="search-output"></div>
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Selectable Tree</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-select-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-select-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="form-group">
+              <button type="button" class="btn btn-success select-node" id="btn-select-node">Select Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger select-node" id="btn-unselect-node">Unselect Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary select-node" id="btn-toggle-selected">Toggle Node</button>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-selectable" class=""></div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Expandible Tree</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-expand-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-expand-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success expand-node" id="btn-expand-node">Expand Node</button>
+            </div>
+            <div class="col-sm-6">
+              <select class="form-control" id="select-expand-node-levels">
+                <option>1</option>
+                <option>2</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger expand-node" id="btn-collapse-node">Collapse Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary expand-node" id="btn-toggle-expanded">Toggle Node</button>
+          </div>
+          <hr>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success" id="btn-expand-all">Expand All</button>
+            </div>
+            <div class="col-sm-6">
+              <select class="form-control" id="select-expand-all-levels">
+                <option>1</option>
+                <option>2</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger" id="btn-collapse-all">Collapse All</button>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-expandible" class=""></div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Events</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div id="treeview-events" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Output</h2>
+          <div id="event-output"></div>
+        </div>
+        <div class="col-sm-4">
+          <!-- <h2>Output</h2>
+          <div id="event_output"></div> -->
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Data</h2>
         <div class="col-sm-4">
           <h2>JSON Data</h2>
           <div id="treeview12" class=""></div>
@@ -244,7 +368,7 @@
         });
 
         $('#treeview4').treeview({
-          
+
           color: "#428bca",
           data: defaultData
         });
@@ -282,7 +406,7 @@
           borderColor: "red",
           showBorder: false,
           showTags: true,
-          highlightSelected: true, 
+          highlightSelected: true,
           selectedColor: "yellow",
           selectedBackColor: "darkorange",
           data: defaultData
@@ -298,7 +422,7 @@
           borderColor: "red",
           showBorder: false,
           showTags: true,
-          highlightSelected: true, 
+          highlightSelected: true,
           selectedColor: "yellow",
           selectedBackColor: "darkorange",
           data: alternateData
@@ -310,23 +434,126 @@
           data: defaultData
         });
 
-        $('#treeview11').treeview({
-          color: "#428bca",
+        $('#treeview-events').treeview({
           data: defaultData,
+          onNodeCollapsed: function(event, node) {
+            $('#event-output').prepend('<p>' + node.text + ' was collapsed</p>');
+          },
+          onNodeExpanded: function (event, node) {
+            $('#event-output').prepend('<p>' + node.text + ' was expanded</p>');
+          },
           onNodeSelected: function(event, node) {
-            $('#event_output').prepend('<p>You clicked ' + node.text + '</p>');
+            $('#event-output').prepend('<p>' + node.text + ' was selected</p>');
+          },
+          onNodeUnselected: function (event, node) {
+            $('#event-output').prepend('<p>' + node.text + ' was unselected</p>');
           }
         });
 
-        // $('#treeview11').on('nodeSelected', function (event, node) {
-        //   $('#event_output').prepend('<p>You clicked ' + node.text + '</p>');
-        // });
 
 
-        $('#treeview12').treeview({
-          data: json
+        var $searchableTree = $('#treeview-searchable').treeview({
+          data: defaultData,
         });
 
+        var search = function(e) {
+          var pattern = $('#input-search').val();
+          var options = {
+            ignoreCase: $('#chk-ignore-case').is(':checked'),
+            exactMatch: $('#chk-exact-match').is(':checked')
+          };
+          var results = $searchableTree.treeview('search', [ pattern, options ]);
+
+          var output = '<p>' + results.length + ' matches found</p>';
+          $.each(results, function (index, result) {
+            output += '<p>- ' + result.text + '</p>';
+          });
+          $('#search-output').html(output);
+        }
+
+        $('#btn-search').on('click', search);
+        $('#input-search').on('keyup', search);
+
+        $('#btn-clear-search').on('click', function (e) {
+          $searchableTree.treeview('clearSearch');
+          $('#input-search').val('');
+          $('#search-output').html('');
+        });
+
+
+
+        var $selectableTree = $('#treeview-selectable').treeview({
+          data: defaultData
+        });
+
+        var findSelectableNode = function() {
+          return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        };
+        var selectableNode = findSelectableNode();
+
+        // Select/unselect/toggle nodes
+        $('#input-select-node').on('keyup', function (e) {
+          selectableNode = findSelectableNode();
+          $('.select-node').prop('disabled', !(selectableNode.length === 1));
+        });
+
+        $('#btn-select-node.select-node').on('click', function (e) {
+          $selectableTree.treeview('selectNode', selectableNode[0]);
+        });
+
+        $('#btn-unselect-node.select-node').on('click', function (e) {
+          $selectableTree.treeview('unselectNode', selectableNode[0]);
+        });
+
+        $('#btn-toggle-selected.select-node').on('click', function (e) {
+          $selectableTree.treeview('toggleNodeSelected', selectableNode[0]);
+        });
+
+
+
+        var $expandibleTree = $('#treeview-expandible').treeview({
+          data: defaultData
+        });
+
+        var findExpandibleNode = function() {
+          return $expandibleTree.treeview('search', [ $('#input-expand-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        };
+        var expandibleNode = findExpandibleNode();
+
+        // Expand/collapse/toggle nodes
+        $('#input-expand-node').on('keyup', function (e) {
+          expandibleNode = findExpandibleNode();
+          $('.expand-node').prop('disabled', !(expandibleNode.length === 1));
+        });
+
+        $('#btn-expand-node.expand-node').on('click', function (e) {
+          var levels = $('#select-expand-node-levels').val();
+          $expandibleTree.treeview('expandNode', [ expandibleNode[0], { levels: levels } ]);
+        });
+
+        $('#btn-collapse-node.expand-node').on('click', function (e) {
+          $expandibleTree.treeview('collapseNode', expandibleNode[0]);
+        });
+
+        $('#btn-toggle-expanded.expand-node').on('click', function (e) {
+          $expandibleTree.treeview('toggleNodeExpanded', expandibleNode[0]);
+        });
+
+        // Expand/collapse all
+        $('#btn-expand-all').on('click', function (e) {
+          var levels = $('#select-expand-all-levels').val();
+          $expandibleTree.treeview('expandAll', { levels: levels });
+        });
+
+        $('#btn-collapse-all').on('click', function (e) {
+          $expandibleTree.treeview('collapseAll');
+        });
+
+
+
+        var $tree = $('#treeview12').treeview({
+          data: json
+        });
   		});
   	</script>
   </body>
