@@ -2,17 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v1.1.0 - [unreleased]
+## v1.1.0 - 29th March, 2015
 
 ### New Features
-- Node properties `expanded` and `selected` to set a node's initial state
+- Node states `expanded` and `selected` to set a node's initial state
 - Methods `getNode`, `getParent` and `getSiblings` methods
 - Methods `selectNode`, `unselectNode` and `toggleNodeSelected` methods
 - Events `nodeUnselected`
 - Option `multiSelect`
 - Methods `expandAll`, `collapseAll`, `expandNode`, `collapseNode` and `toggleNodeExpanded` methods
 - Events `nodeExpanded` and `nodeCollapsed` events
-- Methods `search` and `clearSearch` methods, 
+- Methods `search` and `clearSearch` methods,
 - Events `searchComplete` and `searchCleared` events
 - Options `highlightSearchResults`, `searchResultColor` and `searchResultBackColor`
 
