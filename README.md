@@ -9,9 +9,7 @@
 
 A simple and elegant solution to displaying hierarchical tree structures (i.e. a Tree View) while leveraging the best that Twitter Bootstrap has to offer.
 
-![Bootstrap Tree View Default](https://raw.github.com/jondmiles/bootstrap-treeview/master/screenshot/default.PNG)
-
-<!--For full documentation and examples, please visit [Bootstrap Tree View Website](http://www.jondmiles.com/bootstrap-treeview/ "Click to visit Bootstrap Tree View")-->
+![Bootstrap Tree View Default](https://raw.github.com/jonmiles/bootstrap-treeview/master/screenshot/default.PNG)
 
 ## Dependencies
 
