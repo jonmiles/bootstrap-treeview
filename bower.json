@@ -1,7 +1,7 @@
 {
   "name": "bootstrap-treeview",
   "description": "Tree View for Twitter Bootstrap",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "homepage": "https://github.com/jonmiles/bootstrap-treeview",
   "main": [
     "dist/bootstrap-treeview.min.js",
@@ -26,8 +26,8 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": ">= 3.0.0",
-    "jquery": ">= 1.9.0"
+    "jquery": ">= 1.9.0",
+    "bootstrap": ">= 3.0.0"
   },
   "devDependencies": {}
 }

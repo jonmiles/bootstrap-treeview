@@ -87,25 +87,31 @@
 		var el = init(),
 			options = getOptions(el);
 		ok(options, 'Defaults created ok');
-		equal(options.levels, 2, 'levels defaults ok');
-		equal(options.expandIcon, 'glyphicon glyphicon-plus', 'expandIcon defaults ok');
-		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon defaults ok');
-		equal(options.emptyIcon, 'glyphicon', 'emptyIcon defaults ok');
-		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon defaults ok');
-		equal(options.color, undefined, 'color defaults ok');
-		equal(options.backColor, undefined, 'backColor defaults ok');
-		equal(options.borderColor, undefined, 'borderColor defaults ok');
-		equal(options.onhoverColor, '#F5F5F5', 'onhoverColor defaults ok');
-		equal(options.selectedColor, '#FFFFFF', 'selectedColor defaults ok');
-		equal(options.selectedBackColor, '#428bca', 'selectedBackColor defaults ok');
-		equal(options.enableLinks, false, 'enableLinks defaults ok');
-		equal(options.highlightSelected, true, 'highlightSelected defaults ok');
-		equal(options.showBorder, true, 'showBorder defaults ok');
-		equal(options.showTags, false, 'showTags defatuls ok');
+		equal(options.levels, 2, 'levels default ok');
+		equal(options.expandIcon, 'glyphicon glyphicon-plus', 'expandIcon default ok');
+		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon default ok');
+		equal(options.emptyIcon, 'glyphicon', 'emptyIcon default ok');
+		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon default ok');
+		equal(options.color, undefined, 'color default ok');
+		equal(options.backColor, undefined, 'backColor default ok');
+		equal(options.borderColor, undefined, 'borderColor default ok');
+		equal(options.onhoverColor, '#F5F5F5', 'onhoverColor default ok');
+		equal(options.selectedColor, '#FFFFFF', 'selectedColor default ok');
+		equal(options.selectedBackColor, '#428bca', 'selectedBackColor default ok');
+		equal(options.searchResultColor, '#D9534F', 'searchResultColor default ok');
+		equal(options.searchResultBackColor, undefined, 'searchResultBackColor default ok');
+		equal(options.enableLinks, false, 'enableLinks default ok');
+		equal(options.highlightSelected, true, 'highlightSelected default ok');
+		equal(options.highlightSearchResults, true, 'highlightSearchResults default ok');
+		equal(options.showBorder, true, 'showBorder default ok');
+		equal(options.showTags, false, 'showTags default ok');
+		equal(options.multiSelect, false, 'multiSelect default ok');
 		equal(options.onNodeCollapsed, null, 'onNodeCollapsed default ok');
 		equal(options.onNodeExpanded, null, 'onNodeExpanded default ok');
 		equal(options.onNodeSelected, null, 'onNodeSelected default ok');
 		equal(options.onNodeUnselected, null, 'onNodeUnselected default ok');
+		equal(options.onSearchComplete, null, 'onSearchComplete default ok');
+		equal(options.onSearchCleared, null, 'onSearchCleared default ok');
 
 		// Then test user options are correctly set
 		var opts = {
@@ -120,14 +126,20 @@
 			onhoverColor: 'orange',
 			selectedColor: 'yellow',
 			selectedBackColor: 'darkorange',
+			searchResultColor: 'yellow',
+			searchResultBackColor: 'darkorange',
 			enableLinks: true,
 			highlightSelected: false,
+			highlightSearchResults: true,
 			showBorder: false,
 			showTags: true,
+			multiSelect: true,
 			onNodeCollapsed: function () {},
 			onNodeExpanded: function () {},
 			onNodeSelected: function () {},
-			onNodeUnselected: function () {}
+			onNodeUnselected: function () {},
+			onSearchComplete: function () {},
+			onSearchCleared: function () {}
 		};
 
 		options = getOptions(init(opts));
@@ -143,22 +155,28 @@
 		equal(options.onhoverColor, 'orange', 'onhoverColor set ok');
 		equal(options.selectedColor, 'yellow', 'selectedColor set ok');
 		equal(options.selectedBackColor, 'darkorange', 'selectedBackColor set ok');
+		equal(options.searchResultColor, 'yellow', 'searchResultColor set ok');
+		equal(options.searchResultBackColor, 'darkorange', 'searchResultBackColor set ok');
 		equal(options.enableLinks, true, 'enableLinks set ok');
 		equal(options.highlightSelected, false, 'highlightSelected set ok');
+		equal(options.highlightSearchResults, true, 'highlightSearchResults set ok');
 		equal(options.showBorder, false, 'showBorder set ok');
 		equal(options.showTags, true, 'showTags set ok');
+		equal(options.multiSelect, true, 'multiSelect set ok');
 		equal(typeof options.onNodeCollapsed, 'function', 'onNodeCollapsed set ok');
 		equal(typeof options.onNodeExpanded, 'function', 'onNodeExpanded set ok');
 		equal(typeof options.onNodeSelected, 'function', 'onNodeSelected set ok');
 		equal(typeof options.onNodeUnselected, 'function', 'onNodeUnselected set ok');
+		equal(typeof options.onSearchComplete, 'function', 'onSearchComplete set ok');
+		equal(typeof options.onSearchCleared, 'function', 'onSearchCleared set ok');
 	});
 
 	test('Links enabled', function () {
 		init({enableLinks:true, data:data});
 		ok($('.list-group-item:first').children('a').length, 'Links are enabled');
-		
+
 	});
-	
+
 
 	module('Data');
 
@@ -252,6 +270,24 @@
 		ok(onWorked, 'nodeSelected was fired');
 	});
 
+	test('Selecting multiple nodes (multiSelect true)', function () {
+
+		init({
+			data: data,
+			multiSelect: true
+		});
+
+		var $firstEl = $('.list-group-item:nth-child(1)').trigger('click');
+		var $secondEl = $('.list-group-item:nth-child(2)').trigger('click');
+
+		$firstEl = $('.list-group-item:nth-child(1)');
+		$secondEl = $('.list-group-item:nth-child(2)');
+
+		ok(($firstEl.attr('class').split(' ').indexOf('node-selected') !== -1), 'First node is correctly selected : class "node-selected" added');
+		ok(($secondEl.attr('class').split(' ').indexOf('node-selected') !== -1), 'Second node is correctly selected : class "node-selected" added');
+		ok(($('.node-selected').length === 2), 'There are two selected nodes');
+	});
+
 	test('Unselecting a node', function () {
 
 		var cbWorked, onWorked = false;
@@ -324,6 +360,7 @@
 
 		var nodeCount = $('.list-group-item').length;
 		var el = $('.list-group-item:first');
+		// console.log(el);
 		el.trigger('click');
 		el = $('.list-group-item:first');
 		ok(!el.hasClass('node-selected'), 'Node should not be selected');
@@ -343,14 +380,15 @@
 
 	test('getParent', function () {
 		var $tree = init({ data: data });
-		var nodeParent1 = $tree.treeview('getNode', 0);
-		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
+		var nodeChild1 = $tree.treeview('getNode', 1);
+		var parentNode = $tree.treeview('getParent', nodeChild1);
+		equal(parentNode.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
 	});
 
 	test('getSiblings', function () {
 		var $tree = init({ data: data });
 
-		// Test root level which uses the this.tree
+		// Test root level, internally uses the this.tree
 		var nodeParent1 = $tree.treeview('getNode', 0);
 		var nodeParent1Siblings = $tree.treeview('getSiblings', nodeParent1);
 		var isArray = (nodeParent1Siblings instanceof Array);
@@ -363,7 +401,7 @@
 		ok(countOK, 'Correct siblings for "Parent 1" [root] : count OK');
 		ok(resultsOK, 'Correct siblings for "Parent 1" [root] : results OK');
 
-		// Test non root level, which uses getParent.nodes
+		// Test non root level, internally uses getParent.nodes
 		var nodeChild1 = $tree.treeview('getNode', 1);
 		var nodeChild1Siblings = $tree.treeview('getSiblings', nodeChild1);
 		var isArray = (nodeChild1Siblings instanceof Array);
@@ -372,5 +410,165 @@
 		ok(isArray, 'Correct siblings for "Child 1" [non root] : is array');
 		ok(countOK, 'Correct siblings for "Child 1" [non root] : count OK');
 		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
-	})
+	});
+
+	test('selectNode / unselectNode', function () {
+		var $tree = init({ data: data });
+		var el;
+		var nodeId = 0;
+		var node = $tree.treeview('getNode', 0);
+
+		// Select node using node id
+		$tree.treeview('selectNode', nodeId);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by id) : Node is selected');
+		ok(($('.node-selected').length === 1), 'Select node (by id) : There is only one selected node');
+
+		// Unselect node using node id
+		$tree.treeview('unselectNode', nodeId);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Select node (by id) : Node is no longer selected');
+		ok(($('.node-selected').length === 0), 'Select node (by id) : There are no selected nodes');
+
+		// Select node using node
+		$tree.treeview('selectNode', node);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by node) : Node is selected');
+		ok(($('.node-selected').length === 1), 'Select node (by node) : There is only one selected node');
+
+		// Unselect node using node id
+		$tree.treeview('unselectNode', node);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Select node (by node) : Node is no longer selected');
+		ok(($('.node-selected').length === 0), 'Select node (by node) : There are no selected nodes');
+	});
+
+	test('toggleNodeSelected', function () {
+		var $tree = init({ data: data });
+		var el;
+		var nodeId = 0;
+		var node = $tree.treeview('getNode', 0);
+
+		// Toggle selected using node id
+		$tree.treeview('toggleNodeSelected', nodeId);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Toggle node (by id) : Node is selected');
+		ok(($('.node-selected').length === 1), 'Toggle node (by id) : There is only one selected node');
+
+		// Toggle selected using node
+		$tree.treeview('toggleNodeSelected', node);
+		el = $('.list-group-item:first');
+		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Toggle node (by node) : Node is unselected');
+		ok(($('.node-selected').length === 0), 'Toggle node (by node) : There are no selected nodes');
+	});
+
+	test('expandAll / collapseAll', function () {
+		var $tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
+
+		$tree.treeview('expandAll');
+		equal($($tree.selector + ' ul li').length, 9, 'Expand all works, all 9 nodes displayed');
+
+		$tree.treeview('collapseAll');
+		equal($($tree.selector + ' ul li').length, 5, 'Collapse all works, 5 original root nodes displayed');
+
+		$tree.treeview('expandAll', { levels: 1 });
+		equal($($tree.selector + ' ul li').length, 7, 'Expand all (levels = 1) works, correctly displayed 7 nodes');
+	});
+
+	test('expandNode / collapseNode / toggleExpanded', function () {
+		var $tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
+
+		$tree.treeview('expandNode', 0);
+		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by id) works, 7 nodes displayed');
+
+		$tree.treeview('collapseNode', 0);
+		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by id) works, 5 original nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', 0);
+		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by id) works, 7 nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', 0);
+		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
+
+		$tree.treeview('expandNode', [ 0, { levels: 2 } ]);
+		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
+
+		$tree = init({ data: data, levels: 1 });
+		equal($($tree.selector + ' ul li').length, 5, 'Reset to collapsed state, 5 root nodes displayed');
+
+		var nodeParent1 = $tree.treeview('getNode', 0);
+		$tree.treeview('expandNode', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by node) works, 7 nodes displayed');
+
+		$tree.treeview('collapseNode', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by node) works, 5 original nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by node) works, 7 nodes displayed');
+
+		$tree.treeview('toggleNodeExpanded', nodeParent1);
+		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
+
+		$tree.treeview('expandNode', [ nodeParent1, { levels: 2 } ]);
+		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
+	});
+
+	test('search', function () {
+		var cbWorked, onWorked = false;
+		var $tree = init({
+			data: data,
+			onSearchComplete: function(/*event, results*/) {
+				cbWorked = true;
+			}
+		})
+		.on('searchComplete', function(/*event, results*/) {
+			onWorked = true;
+		});
+
+		// Case sensitive, exact match
+		var result = $tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
+		equal(result.length, 1, 'Search "Parent 1" case sensitive, exact match - returns 1 result');
+
+		// Case sensitive, like
+		result = $tree.treeview('search', [ 'Parent', { ignoreCase: false, exactMatch: false } ]);
+		equal(result.length, 5, 'Search "Parent" case sensitive, exact match - returns 5 results');
+
+		// Case insensitive, exact match
+		result = $tree.treeview('search', [ 'parent 1', { ignoreCase: true, exactMatch: true } ]);
+		equal(result.length, 1, 'Search "parent 1" case insensitive, exact match - returns 1 result');
+
+		// Case insensitive, like
+		result = $tree.treeview('search', [ 'parent', { ignoreCase: true, exactMatch: false } ]);
+		equal(result.length, 5, 'Search "parent" case insensitive, exact match - returns 5 results')
+
+		// Check events fire
+		ok(cbWorked, 'onSearchComplete function was called');
+		ok(onWorked, 'searchComplete was fired');
+	});
+
+	test('clearSearch', function () {
+		var cbWorked, onWorked = false;
+		var $tree = init({
+			data: data,
+			onSearchCleared: function(/*event, results*/) {
+				cbWorked = true;
+			}
+		})
+		.on('searchCleared', function(/*event, results*/) {
+			onWorked = true;
+		});
+
+		// Check results are cleared
+		$tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
+		equal($tree.find('.search-result').length, 1, 'Search results highlighted');
+		$tree.treeview('clearSearch');
+		equal($tree.find('.search-result').length, 0, 'Search results cleared');
+
+		// Check events fire
+		ok(cbWorked, 'onSearchCleared function was called');
+		ok(onWorked, 'searchCleared was fired');
+	});
+
 }());
