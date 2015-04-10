@@ -309,11 +309,21 @@
 
 			// Collapse a node
 			node.state.expanded = false;
+			if (this.options.collapseChildrenOnCollapse) this.collapseChildren(node);
 			if (!silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}
 		}
 	};
+
+	Tree.prototype.collapseChildren = function (identifier) {
+		var node = this.identifyNode(identifier),
+			that = this;
+		if (node.nodes) $.each(node.nodes, function (index, childNode) {
+			childNode.state.expanded = false;
+			that.collapseChildren(childNode);
+		});
+	}
 
 	Tree.prototype.toggleSelectedState = function (node, silent) {
 		if (!node) { return; }
