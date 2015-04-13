@@ -221,7 +221,7 @@
 	*/
 	Tree.prototype.setInitialStates = function (node, level) {
 
-		if (!node.nodes) { return; }
+		if (!node.nodes) return;
 		level += 1;
 
 		var parent = node;
@@ -271,11 +271,11 @@
 
 	Tree.prototype.clickHandler = function (event) {
 
-		if (!this.options.enableLinks) { event.preventDefault(); }
+		if (!this.options.enableLinks) event.preventDefault();
 
-		var target = $(event.target),
-			classList = target.attr('class') ? target.attr('class').split(' ') : [],
-			node = this.findNode(target);
+		var target = $(event.target);
+		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
+		var node = this.findNode(target);
 
 		if ((classList.indexOf('click-expand') != -1) ||
 				(classList.indexOf('click-collapse') != -1)) {
@@ -294,8 +294,8 @@
 	// data attribute nodeid, which is used to lookup the node in the flattened structure.
 	Tree.prototype.findNode = function (target) {
 
-		var nodeId = target.closest('li.list-group-item').attr('data-nodeid'),
-			node = this.nodes[nodeId];
+		var nodeId = target.closest('li.list-group-item').attr('data-nodeid');
+		var node = this.nodes[nodeId];
 
 		if (!node) {
 			console.log('Error: node does not exist');
@@ -339,7 +339,7 @@
 	};
 
 	Tree.prototype.toggleSelectedState = function (node, options) {
-		if (!node) { return; }
+		if (!node) return;
 		this.setSelectedState(node, !node.state.selected, options);
 		this.render();
 	};
@@ -396,7 +396,7 @@
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
 
-		if (!nodes) { return; }
+		if (!nodes) return;
 		level += 1;
 
 		var _this = this;
@@ -521,12 +521,15 @@
 	Tree.prototype.buildStyle = function () {
 
 		var style = '.node-' + this.elementId + '{';
+
 		if (this.options.color) {
 			style += 'color:' + this.options.color + ';';
 		}
+
 		if (this.options.backColor) {
 			style += 'background-color:' + this.options.backColor + ';';
 		}
+
 		if (!this.options.showBorder) {
 			style += 'border:none;';
 		}
@@ -810,7 +813,7 @@
 	};
 
 	var logError = function (message) {
-		if(window.console) {
+		if (window.console) {
 			window.console.error(message);
 		}
 	};
