@@ -323,6 +323,13 @@
 			// Collapse a node
 			node.state.expanded = false;
 
+			// Collapse child nodes
+			if (node.nodes && !options.ignoreChildren) {
+				$.each(node.nodes, $.proxy(function (index, node) {
+					this.setExpandedState(node, false, $.extend({}, options, { silent: true }));
+				}, this));
+			}
+
 			if (!options.silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}

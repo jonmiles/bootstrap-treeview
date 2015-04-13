@@ -384,13 +384,14 @@ Triggers `nodeCollapsed` event; pass silent to suppress events.
 
 #### collapseNode(node | nodeId, options)
 
-Collapse a given tree node, accepts node or nodeId
+Collapse a given tree node and it's child nodes.  If you don't want to collapse the child nodes, pass option `{ ignoreChildren: true }`.
 
 ```javascript
-$('#tree').treeview('collapseNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('collapseNode', [ nodeId, { silent: true, ignoreChildren: false } ]);
 ```
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
+
 
 #### expandAll(options)
 
