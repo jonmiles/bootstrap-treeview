@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.2.0 - [Unreleased]
+
+### New Features
+
+### Changes
+- Method collapseNode accepts new option `{ignoreChildren: true | false }`.  The default is false, passing true will leave child nodes uncollapsed.
+
+### Bug Fixes
+- Child nodes should collapse by default on collapseNode
+- Incorrect expand collapse icon displayed when nodes array is empty
+
+
 ## v1.1.0 - 29th March, 2015
 
 ### New Features
