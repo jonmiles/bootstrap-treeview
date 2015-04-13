@@ -244,7 +244,7 @@
 
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
-				if (level < _this.options.levels) {
+				if ((level < _this.options.levels) && node.nodes) {
 					node.state.expanded = true;
 				}
 				else {
@@ -309,29 +309,29 @@
 
 	Tree.prototype.setExpandedState = function (node, state, options) {
 
-		if (state) {
+		if (state === node.state.expanded) return;
+
+		if (state && node.nodes) {
 
 			// Expand a node
 			node.state.expanded = true;
-
 			if (!options.silent) {
 				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
 			}
 		}
-		else {
+		else if (!state) {
 
 			// Collapse a node
 			node.state.expanded = false;
+			if (!options.silent) {
+				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+			}
 
 			// Collapse child nodes
 			if (node.nodes && !options.ignoreChildren) {
 				$.each(node.nodes, $.proxy(function (index, node) {
-					this.setExpandedState(node, false, $.extend({}, options, { silent: true }));
+					this.setExpandedState(node, false, options);
 				}, this));
-			}
-
-			if (!options.silent) {
-				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}
 		}
 	};
@@ -343,6 +343,8 @@
 	};
 
 	Tree.prototype.setSelectedState = function (node, state, options) {
+
+		if (state === node.state.selected) return;
 
 		if (state) {
 
@@ -628,7 +630,7 @@
 	Tree.prototype.collapseAll = function (options) {
 		options = $.extend({}, _default.options, options);
 
-		$.each(this.nodes, $.proxy(function (index, node) {
+		$.each(this.findNodes('true', 'g', 'state.expanded'), $.proxy(function (index, node) {
 			this.setExpandedState(node, false, options);
 		}, this));
 
