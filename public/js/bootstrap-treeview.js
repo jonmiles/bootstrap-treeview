@@ -25,7 +25,9 @@
 
 	var pluginName = 'treeview';
 
-	var defaults = {
+	var _default = {};
+
+	_default.settings = {
 
 		injectStyle: true,
 
@@ -59,6 +61,16 @@
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
 		onSearchCleared: undefined
+	};
+
+	_default.options = {
+		silent: false,
+		ignoreChildren: false
+	};
+
+	_default.searchOptions = {
+		ignoreCase: true,
+		exactMatch: false
 	};
 
 	var Tree = function (element, options) {
@@ -113,7 +125,7 @@
 			this.tree = $.extend(true, [], options.data);
 			delete options.data;
 		}
-		this.options = $.extend({}, defaults, options);
+		this.options = $.extend({}, _default.settings, options);
 
 		this.destroy();
 		this.subscribeEvents();
@@ -265,13 +277,13 @@
 
 		if ((classList.indexOf('click-expand') != -1) ||
 				(classList.indexOf('click-collapse') != -1)) {
-			this.toggleExpandedState(node);
+			this.toggleExpandedState(node, _default.options);
 		}
 		else if (node) {
 			if (node.selectable) {
-				this.toggleSelectedState(node);
+				this.toggleSelectedState(node, _default.options);
 			} else {
-				this.toggleExpandedState(node);
+				this.toggleExpandedState(node, _default.options);
 			}
 		}
 	};
@@ -289,19 +301,20 @@
 		return node;
 	};
 
-	Tree.prototype.toggleExpandedState = function (node, silent) {
+	Tree.prototype.toggleExpandedState = function (node, options) {
 		if (!node) return;
-		this.setExpandedState(node, !node.state.expanded, silent);
+		this.setExpandedState(node, !node.state.expanded, options);
 		this.render();
 	};
 
-	Tree.prototype.setExpandedState = function (node, state, silent) {
+	Tree.prototype.setExpandedState = function (node, state, options) {
 
 		if (state) {
 
 			// Expand a node
 			node.state.expanded = true;
-			if (!silent) {
+
+			if (!options.silent) {
 				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
 			}
 		}
@@ -309,32 +322,33 @@
 
 			// Collapse a node
 			node.state.expanded = false;
-			if (!silent) {
+
+			if (!options.silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}
 		}
 	};
 
-	Tree.prototype.toggleSelectedState = function (node, silent) {
+	Tree.prototype.toggleSelectedState = function (node, options) {
 		if (!node) { return; }
-		this.setSelectedState(node, !node.state.selected, silent);
+		this.setSelectedState(node, !node.state.selected, options);
 		this.render();
 	};
 
-	Tree.prototype.setSelectedState = function (node, state, silent) {
+	Tree.prototype.setSelectedState = function (node, state, options) {
 
 		if (state) {
 
 			// If multiSelect false, unselect previously selected
 			if (!this.options.multiSelect) {
 				$.each(this.findNodes('true', 'g', 'state.selected'), $.proxy(function (index, node) {
-					this.setSelectedState(node, false, silent);
+					this.setSelectedState(node, false, options);
 				}, this));
 			}
 
 			// Continue selecting node
 			node.state.selected = true;
-			if (!silent) {
+			if (!options.silent) {
 				this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
 			}
 		}
@@ -342,7 +356,7 @@
 
 			// Unselect node
 			node.state.selected = false;
-			if (!silent) {
+			if (!options.silent) {
 				this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
 			}
 		}
@@ -573,8 +587,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.selectNode = function (identifier, options) {
-		var silent = this.isSilent(options);
-		this.setSelectedState(this.identifyNode(identifier), true, silent);
+		options = $.extend({}, _default.options, options);
+		this.setSelectedState(this.identifyNode(identifier), true, options);
 		this.render();
 	};
 
@@ -584,8 +598,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.unselectNode = function (identifier, options) {
-		var silent = this.isSilent(options);
-		this.setSelectedState(this.identifyNode(identifier), false, silent);
+		options = $.extend({}, _default.options, options);
+		this.setSelectedState(this.identifyNode(identifier), false, options);
 		this.render();
 	};
 
@@ -595,8 +609,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeSelected = function (identifier, options) {
-		this.toggleSelectedState(this.identifyNode(identifier),
-															this.isSilent(options));
+		options = $.extend({}, _default.options, options);
+		this.toggleSelectedState(this.identifyNode(identifier), options);
 	};
 
 
@@ -605,10 +619,10 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseAll = function (options) {
-		var silent = this.isSilent(options);
+		options = $.extend({}, _default.options, options);
 
 		$.each(this.nodes, $.proxy(function (index, node) {
-			this.setExpandedState(node, false, silent);
+			this.setExpandedState(node, false, options);
 		}, this));
 
 		this.render();
@@ -620,8 +634,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseNode = function (identifier, options) {
-		var silent = this.isSilent(options);
-		this.setExpandedState(this.identifyNode(identifier), false, silent);
+		options = $.extend({}, _default.options, options);
+		this.setExpandedState(this.identifyNode(identifier), false, options);
 		this.render();
 	};
 
@@ -630,14 +644,14 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandAll = function (options) {
-		var silent = this.isSilent(options);
+		options = $.extend({}, _default.options, options);
 
 		if (options && options.levels) {
-			this.expandLevels(this.tree, options.levels, silent);
+			this.expandLevels(this.tree, options.levels, options);
 		}
 		else {
 			$.each(this.nodes, $.proxy(function (index, node) {
-				this.setExpandedState(node, true, silent);
+				this.setExpandedState(node, true, options);
 			}, this));
 		}
 
@@ -650,23 +664,25 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (identifier, options) {
-		var silent = this.isSilent(options);
+		options = $.extend({}, _default.options, options);
 
 		var node = this.identifyNode(identifier);
-		this.setExpandedState(node, true, silent);
+		this.setExpandedState(node, true, options);
 
 		if (node.nodes && (options && options.levels)) {
-			this.expandLevels(node.nodes, options.levels-1, silent);
+			this.expandLevels(node.nodes, options.levels-1, options);
 		}
 
 		this.render();
 	};
 
-	Tree.prototype.expandLevels = function (nodes, level, silent) {
+	Tree.prototype.expandLevels = function (nodes, level, options) {
+		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
-			this.setExpandedState(node, (level > 0) ? true : false)
+			this.setExpandedState(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
-				this.expandLevels(node.nodes, level-1, silent);
+				this.expandLevels(node.nodes, level-1, options);
 			}
 		}, this));
 	};
@@ -677,20 +693,14 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeExpanded = function (identifier, options) {
-		this.toggleExpandedState(this.identifyNode(identifier),
-															this.isSilent(options));
+		options = $.extend({}, _default.options, options);
+		this.toggleExpandedState(this.identifyNode(identifier), options);
 	};
 
 	Tree.prototype.identifyNode = function (identifier) {
 		return ((typeof identifier) === 'number') ?
 						this.nodes[identifier] :
 						identifier;
-	};
-
-	Tree.prototype.isSilent = function (options) {
-		return (options && options.hasOwnProperty('silent')) ?
-						options.silent :
-						false;
 	};
 
 
@@ -701,6 +711,7 @@
 		@return {Array} nodes - Matching nodes
 	*/
 	Tree.prototype.search = function (pattern, options) {
+		options = $.extend({}, _default.searchOptions, options);
 
 		this.clearSearch();
 
@@ -789,10 +800,10 @@
 	};
 
 	var logError = function (message) {
-    if(window.console) {
-        window.console.error(message);
-    }
-  };
+		if(window.console) {
+			window.console.error(message);
+		}
+	};
 
 	// Prevent against multiple instantiations,
 	// handle updates and method calls
