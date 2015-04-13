@@ -94,6 +94,10 @@
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
+			getSelected: $.proxy(this.getSelected, this),
+			getUnselected: $.proxy(this.getUnselected, this),
+			getExpanded: $.proxy(this.getExpanded, this),
+			getCollapsed: $.proxy(this.getCollapsed, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -572,7 +576,7 @@
 	/**
 		Returns the parent node of a given node, if valid otherwise returns undefined.
 		@param {Object|Number} identifier - A valid node or node id
-		@returns {Object} parent - The parent node
+		@returns {Object} node - The parent node
 	*/
 	Tree.prototype.getParent = function (identifier) {
 		var node = this.identifyNode(identifier);
@@ -582,7 +586,7 @@
 	/**
 		Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
 		@param {Object|Number} identifier - A valid node or node id
-		@returns {Array} siblings - Sibling nodes
+		@returns {Array} nodes - Sibling nodes
 	*/
 	Tree.prototype.getSiblings = function (identifier) {
 		var node = this.identifyNode(identifier);
@@ -591,6 +595,38 @@
 		return nodes.filter(function (obj) {
 				return obj.nodeId !== node.nodeId;
 			});
+	};
+
+	/**
+		Returns an array of selected nodes.
+		@returns {Array} nodes - Selected nodes
+	*/
+	Tree.prototype.getSelected = function () {
+		return this.findNodes('true', 'g', 'state.selected');
+	};
+
+	/**
+		Returns an array of unselected nodes.
+		@returns {Array} nodes - Unselected nodes
+	*/
+	Tree.prototype.getUnselected = function () {
+		return this.findNodes('false', 'g', 'state.selected');
+	};
+
+	/**
+		Returns an array of expanded nodes.
+		@returns {Array} nodes - Expanded nodes
+	*/
+	Tree.prototype.getExpanded = function () {
+		return this.findNodes('true', 'g', 'state.expanded');
+	};
+
+	/**
+		Returns an array of collapsed nodes.
+		@returns {Array} nodes - Collapsed nodes
+	*/
+	Tree.prototype.getCollapsed = function () {
+		return this.findNodes('false', 'g', 'state.expanded');
 	};
 
 
