@@ -122,6 +122,8 @@
           <div id="treeview-selectable" class=""></div>
         </div>
         <div class="col-sm-4">
+          <h2>Events</h2>
+          <div id="selectable-output"></div>
         </div>
       </div>
       <div class="row">
@@ -169,22 +171,8 @@
           <div id="treeview-expandible" class=""></div>
         </div>
         <div class="col-sm-4">
-        </div>
-      </div>
-      <div class="row">
-        <hr>
-        <h2>Events</h2>
-        <div class="col-sm-4">
-          <h2>Input</h2>
-          <div id="treeview-events" class=""></div>
-        </div>
-        <div class="col-sm-4">
-          <h2>Output</h2>
-          <div id="event-output"></div>
-        </div>
-        <div class="col-sm-4">
-          <!-- <h2>Output</h2>
-          <div id="event_output"></div> -->
+          <h2>Events</h2>
+          <div id="expandible-output"></div>
         </div>
       </div>
       <div class="row">
@@ -433,23 +421,7 @@
           enableLinks: true,
           data: defaultData
         });
-
-        $('#treeview-events').treeview({
-          data: defaultData,
-          onNodeCollapsed: function(event, node) {
-            $('#event-output').prepend('<p>' + node.text + ' was collapsed</p>');
-          },
-          onNodeExpanded: function (event, node) {
-            $('#event-output').prepend('<p>' + node.text + ' was expanded</p>');
-          },
-          onNodeSelected: function(event, node) {
-            $('#event-output').prepend('<p>' + node.text + ' was selected</p>');
-          },
-          onNodeUnselected: function (event, node) {
-            $('#event-output').prepend('<p>' + node.text + ' was unselected</p>');
-          }
-        });
-
+        
 
 
         var $searchableTree = $('#treeview-searchable').treeview({
@@ -483,7 +455,13 @@
 
 
         var $selectableTree = $('#treeview-selectable').treeview({
-          data: defaultData
+          data: defaultData,
+          onNodeSelected: function(event, node) {
+            $('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
+          },
+          onNodeUnselected: function (event, node) {
+            $('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
+          }
         });
 
         var findSelectableNode = function() {
@@ -512,7 +490,13 @@
 
 
         var $expandibleTree = $('#treeview-expandible').treeview({
-          data: defaultData
+          data: defaultData,
+          onNodeCollapsed: function(event, node) {
+            $('#expandible-output').prepend('<p>' + node.text + ' was collapsed</p>');
+          },
+          onNodeExpanded: function (event, node) {
+            $('#expandible-output').prepend('<p>' + node.text + ' was expanded</p>');
+          }
         });
 
         var findExpandibleNode = function() {
