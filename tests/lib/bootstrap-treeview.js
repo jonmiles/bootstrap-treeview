@@ -244,7 +244,9 @@
 
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
-				if ((level < _this.options.levels) && node.nodes) {
+
+				if ((level < _this.options.levels) &&
+						(node.nodes && node.nodes.length > 0)) {
 					node.state.expanded = true;
 				}
 				else {
@@ -471,7 +473,6 @@
 			_this.$wrapper.append(treeItem);
 
 			// Recursively add child ndoes
-			// console.log(node.text + ' ' + node.state.expanded);
 			if (node.nodes && node.state.expanded) {
 				return _this.buildTree(node.nodes, level);
 			}
