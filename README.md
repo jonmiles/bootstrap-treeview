@@ -494,8 +494,9 @@ Returns an array of matching nodes.
 
 ```javascript
 $('#tree').treeview('search', [ 'Parent', {
-  ignoreCase: true,
-  exactMatch: false
+  ignoreCase: true,     // case insensitive
+  exactMatch: false,    // like or equals
+  revealResults: false, // reveal matching nodes
 }]);
 ```
 

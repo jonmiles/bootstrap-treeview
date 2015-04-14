@@ -70,7 +70,8 @@
 
 	_default.searchOptions = {
 		ignoreCase: true,
-		exactMatch: false
+		exactMatch: false,
+		revealResults: true
 	};
 
 	var Tree = function (element, options) {
@@ -739,17 +740,26 @@
 
 	/**
 		Reveals a given tree node, expanding the tree from node to root.
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number|Array} identifier - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
 	Tree.prototype.revealNode = function (identifier, options) {
 		options = $.extend({}, _default.options, options);
 
-		var parentNode = this.getParent(identifier);
-		while (parentNode) {
-			this.setExpandedState(parentNode, true, options);
-			parentNode = this.getParent(parentNode);
-		};
+		if (!(identifier instanceof Array)) {
+			identifier = [identifier];
+		}
+
+		// Iterate nodes
+		$.each(identifier, $.proxy(function (index, identifier) {
+
+			// Traverse the tree expanding parents from node to root
+			var parentNode = this.getParent(identifier);
+			while (parentNode) {
+				this.setExpandedState(parentNode, true, options);
+				parentNode = this.getParent(parentNode);
+			};
+		}, this));
 
 		this.render();
 	};
@@ -795,11 +805,22 @@
 			}
 
 			results = this.findNodes(pattern, modifier);
+
+			// Add searchResult property to all matching nodes
+			// This will be used to apply custom styles
+			// and when identifying result to be cleared
 			$.each(results, function (index, node) {
 				node.searchResult = true;
 			})
 
-			this.render();
+			// If revealResults, then render is triggered from revealNode
+			// otherwise we just call render.
+			if (options.revealResults) {
+				this.revealNode(results);
+			}
+			else {
+				this.render();
+			}
 		}
 
 		this.$element.trigger('searchComplete', $.extend(true, {}, results));
