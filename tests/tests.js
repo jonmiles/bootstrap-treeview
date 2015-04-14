@@ -556,6 +556,17 @@
 		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
 	});
 
+	test('revealNode', function () {
+		var $tree = init({ data: data, levels: 1 });
+
+		$tree.treeview('revealNode', 1); // Child_1
+		equal($($tree.selector + ' ul li').length, 7, 'Reveal node (by id) works, reveal Child 1 and 7 nodes displayed');
+
+		var nodeGrandchild1 = $tree.treeview('getNode', 2); // Grandchild 1
+		$tree.treeview('revealNode', nodeGrandchild1);
+		equal($($tree.selector + ' ul li').length, 9, 'Reveal node (by node) works, reveal Grandchild 1 and 9 nodes displayed');
+	});
+
 	test('search', function () {
 		var cbWorked, onWorked = false;
 		var $tree = init({

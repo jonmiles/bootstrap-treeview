@@ -110,6 +110,7 @@
 			expandAll: $.proxy(this.expandAll, this),
 			expandNode: $.proxy(this.expandNode, this),
 			toggleNodeExpanded: $.proxy(this.toggleNodeExpanded, this),
+			revealNode: $.proxy(this.revealNode, this),
 
 			// Search methods
 			search: $.proxy(this.search, this),
@@ -734,6 +735,21 @@
 				this.expandLevels(node.nodes, level-1, options);
 			}
 		}, this));
+	};
+
+	/**
+		Reveals a given tree node, expanding the tree from node to root.
+		@param {Object|Number} identifier - A valid node or node id
+		@param {optional Object} options
+	*/
+	Tree.prototype.revealNode = function (identifier, options) {
+		options = $.extend({}, _default.options, options);
+
+		var parentNode = this.getParent(identifier);
+		while (parentNode) {
+			this.expandNode(parentNode);
+			parentNode = this.getParent(parentNode);
+		};
 	};
 
 	/**

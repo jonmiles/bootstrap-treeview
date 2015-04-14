@@ -476,6 +476,16 @@ Removes the tree view component. Removing attached events, internal attached obj
 $('#tree').treeview('remove');
 ```
 
+#### revealNode()
+
+Reveals a given tree node, expanding the tree from node to root.
+
+```javascript
+$('#tree').treeview('revealNode');
+```
+
+Triggers `nodeExpanded` event; pass silent to suppress events.
+
 #### search(pattern, options)
 
 Searches the tree view for nodes that match a given string, highlighting them in the tree.  
