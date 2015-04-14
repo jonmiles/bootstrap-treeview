@@ -747,9 +747,11 @@
 
 		var parentNode = this.getParent(identifier);
 		while (parentNode) {
-			this.expandNode(parentNode);
+			this.setExpandedState(parentNode, true, options);
 			parentNode = this.getParent(parentNode);
 		};
+
+		this.render();
 	};
 
 	/**
