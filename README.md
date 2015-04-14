@@ -413,6 +413,21 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### getCollapsed()
+
+Returns an array of collapsed nodes e.g. state.expanded = false.
+
+```javascript
+$('#tree').treeview('getCollapsed', nodeId);
+```
+#### getExpanded()
+
+Returns an array of expanded nodes e.g. state.expanded = true.
+
+```javascript
+$('#tree').treeview('getExpanded', nodeId);
+```
+
 #### getNode(nodeId)
 
 Returns a single node object that matches the given node id.
@@ -429,12 +444,28 @@ Returns the parent node of a given node, if valid otherwise returns undefined.
 $('#tree').treeview('getParent', node);
 ```
 
+#### getSelected()
+
+Returns an array of selected nodes e.g. state.selected = true.
+
+```javascript
+$('#tree').treeview('getSelected', nodeId);
+```
+
 #### getSiblings(node | nodeId)
 
 Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
 
 ```javascript
 $('#tree').treeview('getSiblings', node);
+```
+
+#### getUnselected()
+
+Returns an array of unselected nodes e.g. state.selected = false.
+
+```javascript
+$('#tree').treeview('getUnselected', nodeId);
 ```
 
 #### remove()
