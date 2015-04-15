@@ -496,7 +496,7 @@ Returns an array of matching nodes.
 $('#tree').treeview('search', [ 'Parent', {
   ignoreCase: true,     // case insensitive
   exactMatch: false,    // like or equals
-  revealResults: false, // reveal matching nodes
+  revealResults: true,  // reveal matching nodes
 }]);
 ```
 
