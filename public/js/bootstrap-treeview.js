@@ -634,34 +634,57 @@
 
 	/**
 		Set a node state to selected
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.selectNode = function (identifier, options) {
+	Tree.prototype.selectNode = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
-		this.setSelectedState(this.identifyNode(identifier), true, options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.setSelectedState(this.identifyNode(identifier), true, options);
+		}, this));
+
 		this.render();
 	};
 
 	/**
 		Set a node state to unselected
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.unselectNode = function (identifier, options) {
+	Tree.prototype.unselectNode = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
-		this.setSelectedState(this.identifyNode(identifier), false, options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.setSelectedState(this.identifyNode(identifier), false, options);
+		}, this));
+
 		this.render();
 	};
 
 	/**
 		Toggles a node selected state; selecting if unselected, unselecting if selected.
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.toggleNodeSelected = function (identifier, options) {
+	Tree.prototype.toggleNodeSelected = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
-		this.toggleSelectedState(this.identifyNode(identifier), options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.toggleSelectedState(this.identifyNode(identifier), options);
+		}, this));
 	};
 
 
@@ -681,12 +704,20 @@
 
 	/**
 		Collapse a given tree node
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.collapseNode = function (identifier, options) {
+	Tree.prototype.collapseNode = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
-		this.setExpandedState(this.identifyNode(identifier), false, options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.setExpandedState(this.identifyNode(identifier), false, options);
+		}, this));
+
 		this.render();
 	};
 
@@ -711,18 +742,23 @@
 
 	/**
 		Expand a given tree node
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.expandNode = function (identifier, options) {
+	Tree.prototype.expandNode = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
 
-		var node = this.identifyNode(identifier);
-		this.setExpandedState(node, true, options);
-
-		if (node.nodes && (options && options.levels)) {
-			this.expandLevels(node.nodes, options.levels-1, options);
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
 		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			var node = this.identifyNode(identifier);
+			this.setExpandedState(node, true, options);
+			if (node.nodes && (options && options.levels)) {
+				this.expandLevels(node.nodes, options.levels-1, options);
+			}
+		}, this));
 
 		this.render();
 	};
@@ -740,20 +776,17 @@
 
 	/**
 		Reveals a given tree node, expanding the tree from node to root.
-		@param {Object|Number|Array} identifier - A valid node, node id or array of node identifiers
+		@param {Object|Number|Array} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.revealNode = function (identifier, options) {
+	Tree.prototype.revealNode = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
 
-		if (!(identifier instanceof Array)) {
-			identifier = [identifier];
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
 		}
 
-		// Iterate nodes
-		$.each(identifier, $.proxy(function (index, identifier) {
-
-			// Traverse the tree expanding parents from node to root
+		$.each(identifiers, $.proxy(function (index, identifier) {
 			var parentNode = this.getParent(identifier);
 			while (parentNode) {
 				this.setExpandedState(parentNode, true, options);
@@ -766,14 +799,25 @@
 
 	/**
 		Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
-		@param {Object|Number} identifier - A valid node or node id
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
 		@param {optional Object} options
 	*/
-	Tree.prototype.toggleNodeExpanded = function (identifier, options) {
+	Tree.prototype.toggleNodeExpanded = function (identifiers, options) {
 		options = $.extend({}, _default.options, options);
-		this.toggleExpandedState(this.identifyNode(identifier), options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.toggleExpandedState(this.identifyNode(identifier), options);
+		}, this));
 	};
 
+
+	/*
+		Identifies a node from either a node id or object
+	*/
 	Tree.prototype.identifyNode = function (identifier) {
 		return ((typeof identifier) === 'number') ?
 						this.nodes[identifier] :
