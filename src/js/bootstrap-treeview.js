@@ -35,6 +35,7 @@
 		collapseIcon: 'glyphicon glyphicon-minus',
 		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
+		selectedIcon: 'glyphicon glyphicon-stop',
 
 		color: undefined, // '#000000',
 		backColor: undefined, // '#FFFFFF',
@@ -414,10 +415,19 @@
 			}
 
 			// Add node icon
-			treeItem
-				.append($(_this.template.icon)
-					.addClass(node.icon ? node.icon : _this.options.nodeIcon)
-				);
+			var selected = node.state.selected
+			if (selected) {
+				treeItem
+					.append($(_this.template.icon)
+						.addClass(node.selectedIcon ? (node.selectedIcon || node.icon) : _this.options.selectedIcon)
+					);
+			}
+			else {
+				treeItem
+					.append($(_this.template.icon)
+						.addClass(node.icon ? node.icon : _this.options.nodeIcon)
+					);
+			}
 
 			// Add text
 			if (_this.options.enableLinks) {
