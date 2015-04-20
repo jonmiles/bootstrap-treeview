@@ -92,6 +92,7 @@
 		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon default ok');
 		equal(options.emptyIcon, 'glyphicon', 'emptyIcon default ok');
 		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon default ok');
+		equal(options.selectedIcon, 'glyphicon glyphicon-stop', 'selectedIcon default ok');
 		equal(options.color, undefined, 'color default ok');
 		equal(options.backColor, undefined, 'backColor default ok');
 		equal(options.borderColor, undefined, 'borderColor default ok');
@@ -120,6 +121,7 @@
 			collapseIcon: 'glyphicon glyphicon-collapse',
 			emptyIcon: 'glyphicon',
 			nodeIcon: 'glyphicon glyphicon-node',
+			selectedIcon: 'glyphicon glyphicon-selected',
 			color: 'yellow',
 			backColor: 'purple',
 			borderColor: 'purple',
@@ -149,6 +151,7 @@
 		equal(options.collapseIcon, 'glyphicon glyphicon-collapse', 'collapseIcon set ok');
 		equal(options.emptyIcon, 'glyphicon', 'emptyIcon set ok');
 		equal(options.nodeIcon, 'glyphicon glyphicon-node', 'nodeIcon set ok');
+		equal(options.selectedIcon, 'glyphicon glyphicon-selected', 'selectedIcon set ok');
 		equal(options.color, 'yellow', 'color set ok');
 		equal(options.backColor, 'purple', 'backColor set ok');
 		equal(options.borderColor, 'purple', 'borderColor set ok');
@@ -454,7 +457,7 @@
 	});
 
 	test('selectNode / unselectNode', function () {
-		var $tree = init({ data: data });
+		var $tree = init({ data: data, selectedIcon: 'glyphicon glyphicon-selected' });
 		var el;
 		var nodeId = 0;
 		var node = $tree.treeview('getNode', 0);
@@ -463,24 +466,28 @@
 		$tree.treeview('selectNode', nodeId);
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by id) : Node is selected');
+		ok((el.find('.icon').attr('class') === 'icon glyphicon glyphicon-selected'), 'Select node (by id) : Node icon is correct');
 		ok(($('.node-selected').length === 1), 'Select node (by id) : There is only one selected node');
 
 		// Unselect node using node id
 		$tree.treeview('unselectNode', nodeId);
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Select node (by id) : Node is no longer selected');
+		ok((el.find('.icon').attr('class') === 'icon glyphicon glyphicon-stop'), 'Select node (by id) : Node icon is correct');
 		ok(($('.node-selected').length === 0), 'Select node (by id) : There are no selected nodes');
 
 		// Select node using node
 		$tree.treeview('selectNode', node);
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by node) : Node is selected');
+		ok((el.find('.icon').attr('class') === 'icon glyphicon glyphicon-selected'), 'Select node (by node) : Node icon is correct');
 		ok(($('.node-selected').length === 1), 'Select node (by node) : There is only one selected node');
 
 		// Unselect node using node id
 		$tree.treeview('unselectNode', node);
 		el = $('.list-group-item:first');
 		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Select node (by node) : Node is no longer selected');
+		ok((el.find('.icon').attr('class') === 'icon glyphicon glyphicon-stop'), 'Select node (by node) : Node icon is correct');
 		ok(($('.node-selected').length === 0), 'Select node (by node) : There are no selected nodes');
 	});
 

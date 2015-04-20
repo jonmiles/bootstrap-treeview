@@ -125,6 +125,7 @@ If you want to do more, here's the full node specification
 {
   text: "Node 1",
   icon: "glyphicon glyphicon-stop",
+  selectedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
   backColor: "#FFFFFF",
   href: "#node-1",
@@ -158,6 +159,11 @@ The icon displayed on a given node, typically to the left of the text.
 For simplicity we directly leverage [Bootstraps Glyphicons support](http://getbootstrap.com/components/#glyphicons) and as such you should provide both the base class and individual icon class separated by a space.  
 
 By providing the base class you retain full control over the icons used.  If you want to use your own then just add your class to this icon field.
+
+#### selectedIcon
+`String` `Optional`
+
+The icon displayed on a given node when selected, typically to the left of the text.
 
 #### color
 `String` `Optional`
@@ -289,6 +295,11 @@ Whether or not multiple nodes can be selected at the same time.
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
+
+#### selectedIcon
+String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the default icon to be used on all selected nodes, except when overridden on a per node basis in data.
 
 #### onhoverColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
