@@ -384,13 +384,14 @@ Triggers `nodeCollapsed` event; pass silent to suppress events.
 
 #### collapseNode(node | nodeId, options)
 
-Collapse a given tree node, accepts node or nodeId
+Collapse a given tree node and it's child nodes.  If you don't want to collapse the child nodes, pass option `{ ignoreChildren: true }`.
 
 ```javascript
-$('#tree').treeview('collapseNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('collapseNode', [ nodeId, { silent: true, ignoreChildren: false } ]);
 ```
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
+
 
 #### expandAll(options)
 
@@ -412,6 +413,21 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### getCollapsed()
+
+Returns an array of collapsed nodes e.g. state.expanded = false.
+
+```javascript
+$('#tree').treeview('getCollapsed', nodeId);
+```
+#### getExpanded()
+
+Returns an array of expanded nodes e.g. state.expanded = true.
+
+```javascript
+$('#tree').treeview('getExpanded', nodeId);
+```
+
 #### getNode(nodeId)
 
 Returns a single node object that matches the given node id.
@@ -428,12 +444,28 @@ Returns the parent node of a given node, if valid otherwise returns undefined.
 $('#tree').treeview('getParent', node);
 ```
 
+#### getSelected()
+
+Returns an array of selected nodes e.g. state.selected = true.
+
+```javascript
+$('#tree').treeview('getSelected', nodeId);
+```
+
 #### getSiblings(node | nodeId)
 
 Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
 
 ```javascript
 $('#tree').treeview('getSiblings', node);
+```
+
+#### getUnselected()
+
+Returns an array of unselected nodes e.g. state.selected = false.
+
+```javascript
+$('#tree').treeview('getUnselected', nodeId);
 ```
 
 #### remove()
@@ -444,6 +476,16 @@ Removes the tree view component. Removing attached events, internal attached obj
 $('#tree').treeview('remove');
 ```
 
+#### revealNode(node | nodeId, options)
+
+Reveals a given tree node, expanding the tree from node to root.
+
+```javascript
+$('#tree').treeview('revealNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeExpanded` event; pass silent to suppress events.
+
 #### search(pattern, options)
 
 Searches the tree view for nodes that match a given string, highlighting them in the tree.  
@@ -452,8 +494,9 @@ Returns an array of matching nodes.
 
 ```javascript
 $('#tree').treeview('search', [ 'Parent', {
-  ignoreCase: true,
-  exactMatch: false
+  ignoreCase: true,     // case insensitive
+  exactMatch: false,    // like or equals
+  revealResults: true,  // reveal matching nodes
 }]);
 ```
 

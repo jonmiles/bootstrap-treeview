@@ -375,7 +375,7 @@
 	test('getNode', function () {
 		var $tree = init({ data: data });
 		var nodeParent1 = $tree.treeview('getNode', 0);
-		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", for "Parent 1"');
+		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", got "Parent 1"');
 	});
 
 	test('getParent', function () {
@@ -410,6 +410,47 @@
 		ok(isArray, 'Correct siblings for "Child 1" [non root] : is array');
 		ok(countOK, 'Correct siblings for "Child 1" [non root] : count OK');
 		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
+	});
+
+	test('getSelected', function () {
+		var $tree = init({ data: data })
+			.treeview('selectNode', 0);
+
+		var selectedNodes = $tree.treeview('getSelected');
+		ok((selectedNodes instanceof Array), 'Result is an array');
+		equal(selectedNodes.length, 1, 'Correct number of nodes returned');
+		equal(selectedNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	test('getUnselected', function () {
+		var $tree = init({ data: data })
+			.treeview('selectNode', 0);
+
+		var unselectedNodes = $tree.treeview('getUnselected');
+		ok((unselectedNodes instanceof Array), 'Result is an array');
+		equal(unselectedNodes.length, 8, 'Correct number of nodes returned');
+	});
+
+	// Assumptions:
+	// Default tree + expanded to 2 levels,
+	// means 1 node 'Parent 1' should be expanded and therefore returned
+	test('getExpanded', function () {
+		var $tree = init({ data: data });
+		var expandedNodes = $tree.treeview('getExpanded');
+		ok((expandedNodes instanceof Array), 'Result is an array');
+		equal(expandedNodes.length, 1, 'Correct number of nodes returned');
+		equal(expandedNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	// Assumptions:
+	// Default tree + expanded to 2 levels, means only 'Parent 1' should be expanded
+	// as all other parent nodes have no children their state will be collapsed
+	// which means 8 of the 9 nodes should be returned
+	test('getCollapsed', function () {
+		var $tree = init({ data: data });
+		var collapsedNodes = $tree.treeview('getCollapsed');
+		ok((collapsedNodes instanceof Array), 'Result is an array');
+		equal(collapsedNodes.length, 8, 'Correct number of nodes returned');
 	});
 
 	test('selectNode / unselectNode', function () {
@@ -513,6 +554,17 @@
 
 		$tree.treeview('expandNode', [ nodeParent1, { levels: 2 } ]);
 		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
+	});
+
+	test('revealNode', function () {
+		var $tree = init({ data: data, levels: 1 });
+
+		$tree.treeview('revealNode', 1); // Child_1
+		equal($($tree.selector + ' ul li').length, 7, 'Reveal node (by id) works, reveal Child 1 and 7 nodes displayed');
+
+		var nodeGrandchild1 = $tree.treeview('getNode', 2); // Grandchild 1
+		$tree.treeview('revealNode', nodeGrandchild1);
+		equal($($tree.selector + ' ul li').length, 9, 'Reveal node (by node) works, reveal Grandchild 1 and 9 nodes displayed');
 	});
 
 	test('search', function () {
