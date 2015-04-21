@@ -461,18 +461,23 @@
 			}
 
 			// Add text
+			var statusTextFn = node.statusText || _this.options.statusText
+			var text = !!statusTextFn ?
+				node.text + " " + statusTextFn(node) :
+				node.text
+
 			if (_this.options.enableLinks) {
 				// Add hyperlink
 				treeItem
 					.append($(_this.template.link)
 						.attr('href', node.href)
-						.append(node.text)
+						.append(text)
 					);
 			}
 			else {
 				// otherwise just text
 				treeItem
-					.append(node.text);
+					.append(text);
 			}
 
 			// Add tags as badges
