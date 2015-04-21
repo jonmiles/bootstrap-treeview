@@ -446,17 +446,16 @@
 			}
 
 			// Add node icon
-			var selected = node.state.selected
-			if (selected) {
+			if (node.state.selected) {
 				treeItem
 					.append($(_this.template.icon)
-						.addClass(node.selectedIcon ? (node.selectedIcon || node.icon) : _this.options.selectedIcon)
+						.addClass(node.selectedIcon || _this.options.selectedIcon)
 					);
 			}
 			else {
 				treeItem
 					.append($(_this.template.icon)
-						.addClass(node.icon ? node.icon : _this.options.nodeIcon)
+						.addClass(node.icon || _this.options.nodeIcon)
 					);
 			}
 
