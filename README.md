@@ -124,6 +124,7 @@ If you want to do more, here's the full node specification
 ```javascript
 {
   text: "Node 1",
+  statusText: function(node) {},
   icon: "glyphicon glyphicon-stop",
   selectedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
@@ -150,6 +151,11 @@ The following properties are defined to allow node level overrides, such as node
 `String` `Mandatory`
 
 The text value displayed for a given tree node, typically to the right of the nodes icon.
+
+#### statusText
+`Function` `Optional`
+
+Function that receives the node and returns informational text
 
 #### icon
 `String` `Optional`
@@ -290,6 +296,11 @@ Sets the number of hierarchical levels deep the tree will be expanded to by defa
 Boolean.  Default: false
 
 Whether or not multiple nodes can be selected at the same time.
+
+#### statusText
+Function.  Default: none
+
+Sets the default status text to be returned for all nodes, except when overridden on a per node basis in data
 
 #### nodeIcon
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)

@@ -39,7 +39,8 @@
 			text: 'Parent 3'
 		},
 		{
-			text: 'Parent 4'
+			text: 'Parent 4',
+			statusText: function(node) { return node.nodeId + ' is bad' }
 		},
 		{
 			text: 'Parent 5'
@@ -177,9 +178,19 @@
 	test('Links enabled', function () {
 		init({enableLinks:true, data:data});
 		ok($('.list-group-item:first').children('a').length, 'Links are enabled');
-
 	});
 
+	test('Status text', function () {
+		init({
+			data:data,
+			statusText:function(node) { return node.nodeId + " is good"},
+		});
+		ok($('.list-group-item:first').text() === "Parent 1 0 is good",
+			'Tree wide status text')
+
+		ok($('.list-group-item:eq(5)').text() === "Parent 4 7 is bad",
+			'Node specific status text')
+	});
 
 	module('Data');
 
