@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## v1.2.0 - [Unreleased]
 
 ### New Features
+- New option selectedIcon to support displaying different icons when node is selected.
 - New search option `{ revealResults : true | false }` which when set to true will automatically expand the tree view to reveal matching nodes
 - New method `revealNode` which expands the tree view to reveal a given node
 - New methods `getSelected`, `getUnselected`, `getExpanded` and `getCollapsed` to retrieve nodes by state
