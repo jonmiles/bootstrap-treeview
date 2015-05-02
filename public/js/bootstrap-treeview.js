@@ -54,13 +54,17 @@
 		highlightSelected: true,
 		highlightSearchResults: true,
 		showBorder: true,
+		showIcon: true,
+		showCheckbox: false,
 		showTags: false,
 		multiSelect: false,
 
 		// Event handlers
+		onNodeChecked: undefined,
 		onNodeCollapsed: undefined,
 		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
+		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
 		onSearchCleared: undefined
@@ -165,30 +169,14 @@
 	Tree.prototype.unsubscribeEvents = function () {
 
 		this.$element.off('click');
-
-		if (typeof (this.options.onNodeCollapsed) === 'function') {
-			this.$element.off('nodeCollapsed');
-		}
-
-		if (typeof (this.options.onNodeExpanded) === 'function') {
-			this.$element.off('nodeExpanded');
-		}
-
-		if (typeof (this.options.onNodeSelected) === 'function') {
-			this.$element.off('nodeSelected');
-		}
-
-		if (typeof (this.options.onNodeUnselected) === 'function') {
-			this.$element.off('nodeUnselected');
-		}
-
-		if (typeof (this.options.onSearchComplete) === 'function') {
-			this.$element.off('searchComplete');
-		}
-
-		if (typeof (this.options.onSearchCleared) === 'function') {
-			this.$element.off('searchCleared');
-		}
+		this.$element.off('nodeChecked');
+		this.$element.off('nodeCollapsed');
+		this.$element.off('nodeExpanded');
+		this.$element.off('nodeSelected');
+		this.$element.off('nodeUnchecked');
+		this.$element.off('nodeUnselected');
+		this.$element.off('searchComplete');
+		this.$element.off('searchCleared');
 	};
 
 	Tree.prototype.subscribeEvents = function () {
@@ -196,6 +184,10 @@
 		this.unsubscribeEvents();
 
 		this.$element.on('click', $.proxy(this.clickHandler, this));
+
+		if (typeof (this.options.onNodeChecked) === 'function') {
+			this.$element.on('nodeChecked', this.options.onNodeChecked);
+		}
 
 		if (typeof (this.options.onNodeCollapsed) === 'function') {
 			this.$element.on('nodeCollapsed', this.options.onNodeCollapsed);
@@ -207,6 +199,10 @@
 
 		if (typeof (this.options.onNodeSelected) === 'function') {
 			this.$element.on('nodeSelected', this.options.onNodeSelected);
+		}
+
+		if (typeof (this.options.onNodeUnchecked) === 'function') {
+			this.$element.on('nodeUnchecked', this.options.onNodeUnchecked);
 		}
 
 		if (typeof (this.options.onNodeUnselected) === 'function') {
@@ -405,17 +401,17 @@
 
 			// Check node
 			node.state.checked = true;
-			// if (!options.silent) {
-			// 	this.$element.trigger('nodeChecked', $.extend(true, {}, node) );
-			// }
+			if (!options.silent) {
+				this.$element.trigger('nodeChecked', $.extend(true, {}, node) );
+			}
 		}
 		else {
 
 			// Uncheck node
 			node.state.checked = false;
-			// if (!options.silent) {
-			// 	this.$element.trigger('nodeUnchecked', $.extend(true, {}, node) );
-			// }
+			if (!options.silent) {
+				this.$element.trigger('nodeUnchecked', $.extend(true, {}, node) );
+			}
 		}
 	};
 
@@ -486,35 +482,39 @@
 			}
 
 			// Add node icon
-			if (node.state.selected) {
-				treeItem
-					.append($(_this.template.icon)
-						.addClass('node-icon')
-						.addClass(node.selectedIcon || _this.options.selectedIcon)
-					);
-			}
-			else {
-				treeItem
-					.append($(_this.template.icon)
-						.addClass('node-icon')
-						.addClass(node.icon || _this.options.nodeIcon)
-					);
+			if (_this.options.showIcon) {
+				if (node.state.selected) {
+					treeItem
+						.append($(_this.template.icon)
+							.addClass('node-icon')
+							.addClass(node.selectedIcon || _this.options.selectedIcon)
+						);
+				}
+				else {
+					treeItem
+						.append($(_this.template.icon)
+							.addClass('node-icon')
+							.addClass(node.icon || _this.options.nodeIcon)
+						);
+				}
 			}
 
 			// Add check / unchecked icon
-			if (node.state.checked) {
-				treeItem
-					.append($(_this.template.icon)
-						.addClass('checked-icon node-checked')
-						.addClass(_this.options.checkedIcon)
-					);
-			}
-			else {
-				treeItem
-					.append($(_this.template.icon)
-						.addClass('checked-icon node-unchecked')
-						.addClass(_this.options.uncheckedIcon)
-					);
+			if (_this.options.showCheckbox) {
+				if (node.state.checked) {
+					treeItem
+						.append($(_this.template.icon)
+							.addClass('checked-icon node-checked')
+							.addClass(_this.options.checkedIcon)
+						);
+				}
+				else {
+					treeItem
+						.append($(_this.template.icon)
+							.addClass('checked-icon node-unchecked')
+							.addClass(_this.options.uncheckedIcon)
+						);
+				}
 			}
 
 			// Add text

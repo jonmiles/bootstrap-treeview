@@ -131,8 +131,9 @@ If you want to do more, here's the full node specification
   href: "#node-1",
   selectable: true,
   state: {
-  	expanded: true,
-  	selected: true
+    checked: true,
+    expanded: true,
+    selected: true
   },
   tags: ['available'],
   nodes: [
@@ -187,8 +188,12 @@ Whether or not a node is selectable in the tree. False indicates the node should
 
 #### state
 `Object` `Optional`
-
 Describes a node's initial state.
+
+#### state.checked
+`Boolean` `Default: false`
+
+Whether or not a node is checked, represented by a checkbox style glyphicon.
 
 #### state.expanded
 `Boolean` `Default: false`
@@ -246,6 +251,9 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the border color for the component; set showBorder to false if you don't want a visible border.
 
+#### checkedIcon
+String, class names(s).  Default: "glyphicon glyphicon-check" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
 #### collapseIcon
 String, class name(s).  Default: "glyphicon glyphicon-minus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
@@ -296,15 +304,15 @@ String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Boots
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
 
-#### selectedIcon
-String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
-
-Sets the default icon to be used on all selected nodes, except when overridden on a per node basis in data.
-
 #### onhoverColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
 
 Sets the default background color activated when the users cursor hovers over a node.
+
+#### selectedIcon
+String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the default icon to be used on all selected nodes, except when overridden on a per node basis in data.
 
 #### searchResultBackColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: undefined, inherits.
@@ -331,11 +339,23 @@ Boolean.  Default: true
 
 Whether or not to display a border around nodes.
 
+#### showCheckbox
+Boolean.  Default: false
+
+Whether or not to display a nodes checked icon.
+
+#### showIcon
+Boolean.  Default: true
+
+Whether or not to display a nodes icon.
+
 #### showTags
 Boolean.  Default: false
 
 Whether or not to display tags to the right of each node.  The values of which must be provided in the data structure on a per node basis.
 
+#### uncheckedIcon
+String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 
 ## Methods
@@ -581,11 +601,15 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
+`nodeChecked (event, node)`  - A node is checked.
+
 `nodeCollapsed (event, node)`  - A node is collapsed.
 
 `nodeExpanded (event, node)` - A node is expanded.
 
 `nodeSelected (event, node)`  - A node is selected.
+
+`nodeUnchecked (event, node)`  - A node is unchecked.
 
 `nodeUnselected (event, node)`  - A node is unselected.  
 
