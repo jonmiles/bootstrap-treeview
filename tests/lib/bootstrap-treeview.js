@@ -106,6 +106,8 @@
 			getUnselected: $.proxy(this.getUnselected, this),
 			getExpanded: $.proxy(this.getExpanded, this),
 			getCollapsed: $.proxy(this.getCollapsed, this),
+			getChecked: $.proxy(this.getChecked, this),
+			getUnchecked: $.proxy(this.getUnchecked, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -119,6 +121,13 @@
 			expandNode: $.proxy(this.expandNode, this),
 			toggleNodeExpanded: $.proxy(this.toggleNodeExpanded, this),
 			revealNode: $.proxy(this.revealNode, this),
+
+			// Expand / collapse methods
+			checkAll: $.proxy(this.checkAll, this),
+			checkNode: $.proxy(this.checkNode, this),
+			uncheckAll: $.proxy(this.uncheckAll, this),
+			uncheckNode: $.proxy(this.uncheckNode, this),
+			toggleNodeChecked: $.proxy(this.toggleNodeChecked, this),
 
 			// Search methods
 			search: $.proxy(this.search, this),
@@ -287,12 +296,10 @@
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		var node = this.findNode(target);
 
-		if ((classList.indexOf('click-expand') !== -1) ||
-				(classList.indexOf('click-collapse') !== -1)) {
+		if ((classList.indexOf('expand-icon') !== -1)) {
 			this.toggleExpandedState(node, _default.options);
 		}
-		else if ((classList.indexOf('node-checked') !== -1) || 
-					(classList.indexOf('node-unchecked') !== -1)) {
+		else if ((classList.indexOf('check-icon') !== -1)) {
 			this.toggleCheckedState(node, _default.options);
 		}
 		else if (node) {
@@ -401,6 +408,8 @@
 
 			// Check node
 			node.state.checked = true;
+
+
 			if (!options.silent) {
 				this.$element.trigger('nodeChecked', $.extend(true, {}, node) );
 			}
@@ -458,63 +467,58 @@
 			}
 
 			// Add expand, collapse or empty spacer icons
+			var classList = [];
 			if (node.nodes) {
-				if (!node.state.expanded) {
-						treeItem
-							.append($(_this.template.icon)
-								.addClass('expand-collapse-icon click-expand')
-								.addClass(_this.options.expandIcon)
-							);
-					}
-					else {
-						treeItem
-							.append($(_this.template.icon)
-								.addClass('expand-collapse-icon click-collapse')
-								.addClass(_this.options.collapseIcon)
-							);
-					}
+				classList.push('expand-icon');
+				if (node.state.expanded) {
+					classList.push(_this.options.collapseIcon);
+				}
+				else {
+					classList.push(_this.options.expandIcon);
+				}
 			}
 			else {
-				treeItem
-					.append($(_this.template.icon)
-						.addClass(_this.options.emptyIcon)
-					);
+				classList.push(_this.options.emptyIcon);
 			}
+
+			treeItem
+				.append($(_this.template.icon)
+					.addClass(classList.join(' '))
+				);
+
 
 			// Add node icon
 			if (_this.options.showIcon) {
+				
+				var classList = ['node-icon'];
 				if (node.state.selected) {
-					treeItem
-						.append($(_this.template.icon)
-							.addClass('node-icon')
-							.addClass(node.selectedIcon || _this.options.selectedIcon)
-						);
+					classList.push(node.selectedIcon || _this.options.selectedIcon);
 				}
 				else {
-					treeItem
-						.append($(_this.template.icon)
-							.addClass('node-icon')
-							.addClass(node.icon || _this.options.nodeIcon)
-						);
+					classList.push(node.icon || _this.options.nodeIcon);
 				}
+
+				treeItem
+					.append($(_this.template.icon)
+						.addClass(classList.join(' '))
+					);
 			}
 
 			// Add check / unchecked icon
 			if (_this.options.showCheckbox) {
+
+				var classList = ['check-icon'];
 				if (node.state.checked) {
-					treeItem
-						.append($(_this.template.icon)
-							.addClass('checked-icon node-checked')
-							.addClass(_this.options.checkedIcon)
-						);
+					classList.push(_this.options.checkedIcon); 
 				}
 				else {
-					treeItem
-						.append($(_this.template.icon)
-							.addClass('checked-icon node-unchecked')
-							.addClass(_this.options.uncheckedIcon)
-						);
+					classList.push(_this.options.uncheckedIcon);
 				}
+
+				treeItem
+					.append($(_this.template.icon)
+						.addClass(classList.join(' '))
+					);
 			}
 
 			// Add text
@@ -697,6 +701,22 @@
 		return this.findNodes('false', 'g', 'state.expanded');
 	};
 
+	/**
+		Returns an array of checked nodes.
+		@returns {Array} nodes - Checked nodes
+	*/
+	Tree.prototype.getChecked = function () {
+		return this.findNodes('true', 'g', 'state.checked');
+	};
+
+	/**
+		Returns an array of unchecked nodes.
+		@returns {Array} nodes - Unchecked nodes
+	*/
+	Tree.prototype.getUnchecked = function () {
+		return this.findNodes('false', 'g', 'state.checked');
+	};
+
 
 	/**
 		Set a node state to selected
@@ -877,6 +897,90 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			this.toggleExpandedState(this.identifyNode(identifier), options);
+		}, this));
+	};
+
+
+	/**
+		Check all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.checkAll = function (options) {
+		options = $.extend({}, _default.options, options);
+
+		$.each(this.findNodes('false', 'g', 'state.checked'), $.proxy(function (index, node) {
+			this.setCheckedState(node, true, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Check a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.checkNode = function (identifiers, options) {
+		options = $.extend({}, _default.options, options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.setCheckedState(this.identifyNode(identifier), true, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Uncheck all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.uncheckAll = function (options) {
+		options = $.extend({}, _default.options, options);
+
+		$.each(this.findNodes('true', 'g', 'state.checked'), $.proxy(function (index, node) {
+			this.setCheckedState(node, false, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Uncheck a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.uncheckNode = function (identifiers, options) {
+		options = $.extend({}, _default.options, options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.setCheckedState(this.identifyNode(identifier), false, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Toggles a nodes checked state; checking if unchecked, unchecking if checked.
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.toggleNodeChecked = function (identifiers, options) {
+		options = $.extend({}, _default.options, options);
+
+		if (!(identifiers instanceof Array)) {
+			identifiers = [identifiers];
+		}
+
+		$.each(identifiers, $.proxy(function (index, identifier) {
+			this.toggleCheckedState(this.identifyNode(identifier), options);
 		}, this));
 	};
 

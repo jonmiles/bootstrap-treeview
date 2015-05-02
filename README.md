@@ -393,6 +393,26 @@ $('#tree').data('treeview')
 
 The following is a list of all available methods.
 
+#### checkAll(options)
+
+Checks all tree nodes
+
+```javascript
+$('#tree').treeview('checkAll', { silent: true });
+```
+
+Triggers `nodeChecked` event; pass silent to suppress events.
+
+#### checkNode(node | nodeId, options)
+
+Checks a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('checkNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeChecked` event; pass silent to suppress events.
+
 #### clearSearch()
 
 Clear the tree view of any previous search results e.g. remove their highlighted state.
@@ -543,6 +563,16 @@ $('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
 
 Triggers `nodeSelected` event; pass silent to suppress events.
 
+#### toggleNodeChecked(node | nodeId, options)
+
+Toggles a nodes checked state; checking if unchecked, unchecking if checked.
+
+```javascript
+$('#tree').treeview('toggleNodeChecked', [ nodeId, { silent: true } ]);
+```
+
+Triggers either `nodeChecked` or `nodeUnchecked` event; pass silent to suppress events.
+
 #### toggleNodeExpanded(node | nodeId, options)
 
 Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
@@ -562,6 +592,26 @@ $('#tree').treeview('toggleNodeSelected', [ nodeId, { silent: true } ]);
 ```
 
 Triggers either `nodeSelected` or `nodeUnselected` event; pass silent to suppress events.
+
+#### uncheckAll(options)
+
+Uncheck all tree nodes.
+
+```javascript
+$('#tree').treeview('uncheckAll', { silent: true });
+```
+
+Triggers `nodeUnchecked` event; pass silent to suppress events.
+
+#### uncheckNode(node | nodeId, options)
+
+Uncheck a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('uncheckNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeUnchecked` event; pass silent to suppress events.
 
 #### unselectNode(node | nodeId, options)
 

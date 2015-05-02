@@ -183,6 +183,43 @@
       </div>
       <div class="row">
         <hr>
+        <h2>Checkable Tree</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-check-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-check-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success check-node" id="btn-check-node">Check Node</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger check-node" id="btn-uncheck-node">Uncheck Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary check-node" id="btn-toggle-checked">Toggle Node</button>
+          </div>
+          <hr>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success" id="btn-check-all">Check All</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger" id="btn-uncheck-all">Uncheck All</button>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-checkable" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Events</h2>
+          <div id="checkable-output"></div>
+        </div>
+      </div>
+      <div class="row">
+        <hr>
         <h2>Data</h2>
         <div class="col-sm-4">
           <h2>JSON Data</h2>
@@ -538,6 +575,52 @@
 
         $('#btn-collapse-all').on('click', function (e) {
           $expandibleTree.treeview('collapseAll');
+        });
+
+
+
+        var $checkableTree = $('#treeview-checkable').treeview({
+          data: defaultData,
+          showIcon: false,
+          showCheckbox: true,
+          onNodeChecked: function(event, node) {
+            $('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
+          },
+          onNodeUnchecked: function (event, node) {
+            $('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
+          }
+        });
+
+        var findCheckableNode = function() {
+          return $checkableTree.treeview('search', [ $('#input-check-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        };
+        var checkableNode = findCheckableNode();
+
+        // Check/uncheck/toggle nodes
+        $('#input-check-node').on('keyup', function (e) {
+          checkableNode = findCheckableNode();
+          $('.check-node').prop('disabled', !(checkableNode.length === 1));
+        });
+
+        $('#btn-check-node.check-node').on('click', function (e) {
+          $checkableTree.treeview('checkNode', [ checkableNode[0], {  } ]);
+        });
+
+        $('#btn-uncheck-node.check-node').on('click', function (e) {
+          $checkableTree.treeview('uncheckNode', checkableNode[0]);
+        });
+
+        $('#btn-toggle-checked.check-node').on('click', function (e) {
+          $checkableTree.treeview('toggleNodeChecked', checkableNode[0]);
+        });
+
+        // Check/uncheck all
+        $('#btn-check-all').on('click', function (e) {
+          $checkableTree.treeview('checkAll', {  });
+        });
+
+        $('#btn-uncheck-all').on('click', function (e) {
+          $checkableTree.treeview('uncheckAll');
         });
 
 
