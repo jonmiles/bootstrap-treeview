@@ -254,6 +254,8 @@ Sets the border color for the component; set showBorder to false if you don't wa
 #### checkedIcon
 String, class names(s).  Default: "glyphicon glyphicon-check" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
+Sets the icon to be as a checked checkbox, used in conjunction with showCheckbox.
+
 #### collapseIcon
 String, class name(s).  Default: "glyphicon glyphicon-minus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
@@ -342,7 +344,7 @@ Whether or not to display a border around nodes.
 #### showCheckbox
 Boolean.  Default: false
 
-Whether or not to display a nodes checked icon.
+Whether or not to display checkboxes on nodes.
 
 #### showIcon
 Boolean.  Default: true
@@ -356,6 +358,8 @@ Whether or not to display tags to the right of each node.  The values of which m
 
 #### uncheckedIcon
 String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be as an unchecked checkbox, used in conjunction with showCheckbox.
 
 
 ## Methods
