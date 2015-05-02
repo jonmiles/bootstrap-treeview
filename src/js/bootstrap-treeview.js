@@ -38,6 +38,8 @@
 		emptyIcon: 'glyphicon',
 		nodeIcon: 'glyphicon glyphicon-stop',
 		selectedIcon: 'glyphicon glyphicon-stop',
+		checkedIcon: 'glyphicon glyphicon-check',
+		uncheckedIcon: 'glyphicon glyphicon-unchecked',
 
 		color: undefined, // '#000000',
 		backColor: undefined, // '#FFFFFF',
@@ -246,7 +248,7 @@
 				node.selectable = true;
 			}
 
-			// where provided we shouuld preserve states
+			// where provided we should preserve states
 			node.state = node.state || {};
 
 			// set expanded state; if not provided based on levels
@@ -264,6 +266,11 @@
 			// set selected state; unless set always false
 			if (!node.state.hasOwnProperty('selected')) {
 				node.state.selected = false;
+			}
+
+			// set checked state; unless set always false
+			if (!node.state.hasOwnProperty('checked')) {
+				node.state.checked = false;
 			}
 
 			// index nodes in a flattened structure for use later
@@ -284,9 +291,13 @@
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		var node = this.findNode(target);
 
-		if ((classList.indexOf('click-expand') != -1) ||
-				(classList.indexOf('click-collapse') != -1)) {
+		if ((classList.indexOf('click-expand') !== -1) ||
+				(classList.indexOf('click-collapse') !== -1)) {
 			this.toggleExpandedState(node, _default.options);
+		}
+		else if ((classList.indexOf('node-checked') !== -1) || 
+					(classList.indexOf('node-unchecked') !== -1)) {
+			this.toggleCheckedState(node, _default.options);
 		}
 		else if (node) {
 			if (node.selectable) {
@@ -380,6 +391,34 @@
 		}
 	};
 
+	Tree.prototype.toggleCheckedState = function (node, options) {
+		if (!node) return;
+		this.setCheckedState(node, !node.state.checked, options);
+		this.render();
+	};
+
+	Tree.prototype.setCheckedState = function (node, state, options) {
+
+		if (state === node.state.checked) return;
+
+		if (state) {
+
+			// Check node
+			node.state.checked = true;
+			// if (!options.silent) {
+			// 	this.$element.trigger('nodeChecked', $.extend(true, {}, node) );
+			// }
+		}
+		else {
+
+			// Uncheck node
+			node.state.checked = false;
+			// if (!options.silent) {
+			// 	this.$element.trigger('nodeUnchecked', $.extend(true, {}, node) );
+			// }
+		}
+	};
+
 	Tree.prototype.render = function () {
 
 		if (!this.initialized) {
@@ -412,7 +451,8 @@
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.selected ? 'node-selected' : '')
-				.addClass(node.searchResult ? 'search-result' : '')
+				.addClass(node.state.checked ? 'node-checked' : '')
+				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
@@ -425,22 +465,22 @@
 			if (node.nodes) {
 				if (!node.state.expanded) {
 						treeItem
-							.append($(_this.template.expandCollapseIcon)
-								.addClass('click-expand')
+							.append($(_this.template.icon)
+								.addClass('expand-collapse-icon click-expand')
 								.addClass(_this.options.expandIcon)
 							);
 					}
 					else {
 						treeItem
-							.append($(_this.template.expandCollapseIcon)
-								.addClass('click-collapse')
+							.append($(_this.template.icon)
+								.addClass('expand-collapse-icon click-collapse')
 								.addClass(_this.options.collapseIcon)
 							);
 					}
 			}
 			else {
 				treeItem
-					.append($(_this.template.expandCollapseIcon)
+					.append($(_this.template.icon)
 						.addClass(_this.options.emptyIcon)
 					);
 			}
@@ -449,13 +489,31 @@
 			if (node.state.selected) {
 				treeItem
 					.append($(_this.template.icon)
+						.addClass('node-icon')
 						.addClass(node.selectedIcon || _this.options.selectedIcon)
 					);
 			}
 			else {
 				treeItem
 					.append($(_this.template.icon)
+						.addClass('node-icon')
 						.addClass(node.icon || _this.options.nodeIcon)
+					);
+			}
+
+			// Add check / unchecked icon
+			if (node.state.checked) {
+				treeItem
+					.append($(_this.template.icon)
+						.addClass('checked-icon node-checked')
+						.addClass(_this.options.checkedIcon)
+					);
+			}
+			else {
+				treeItem
+					.append($(_this.template.icon)
+						.addClass('checked-icon node-unchecked')
+						.addClass(_this.options.uncheckedIcon)
 					);
 			}
 
@@ -566,13 +624,12 @@
 		list: '<ul class="list-group"></ul>',
 		item: '<li class="list-group-item"></li>',
 		indent: '<span class="indent"></span>',
-		expandCollapseIcon: '<span class="expand-collapse"></span>',
 		icon: '<span class="icon"></span>',
 		link: '<a href="#" style="color:inherit;"></a>',
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.expand-collapse{width:1rem;height:1rem}.treeview span.icon{margin-left:10px;margin-right:5px}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}'
 
 
 	/**
