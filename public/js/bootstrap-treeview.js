@@ -256,10 +256,20 @@
 			// where provided we should preserve states
 			node.state = node.state || {};
 
+			// set checked state; unless set always false
+			if (!node.state.hasOwnProperty('checked')) {
+				node.state.checked = false;
+			}
+
+			// set enabled state; unless set always false
+			if (!node.state.hasOwnProperty('disabled')) {
+				node.state.disabled = false;
+			}
+
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
-
-				if ((level < _this.options.levels) &&
+				if (!node.state.disabled &&
+						(level < _this.options.levels) &&
 						(node.nodes && node.nodes.length > 0)) {
 					node.state.expanded = true;
 				}
@@ -271,11 +281,6 @@
 			// set selected state; unless set always false
 			if (!node.state.hasOwnProperty('selected')) {
 				node.state.selected = false;
-			}
-
-			// set checked state; unless set always false
-			if (!node.state.hasOwnProperty('checked')) {
-				node.state.checked = false;
 			}
 
 			// index nodes in a flattened structure for use later
@@ -293,9 +298,10 @@
 		if (!this.options.enableLinks) event.preventDefault();
 
 		var target = $(event.target);
-		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		var node = this.findNode(target);
-
+		if (!node || node.state.disabled) return;
+		
+		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
 			this.toggleExpandedState(node, _default.options);
@@ -306,7 +312,7 @@
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
-		else if (node) {
+		else {
 			
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
@@ -458,8 +464,9 @@
 
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
-				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.state.checked ? 'node-checked' : '')
+				.addClass(node.state.disabled ? 'node-disabled': '')
+				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
@@ -553,7 +560,7 @@
 			_this.$wrapper.append(treeItem);
 
 			// Recursively add child ndoes
-			if (node.nodes && node.state.expanded) {
+			if (node.nodes && node.state.expanded && !node.state.disabled) {
 				return _this.buildTree(node.nodes, level);
 			}
 		});
@@ -619,8 +626,8 @@
 		style += '}';
 
 		if (this.options.onhoverColor) {
-			style += '.node-' + this.elementId + ':hover{' +
-			'background-color:' + this.options.onhoverColor + ';' +
+			style += '.node-' + this.elementId + ':not(.node-disabled):hover{' +
+				'background-color:' + this.options.onhoverColor + ';' +
 			'}';
 		}
 
@@ -636,7 +643,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
 
 
 	/**

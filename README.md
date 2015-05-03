@@ -132,6 +132,7 @@ If you want to do more, here's the full node specification
   selectable: true,
   state: {
     checked: true,
+    disabled: true,
     expanded: true,
     selected: true
   },
@@ -194,6 +195,11 @@ Describes a node's initial state.
 `Boolean` `Default: false`
 
 Whether or not a node is checked, represented by a checkbox style glyphicon.
+
+#### state.disabled
+`Boolean` `Default: false`
+
+Whether or not a node is disabled (not selectable, expandable or checkable).
 
 #### state.expanded
 `Boolean` `Default: false`
