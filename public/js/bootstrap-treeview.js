@@ -297,17 +297,24 @@
 		var node = this.findNode(target);
 
 		if ((classList.indexOf('expand-icon') !== -1)) {
+
 			this.toggleExpandedState(node, _default.options);
+			this.render();
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
+			
 			this.toggleCheckedState(node, _default.options);
+			this.render();
 		}
 		else if (node) {
+			
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
 			} else {
 				this.toggleExpandedState(node, _default.options);
 			}
+
+			this.render();
 		}
 	};
 
@@ -327,7 +334,6 @@
 	Tree.prototype.toggleExpandedState = function (node, options) {
 		if (!node) return;
 		this.setExpandedState(node, !node.state.expanded, options);
-		this.render();
 	};
 
 	Tree.prototype.setExpandedState = function (node, state, options) {
@@ -362,7 +368,6 @@
 	Tree.prototype.toggleSelectedState = function (node, options) {
 		if (!node) return;
 		this.setSelectedState(node, !node.state.selected, options);
-		this.render();
 	};
 
 	Tree.prototype.setSelectedState = function (node, state, options) {
@@ -397,8 +402,7 @@
 	Tree.prototype.toggleCheckedState = function (node, options) {
 		if (!node) return;
 		this.setCheckedState(node, !node.state.checked, options);
-		this.render();
-	};
+	}
 
 	Tree.prototype.setCheckedState = function (node, state, options) {
 
@@ -408,7 +412,6 @@
 
 			// Check node
 			node.state.checked = true;
-
 
 			if (!options.silent) {
 				this.$element.trigger('nodeChecked', $.extend(true, {}, node) );
@@ -753,6 +756,8 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleSelectedState(node, options);
 		}, this));
+
+		this.render();
 	};
 
 
@@ -855,6 +860,8 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleExpandedState(node, options);
 		}, this));
+		
+		this.render();
 	};
 
 
@@ -919,6 +926,8 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleCheckedState(node, options);
 		}, this));
+
+		this.render();
 	};
 
 
