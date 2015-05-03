@@ -113,6 +113,8 @@
 		equal(options.multiSelect, false, 'multiSelect default ok');
 		equal(options.onNodeChecked, null, 'onNodeChecked default ok');
 		equal(options.onNodeCollapsed, null, 'onNodeCollapsed default ok');
+		equal(options.onNodeDisabled, null, 'onNodeDisabled default ok');
+		equal(options.onNodeEnabled, null, 'onNodeEnabled default ok');
 		equal(options.onNodeExpanded, null, 'onNodeExpanded default ok');
 		equal(options.onNodeSelected, null, 'onNodeSelected default ok');
 		equal(options.onNodeUnchecked, null, 'onNodeUnchecked default ok');
@@ -148,6 +150,8 @@
 			multiSelect: true,
 			onNodeChecked: function () {},
 			onNodeCollapsed: function () {},
+			onNodeDisabled: function () {},
+			onNodeEnabled: function () {},
 			onNodeExpanded: function () {},
 			onNodeSelected: function () {},
 			onNodeUnchecked: function () {},
@@ -184,6 +188,8 @@
 		equal(options.multiSelect, true, 'multiSelect set ok');
 		equal(typeof options.onNodeChecked, 'function', 'onNodeChecked set ok');
 		equal(typeof options.onNodeCollapsed, 'function', 'onNodeCollapsed set ok');
+		equal(typeof options.onNodeDisabled, 'function', 'onNodeDisabled set ok');
+		equal(typeof options.onNodeEnabled, 'function', 'onNodeEnabled set ok');
 		equal(typeof options.onNodeExpanded, 'function', 'onNodeExpanded set ok');
 		equal(typeof options.onNodeSelected, 'function', 'onNodeSelected set ok');
 		equal(typeof options.onNodeUnchecked, 'function', 'onNodeUnchecked set ok');
@@ -552,6 +558,77 @@
 		var uncheckedNodes = $tree.treeview('getUnchecked');
 		ok((uncheckedNodes instanceof Array), 'Result is an array');
 		equal(uncheckedNodes.length, 8, 'Correct number of nodes returned');
+	});
+
+	test('getDisabled', function () {
+		var $tree = init({ data: data })
+			.treeview('disableNode', 0);
+
+		var disabledNodes = $tree.treeview('getDisabled');
+		ok((disabledNodes instanceof Array), 'Result is an array');
+		equal(disabledNodes.length, 1, 'Correct number of nodes returned');
+		equal(disabledNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	test('getEnabled', function () {
+		var $tree = init({ data: data })
+			.treeview('disableNode', 0);
+
+		var enabledNodes = $tree.treeview('getEnabled');
+		ok((enabledNodes instanceof Array), 'Result is an array');
+		equal(enabledNodes.length, 8, 'Correct number of nodes returned');
+	});
+
+	test('disableAll / enableAll', function () {
+		var $tree = init({ data: data, levels: 1 });
+
+		$tree.treeview('disableAll');
+		equal($($tree.selector + ' ul li.node-disabled').length, 5, 'Disable all works, 9 nodes with node-disabled class');
+
+		$tree.treeview('enableAll');
+		equal($($tree.selector + ' ul li.node-disabled').length, 0, 'Check all works, 9 nodes non with node-disabled class');
+	});
+
+	test('disableNode / enableNode', function () {
+		var $tree = init({ data: data, levels: 1 });
+		var nodeId = 0;
+		var node = $tree.treeview('getNode', 0);
+
+		// Disable node using node id
+		$tree.treeview('disableNode', nodeId);
+		ok($('.list-group-item:first').hasClass('node-disabled'), 'Disable node (by id) : Node has class node-disabled');
+		ok(($('.node-disabled').length === 1), 'Disable node (by id) : There is only one disabled node');
+
+		// Enable node using node id
+		$tree.treeview('enableNode', nodeId);
+		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Enable node (by id) : Node does not have class node-disabled');
+		ok(($('.node-checked').length === 0), 'Enable node (by id) : There are no disabled nodes');
+
+		// Disable node using node
+		$tree.treeview('disableNode', node);
+		ok($('.list-group-item:first').hasClass('node-disabled'), 'Disable node (by node) : Node has class node-disabled');
+		ok(($('.node-disabled').length === 1), 'Disable node (by node) : There is only one disabled node');
+
+		// Enable node using node
+		$tree.treeview('enableNode', node);
+		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Enable node (by node) : Node does not have class node-disabled');
+		ok(($('.node-checked').length === 0), 'Enable node (by node) : There are no disabled nodes');
+	});
+
+	test('toggleNodeDisabled', function () {
+		var $tree = init({ data: data, levels: 1 });
+		var nodeId = 0;
+		var node = $tree.treeview('getNode', 0);
+
+		// Toggle disabled using node id
+		$tree.treeview('toggleNodeDisabled', nodeId);
+		ok($('.list-group-item:first').hasClass('node-disabled'), 'Toggle node (by id) : Node has class node-disabled');
+		ok(($('.node-disabled').length === 1), 'Toggle node (by id) : There is only one disabled node');
+
+		// Toggle disabled using node
+		$tree.treeview('toggleNodeDisabled', node);
+		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Toggle node (by node) : Node does not have class node-disabled');
+		ok(($('.node-disabled').length === 0), 'Toggle node (by node) : There are no disabled nodes');
 	});
 
 	test('checkAll / uncheckAll', function () {
