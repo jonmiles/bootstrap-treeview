@@ -30,3 +30,8 @@
 	width: 12px;
 	margin-right: 5px;
 }
+
+.treeview .node-disabled {
+	color: silver;
+	cursor: not-allowed;
+}

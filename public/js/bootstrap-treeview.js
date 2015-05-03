@@ -62,6 +62,8 @@
 		// Event handlers
 		onNodeChecked: undefined,
 		onNodeCollapsed: undefined,
+		onNodeDisabled: undefined,
+		onNodeEnabled: undefined,
 		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
 		onNodeUnchecked: undefined,
@@ -108,6 +110,8 @@
 			getCollapsed: $.proxy(this.getCollapsed, this),
 			getChecked: $.proxy(this.getChecked, this),
 			getUnchecked: $.proxy(this.getUnchecked, this),
+			getDisabled: $.proxy(this.getDisabled, this),
+			getEnabled: $.proxy(this.getEnabled, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -128,6 +132,13 @@
 			uncheckAll: $.proxy(this.uncheckAll, this),
 			uncheckNode: $.proxy(this.uncheckNode, this),
 			toggleNodeChecked: $.proxy(this.toggleNodeChecked, this),
+
+			// Disable / enable methods
+			disableAll: $.proxy(this.disableAll, this),
+			disableNode: $.proxy(this.disableNode, this),
+			enableAll: $.proxy(this.enableAll, this),
+			enableNode: $.proxy(this.enableNode, this),
+			toggleNodeDisabled: $.proxy(this.toggleNodeDisabled, this),
 
 			// Search methods
 			search: $.proxy(this.search, this),
@@ -180,6 +191,8 @@
 		this.$element.off('click');
 		this.$element.off('nodeChecked');
 		this.$element.off('nodeCollapsed');
+		this.$element.off('nodeDisabled');
+		this.$element.off('nodeEnabled');
 		this.$element.off('nodeExpanded');
 		this.$element.off('nodeSelected');
 		this.$element.off('nodeUnchecked');
@@ -200,6 +213,14 @@
 
 		if (typeof (this.options.onNodeCollapsed) === 'function') {
 			this.$element.on('nodeCollapsed', this.options.onNodeCollapsed);
+		}
+
+		if (typeof (this.options.onNodeDisabled) === 'function') {
+			this.$element.on('nodeDisabled', this.options.onNodeDisabled);
+		}
+
+		if (typeof (this.options.onNodeEnabled) === 'function') {
+			this.$element.on('nodeEnabled', this.options.onNodeEnabled);
 		}
 
 		if (typeof (this.options.onNodeExpanded) === 'function') {
@@ -256,10 +277,20 @@
 			// where provided we should preserve states
 			node.state = node.state || {};
 
+			// set checked state; unless set always false
+			if (!node.state.hasOwnProperty('checked')) {
+				node.state.checked = false;
+			}
+
+			// set enabled state; unless set always false
+			if (!node.state.hasOwnProperty('disabled')) {
+				node.state.disabled = false;
+			}
+
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
-
-				if ((level < _this.options.levels) &&
+				if (!node.state.disabled &&
+						(level < _this.options.levels) &&
 						(node.nodes && node.nodes.length > 0)) {
 					node.state.expanded = true;
 				}
@@ -271,11 +302,6 @@
 			// set selected state; unless set always false
 			if (!node.state.hasOwnProperty('selected')) {
 				node.state.selected = false;
-			}
-
-			// set checked state; unless set always false
-			if (!node.state.hasOwnProperty('checked')) {
-				node.state.checked = false;
 			}
 
 			// index nodes in a flattened structure for use later
@@ -293,9 +319,10 @@
 		if (!this.options.enableLinks) event.preventDefault();
 
 		var target = $(event.target);
-		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		var node = this.findNode(target);
-
+		if (!node || node.state.disabled) return;
+		
+		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
 			this.toggleExpandedState(node, _default.options);
@@ -306,7 +333,7 @@
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
-		else if (node) {
+		else {
 			
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
@@ -386,7 +413,7 @@
 			// Continue selecting node
 			node.state.selected = true;
 			if (!options.silent) {
-				this.$element.trigger('nodeSelected', $.extend(true, {}, node) );
+				this.$element.trigger('nodeSelected', $.extend(true, {}, node));
 			}
 		}
 		else {
@@ -394,7 +421,7 @@
 			// Unselect node
 			node.state.selected = false;
 			if (!options.silent) {
-				this.$element.trigger('nodeUnselected', $.extend(true, {}, node) );
+				this.$element.trigger('nodeUnselected', $.extend(true, {}, node));
 			}
 		}
 	};
@@ -402,7 +429,7 @@
 	Tree.prototype.toggleCheckedState = function (node, options) {
 		if (!node) return;
 		this.setCheckedState(node, !node.state.checked, options);
-	}
+	};
 
 	Tree.prototype.setCheckedState = function (node, state, options) {
 
@@ -414,7 +441,7 @@
 			node.state.checked = true;
 
 			if (!options.silent) {
-				this.$element.trigger('nodeChecked', $.extend(true, {}, node) );
+				this.$element.trigger('nodeChecked', $.extend(true, {}, node));
 			}
 		}
 		else {
@@ -422,7 +449,35 @@
 			// Uncheck node
 			node.state.checked = false;
 			if (!options.silent) {
-				this.$element.trigger('nodeUnchecked', $.extend(true, {}, node) );
+				this.$element.trigger('nodeUnchecked', $.extend(true, {}, node));
+			}
+		}
+	};
+
+	Tree.prototype.setDisabledState = function (node, state, options) {
+
+		if (state === node.state.disabled) return;
+
+		if (state) {
+
+			// Disable node
+			node.state.disabled = true;
+
+			// Disable all other states
+			this.setExpandedState(node, false, options);
+			this.setSelectedState(node, false, options);
+			this.setCheckedState(node, false, options);
+
+			if (!options.silent) {
+				this.$element.trigger('nodeDisabled', $.extend(true, {}, node));
+			}
+		}
+		else {
+
+			// Enabled node
+			node.state.disabled = false;
+			if (!options.silent) {
+				this.$element.trigger('nodeEnabled', $.extend(true, {}, node));
 			}
 		}
 	};
@@ -458,8 +513,9 @@
 
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
-				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.state.checked ? 'node-checked' : '')
+				.addClass(node.state.disabled ? 'node-disabled': '')
+				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
@@ -553,7 +609,7 @@
 			_this.$wrapper.append(treeItem);
 
 			// Recursively add child ndoes
-			if (node.nodes && node.state.expanded) {
+			if (node.nodes && node.state.expanded && !node.state.disabled) {
 				return _this.buildTree(node.nodes, level);
 			}
 		});
@@ -563,6 +619,8 @@
 	// 1. selectedNode
 	// 2. node|data assigned color overrides
 	Tree.prototype.buildStyleOverride = function (node) {
+
+		if (node.state.disabled) return '';
 
 		var color = node.color;
 		var backColor = node.backColor;
@@ -576,7 +634,7 @@
 			}
 		}
 
-		if (this.options.highlightSearchResults && node.searchResult) {
+		if (this.options.highlightSearchResults && node.searchResult && !node.state.disabled) {
 			if (this.options.searchResultColor) {
 				color = this.options.searchResultColor;
 			}
@@ -619,8 +677,8 @@
 		style += '}';
 
 		if (this.options.onhoverColor) {
-			style += '.node-' + this.elementId + ':hover{' +
-			'background-color:' + this.options.onhoverColor + ';' +
+			style += '.node-' + this.elementId + ':not(.node-disabled):hover{' +
+				'background-color:' + this.options.onhoverColor + ';' +
 			'}';
 		}
 
@@ -636,7 +694,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
 
 
 	/**
@@ -718,6 +776,22 @@
 	*/
 	Tree.prototype.getUnchecked = function () {
 		return this.findNodes('false', 'g', 'state.checked');
+	};
+
+	/**
+		Returns an array of disabled nodes.
+		@returns {Array} nodes - Disabled nodes
+	*/
+	Tree.prototype.getDisabled = function () {
+		return this.findNodes('true', 'g', 'state.disabled');
+	};
+
+	/**
+		Returns an array of enabled nodes.
+		@returns {Array} nodes - Enabled nodes
+	*/
+	Tree.prototype.getEnabled = function () {
+		return this.findNodes('false', 'g', 'state.disabled');
 	};
 
 
@@ -925,6 +999,72 @@
 	Tree.prototype.toggleNodeChecked = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleCheckedState(node, options);
+		}, this));
+
+		this.render();
+	};
+
+
+	/**
+		Disable all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.disableAll = function (options) {
+		var identifiers = this.findNodes('false', 'g', 'state.disabled');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setDisabledState(node, true, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Disable a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.disableNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setDisabledState(node, true, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Enable all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.enableAll = function (options) {
+		var identifiers = this.findNodes('true', 'g', 'state.disabled');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setDisabledState(node, false, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Enable a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.enableNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setDisabledState(node, false, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Toggles a nodes disabled state; disabling is enabled, enabling if disabled.
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.toggleNodeDisabled = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setDisabledState(node, !node.state.disabled, options);
 		}, this));
 
 		this.render();

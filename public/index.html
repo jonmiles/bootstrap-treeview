@@ -244,6 +244,49 @@
       </div>
       <div class="row">
         <hr>
+        <h2>Disabled Tree</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-disable-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-disable-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" class="checkbox" id="chk-disable-silent" value="false">
+              Silent (No events)
+            </label>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success disable-node" id="btn-disable-node">Disable Node</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger disable-node" id="btn-enable-node">Enable Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary disable-node" id="btn-toggle-disabled">Toggle Node</button>
+          </div>
+          <hr>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success" id="btn-disable-all">Disable All</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger" id="btn-enable-all">Enable All</button>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-disabled" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Events</h2>
+          <div id="disabled-output"></div>
+        </div>
+      </div>
+      <div class="row">
+        <hr>
         <h2>Data</h2>
         <div class="col-sm-4">
           <h2>JSON Data</h2>
@@ -654,6 +697,59 @@
 
         $('#btn-uncheck-all').on('click', function (e) {
           $checkableTree.treeview('uncheckAll', { silent: $('#chk-check-silent').is(':checked') });
+        });
+
+
+
+        var $disabledTree = $('#treeview-disabled').treeview({
+          data: defaultData,
+          onNodeDisabled: function(event, node) {
+            $('#disabled-output').prepend('<p>' + node.text + ' was disabled</p>');
+          },
+          onNodeEnabled: function (event, node) {
+            $('#disabled-output').prepend('<p>' + node.text + ' was enabled</p>');
+          },
+          onNodeCollapsed: function(event, node) {
+            $('#disabled-output').prepend('<p>' + node.text + ' was collapsed</p>');
+          },
+          onNodeUnchecked: function (event, node) {
+            $('#disabled-output').prepend('<p>' + node.text + ' was unchecked</p>');
+          },
+          onNodeUnselected: function (event, node) {
+            $('#disabled-output').prepend('<p>' + node.text + ' was unselected</p>');
+          }
+        });
+
+        var findDisabledNodes = function() {
+          return $disabledTree.treeview('search', [ $('#input-disable-node').val(), { ignoreCase: false, exactMatch: false } ]);
+        };
+        var disabledNodes = findDisabledNodes();
+
+        // Expand/collapse/toggle nodes
+        $('#input-disable-node').on('keyup', function (e) {
+          disabledNodes = findDisabledNodes();
+          $('.disable-node').prop('disabled', !(disabledNodes.length >= 1));
+        });
+
+        $('#btn-disable-node.disable-node').on('click', function (e) {
+          $disabledTree.treeview('disableNode', [ disabledNodes, { silent: $('#chk-disable-silent').is(':checked') }]);
+        });
+
+        $('#btn-enable-node.disable-node').on('click', function (e) {
+          $disabledTree.treeview('enableNode', [ disabledNodes, { silent: $('#chk-disable-silent').is(':checked') }]);
+        });
+
+        $('#btn-toggle-disabled.disable-node').on('click', function (e) {
+          $disabledTree.treeview('toggleNodeDisabled', [ disabledNodes, { silent: $('#chk-disable-silent').is(':checked') }]);
+        });
+
+        // Expand/collapse all
+        $('#btn-disable-all').on('click', function (e) {
+          $disabledTree.treeview('disableAll', { silent: $('#chk-disable-silent').is(':checked') });
+        });
+
+        $('#btn-enable-all').on('click', function (e) {
+          $disabledTree.treeview('enableAll', { silent: $('#chk-disable-silent').is(':checked') });
         });
 
 
