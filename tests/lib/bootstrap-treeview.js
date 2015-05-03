@@ -724,14 +724,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.selectNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.setSelectedState(this.identifyNode(identifier), true, options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setSelectedState(node, true, options);
 		}, this));
 
 		this.render();
@@ -743,14 +737,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.unselectNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.setSelectedState(this.identifyNode(identifier), false, options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setSelectedState(node, false, options);
 		}, this));
 
 		this.render();
@@ -762,14 +750,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeSelected = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.toggleSelectedState(this.identifyNode(identifier), options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.toggleSelectedState(node, options);
 		}, this));
 	};
 
@@ -779,9 +761,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseAll = function (options) {
-		options = $.extend({}, _default.options, options);
-
-		$.each(this.findNodes('true', 'g', 'state.expanded'), $.proxy(function (index, node) {
+		var identifiers = this.findNodes('true', 'g', 'state.expanded');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setExpandedState(node, false, options);
 		}, this));
 
@@ -794,14 +775,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.setExpandedState(this.identifyNode(identifier), false, options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setExpandedState(node, false, options);
 		}, this));
 
 		this.render();
@@ -818,7 +793,8 @@
 			this.expandLevels(this.tree, options.levels, options);
 		}
 		else {
-			$.each(this.nodes, $.proxy(function (index, node) {
+			var identifiers = this.findNodes('false', 'g', 'state.expanded');
+			this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 				this.setExpandedState(node, true, options);
 			}, this));
 		}
@@ -832,14 +808,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			var node = this.identifyNode(identifier);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setExpandedState(node, true, options);
 			if (node.nodes && (options && options.levels)) {
 				this.expandLevels(node.nodes, options.levels-1, options);
@@ -866,14 +835,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.revealNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			var parentNode = this.getParent(identifier);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			var parentNode = this.getParent(node);
 			while (parentNode) {
 				this.setExpandedState(parentNode, true, options);
 				parentNode = this.getParent(parentNode);
@@ -889,14 +852,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeExpanded = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.toggleExpandedState(this.identifyNode(identifier), options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.toggleExpandedState(node, options);
 		}, this));
 	};
 
@@ -906,9 +863,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkAll = function (options) {
-		options = $.extend({}, _default.options, options);
-
-		$.each(this.findNodes('false', 'g', 'state.checked'), $.proxy(function (index, node) {
+		var identifiers = this.findNodes('false', 'g', 'state.checked');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setCheckedState(node, true, options);
 		}, this));
 
@@ -921,14 +877,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.setCheckedState(this.identifyNode(identifier), true, options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setCheckedState(node, true, options);
 		}, this));
 
 		this.render();
@@ -939,9 +889,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckAll = function (options) {
-		options = $.extend({}, _default.options, options);
-
-		$.each(this.findNodes('true', 'g', 'state.checked'), $.proxy(function (index, node) {
+		var identifiers = this.findNodes('true', 'g', 'state.checked');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setCheckedState(node, false, options);
 		}, this));
 
@@ -954,14 +903,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
-
-		if (!(identifiers instanceof Array)) {
-			identifiers = [identifiers];
-		}
-
-		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.setCheckedState(this.identifyNode(identifier), false, options);
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setCheckedState(node, false, options);
 		}, this));
 
 		this.render();
@@ -973,6 +916,17 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeChecked = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.toggleCheckedState(node, options);
+		}, this));
+	};
+
+
+	/**
+		Common code for processing multiple identifiers
+	*/
+	Tree.prototype.forEachIdentifier = function (identifiers, options, callback) {
+
 		options = $.extend({}, _default.options, options);
 
 		if (!(identifiers instanceof Array)) {
@@ -980,10 +934,9 @@
 		}
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
-			this.toggleCheckedState(this.identifyNode(identifier), options);
-		}, this));
+			callback(this.identifyNode(identifier), options);
+		}, this));	
 	};
-
 
 	/*
 		Identifies a node from either a node id or object
@@ -993,7 +946,6 @@
 						this.nodes[identifier] :
 						identifier;
 	};
-
 
 	/**
 		Searches the tree for nodes (text) that match given criteria
