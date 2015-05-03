@@ -113,6 +113,18 @@
             <label for="input-select-node" class="sr-only">Search Tree:</label>
             <input type="input" class="form-control" id="input-select-node" placeholder="Identify node..." value="Parent 1">
           </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" class="checkbox" id="chk-select-multi" value="false">
+              Multi Select
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" class="checkbox" id="chk-select-silent" value="false">
+              Silent (No events)
+            </label>
+          </div>
           <div class="form-group">
               <button type="button" class="btn btn-success select-node" id="btn-select-node">Select Node</button>
           </div>
@@ -140,6 +152,12 @@
           <div class="form-group">
             <label for="input-expand-node" class="sr-only">Search Tree:</label>
             <input type="input" class="form-control" id="input-expand-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" class="checkbox" id="chk-expand-silent" value="false">
+              Silent (No events)
+            </label>
           </div>
           <div class="form-group row">
             <div class="col-sm-6">
@@ -179,6 +197,49 @@
         <div class="col-sm-4">
           <h2>Events</h2>
           <div id="expandible-output"></div>
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Checkable Tree</h2>
+        <div class="col-sm-4">
+          <h2>Input</h2>
+          <div class="form-group">
+            <label for="input-check-node" class="sr-only">Search Tree:</label>
+            <input type="input" class="form-control" id="input-check-node" placeholder="Identify node..." value="Parent 1">
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" class="checkbox" id="chk-check-silent" value="false">
+              Silent (No events)
+            </label>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success check-node" id="btn-check-node">Check Node</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger check-node" id="btn-uncheck-node">Uncheck Node</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary check-node" id="btn-toggle-checked">Toggle Node</button>
+          </div>
+          <hr>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success" id="btn-check-all">Check All</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger" id="btn-uncheck-all">Uncheck All</button>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-checkable" class=""></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Events</h2>
+          <div id="checkable-output"></div>
         </div>
       </div>
       <div class="row">
@@ -460,38 +521,47 @@
         });
 
 
-
-        var $selectableTree = $('#treeview-selectable').treeview({
-          data: defaultData,
-          onNodeSelected: function(event, node) {
-            $('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
-          },
-          onNodeUnselected: function (event, node) {
-            $('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
-          }
-        });
-
-        var findSelectableNode = function() {
-          return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        var initSelectableTree = function() {
+          return $('#treeview-selectable').treeview({
+            data: defaultData,
+            multiSelect: $('#chk-select-multi').is(':checked'),
+            onNodeSelected: function(event, node) {
+              $('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
+            },
+            onNodeUnselected: function (event, node) {
+              $('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
+            }
+          });
         };
-        var selectableNode = findSelectableNode();
+        var $selectableTree = initSelectableTree();
+
+        var findSelectableNodes = function() {
+          return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
+        };
+        var selectableNodes = findSelectableNodes();
+
+        $('#chk-select-multi:checkbox').on('change', function () {
+          console.log('multi-select change');
+          $selectableTree = initSelectableTree();
+          selectableNodes = findSelectableNodes();          
+        });
 
         // Select/unselect/toggle nodes
         $('#input-select-node').on('keyup', function (e) {
-          selectableNode = findSelectableNode();
-          $('.select-node').prop('disabled', !(selectableNode.length === 1));
+          selectableNodes = findSelectableNodes();
+          $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
         });
 
         $('#btn-select-node.select-node').on('click', function (e) {
-          $selectableTree.treeview('selectNode', selectableNode[0]);
+          $selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
         });
 
         $('#btn-unselect-node.select-node').on('click', function (e) {
-          $selectableTree.treeview('unselectNode', selectableNode[0]);
+          $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
         });
 
         $('#btn-toggle-selected.select-node').on('click', function (e) {
-          $selectableTree.treeview('toggleNodeSelected', selectableNode[0]);
+          $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
         });
 
 
@@ -506,38 +576,84 @@
           }
         });
 
-        var findExpandibleNode = function() {
-          return $expandibleTree.treeview('search', [ $('#input-expand-node').val(), { ignoreCase: false, exactMatch: true } ]);
+        var findExpandibleNodess = function() {
+          return $expandibleTree.treeview('search', [ $('#input-expand-node').val(), { ignoreCase: false, exactMatch: false } ]);
         };
-        var expandibleNode = findExpandibleNode();
+        var expandibleNodes = findExpandibleNodess();
 
         // Expand/collapse/toggle nodes
         $('#input-expand-node').on('keyup', function (e) {
-          expandibleNode = findExpandibleNode();
-          $('.expand-node').prop('disabled', !(expandibleNode.length === 1));
+          expandibleNodes = findExpandibleNodess();
+          $('.expand-node').prop('disabled', !(expandibleNodes.length >= 1));
         });
 
         $('#btn-expand-node.expand-node').on('click', function (e) {
           var levels = $('#select-expand-node-levels').val();
-          $expandibleTree.treeview('expandNode', [ expandibleNode[0], { levels: levels } ]);
+          $expandibleTree.treeview('expandNode', [ expandibleNodes, { levels: levels, silent: $('#chk-expand-silent').is(':checked') }]);
         });
 
         $('#btn-collapse-node.expand-node').on('click', function (e) {
-          $expandibleTree.treeview('collapseNode', expandibleNode[0]);
+          $expandibleTree.treeview('collapseNode', [ expandibleNodes, { silent: $('#chk-expand-silent').is(':checked') }]);
         });
 
         $('#btn-toggle-expanded.expand-node').on('click', function (e) {
-          $expandibleTree.treeview('toggleNodeExpanded', expandibleNode[0]);
+          $expandibleTree.treeview('toggleNodeExpanded', [ expandibleNodes, { silent: $('#chk-expand-silent').is(':checked') }]);
         });
 
         // Expand/collapse all
         $('#btn-expand-all').on('click', function (e) {
           var levels = $('#select-expand-all-levels').val();
-          $expandibleTree.treeview('expandAll', { levels: levels });
+          $expandibleTree.treeview('expandAll', { levels: levels, silent: $('#chk-expand-silent').is(':checked') });
         });
 
         $('#btn-collapse-all').on('click', function (e) {
-          $expandibleTree.treeview('collapseAll');
+          $expandibleTree.treeview('collapseAll', { silent: $('#chk-expand-silent').is(':checked') });
+        });
+
+
+
+        var $checkableTree = $('#treeview-checkable').treeview({
+          data: defaultData,
+          showIcon: false,
+          showCheckbox: true,
+          onNodeChecked: function(event, node) {
+            $('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
+          },
+          onNodeUnchecked: function (event, node) {
+            $('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
+          }
+        });
+
+        var findCheckableNodess = function() {
+          return $checkableTree.treeview('search', [ $('#input-check-node').val(), { ignoreCase: false, exactMatch: false } ]);
+        };
+        var checkableNodes = findCheckableNodess();
+
+        // Check/uncheck/toggle nodes
+        $('#input-check-node').on('keyup', function (e) {
+          checkableNodes = findCheckableNodess();
+          $('.check-node').prop('disabled', !(checkableNodes.length >= 1));
+        });
+
+        $('#btn-check-node.check-node').on('click', function (e) {
+          $checkableTree.treeview('checkNode', [ checkableNodes, { silent: $('#chk-check-silent').is(':checked') }]);
+        });
+
+        $('#btn-uncheck-node.check-node').on('click', function (e) {
+          $checkableTree.treeview('uncheckNode', [ checkableNodes, { silent: $('#chk-check-silent').is(':checked') }]);
+        });
+
+        $('#btn-toggle-checked.check-node').on('click', function (e) {
+          $checkableTree.treeview('toggleNodeChecked', [ checkableNodes, { silent: $('#chk-check-silent').is(':checked') }]);
+        });
+
+        // Check/uncheck all
+        $('#btn-check-all').on('click', function (e) {
+          $checkableTree.treeview('checkAll', { silent: $('#chk-check-silent').is(':checked') });
+        });
+
+        $('#btn-uncheck-all').on('click', function (e) {
+          $checkableTree.treeview('uncheckAll', { silent: $('#chk-check-silent').is(':checked') });
         });
 
 

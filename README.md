@@ -131,8 +131,9 @@ If you want to do more, here's the full node specification
   href: "#node-1",
   selectable: true,
   state: {
-  	expanded: true,
-  	selected: true
+    checked: true,
+    expanded: true,
+    selected: true
   },
   tags: ['available'],
   nodes: [
@@ -187,8 +188,12 @@ Whether or not a node is selectable in the tree. False indicates the node should
 
 #### state
 `Object` `Optional`
-
 Describes a node's initial state.
+
+#### state.checked
+`Boolean` `Default: false`
+
+Whether or not a node is checked, represented by a checkbox style glyphicon.
 
 #### state.expanded
 `Boolean` `Default: false`
@@ -246,6 +251,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the border color for the component; set showBorder to false if you don't want a visible border.
 
+#### checkedIcon
+String, class names(s).  Default: "glyphicon glyphicon-check" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be as a checked checkbox, used in conjunction with showCheckbox.
+
 #### collapseIcon
 String, class name(s).  Default: "glyphicon glyphicon-minus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
@@ -296,15 +306,15 @@ String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Boots
 
 Sets the default icon to be used on all nodes, except when overridden on a per node basis in data.
 
-#### selectedIcon
-String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
-
-Sets the default icon to be used on all selected nodes, except when overridden on a per node basis in data.
-
 #### onhoverColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
 
 Sets the default background color activated when the users cursor hovers over a node.
+
+#### selectedIcon
+String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the default icon to be used on all selected nodes, except when overridden on a per node basis in data.
 
 #### searchResultBackColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: undefined, inherits.
@@ -331,11 +341,25 @@ Boolean.  Default: true
 
 Whether or not to display a border around nodes.
 
+#### showCheckbox
+Boolean.  Default: false
+
+Whether or not to display checkboxes on nodes.
+
+#### showIcon
+Boolean.  Default: true
+
+Whether or not to display a nodes icon.
+
 #### showTags
 Boolean.  Default: false
 
 Whether or not to display tags to the right of each node.  The values of which must be provided in the data structure on a per node basis.
 
+#### uncheckedIcon
+String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be as an unchecked checkbox, used in conjunction with showCheckbox.
 
 
 ## Methods
@@ -372,6 +396,26 @@ $('#tree').data('treeview')
 ### List of Methods
 
 The following is a list of all available methods.
+
+#### checkAll(options)
+
+Checks all tree nodes
+
+```javascript
+$('#tree').treeview('checkAll', { silent: true });
+```
+
+Triggers `nodeChecked` event; pass silent to suppress events.
+
+#### checkNode(node | nodeId, options)
+
+Checks a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('checkNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeChecked` event; pass silent to suppress events.
 
 #### clearSearch()
 
@@ -523,6 +567,16 @@ $('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
 
 Triggers `nodeSelected` event; pass silent to suppress events.
 
+#### toggleNodeChecked(node | nodeId, options)
+
+Toggles a nodes checked state; checking if unchecked, unchecking if checked.
+
+```javascript
+$('#tree').treeview('toggleNodeChecked', [ nodeId, { silent: true } ]);
+```
+
+Triggers either `nodeChecked` or `nodeUnchecked` event; pass silent to suppress events.
+
 #### toggleNodeExpanded(node | nodeId, options)
 
 Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
@@ -542,6 +596,26 @@ $('#tree').treeview('toggleNodeSelected', [ nodeId, { silent: true } ]);
 ```
 
 Triggers either `nodeSelected` or `nodeUnselected` event; pass silent to suppress events.
+
+#### uncheckAll(options)
+
+Uncheck all tree nodes.
+
+```javascript
+$('#tree').treeview('uncheckAll', { silent: true });
+```
+
+Triggers `nodeUnchecked` event; pass silent to suppress events.
+
+#### uncheckNode(node | nodeId, options)
+
+Uncheck a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('uncheckNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeUnchecked` event; pass silent to suppress events.
 
 #### unselectNode(node | nodeId, options)
 
@@ -581,11 +655,15 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
+`nodeChecked (event, node)`  - A node is checked.
+
 `nodeCollapsed (event, node)`  - A node is collapsed.
 
 `nodeExpanded (event, node)` - A node is expanded.
 
 `nodeSelected (event, node)`  - A node is selected.
+
+`nodeUnchecked (event, node)`  - A node is unchecked.
 
 `nodeUnselected (event, node)`  - A node is unselected.  
 
