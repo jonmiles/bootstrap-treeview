@@ -731,9 +731,9 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 `nodeCollapsed (event, node)`  - A node is collapsed.
 
-'nodeDisabled (event, node)'  - A node is disabled.
+`nodeDisabled (event, node)`  - A node is disabled.
 
-'nodeEnabled (event, node)'  - A node is enabled.
+`nodeEnabled (event, node)`  - A node is enabled.
 
 `nodeExpanded (event, node)` - A node is expanded.
 
