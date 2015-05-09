@@ -1105,7 +1105,7 @@
 	Tree.prototype.search = function (pattern, options) {
 		options = $.extend({}, _default.searchOptions, options);
 
-		this.clearSearch();
+		this.clearSearch({ render: false });
 
 		var results = [];
 		if (pattern && pattern.length > 0) {
@@ -1127,15 +1127,15 @@
 			$.each(results, function (index, node) {
 				node.searchResult = true;
 			})
+		}
 
-			// If revealResults, then render is triggered from revealNode
-			// otherwise we just call render.
-			if (options.revealResults) {
-				this.revealNode(results);
-			}
-			else {
-				this.render();
-			}
+		// If revealResults, then render is triggered from revealNode
+		// otherwise we just call render.
+		if (options.revealResults) {
+			this.revealNode(results);
+		}
+		else {
+			this.render();
 		}
 
 		this.$element.trigger('searchComplete', $.extend(true, {}, results));
@@ -1146,14 +1146,19 @@
 	/**
 		Clears previous search results
 	*/
-	Tree.prototype.clearSearch = function () {
+	Tree.prototype.clearSearch = function (options) {
+
+		options = $.extend({}, { render: true }, options);
 
 		var results = $.each(this.findNodes('true', 'g', 'searchResult'), function (index, node) {
 			node.searchResult = false;
 		});
 
-		this.render();
-
+		// TEMP FIX UNTIL #50 + #76
+		if (options.render) {
+			this.render();	
+		}
+		
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
