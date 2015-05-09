@@ -34,7 +34,7 @@ or using npm:
 $ npm install bootstrap-treeview
 ```
 
-or [download](https://github.com/jonmiles/bootstrap-treeview/releases/tag/v1.1.0) manually.
+or [download](https://github.com/jonmiles/bootstrap-treeview/releases/tag/v1.2.0) manually.
 
 
 
@@ -125,13 +125,16 @@ If you want to do more, here's the full node specification
 {
   text: "Node 1",
   icon: "glyphicon glyphicon-stop",
+  selectedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
   backColor: "#FFFFFF",
   href: "#node-1",
   selectable: true,
   state: {
-  	expanded: true,
-  	selected: true
+    checked: true,
+    disabled: true,
+    expanded: true,
+    selected: true
   },
   tags: ['available'],
   nodes: [
@@ -159,6 +162,11 @@ For simplicity we directly leverage [Bootstraps Glyphicons support](http://getbo
 
 By providing the base class you retain full control over the icons used.  If you want to use your own then just add your class to this icon field.
 
+#### selectedIcon
+`String` `Optional`
+
+The icon displayed on a given node when selected, typically to the left of the text.
+
 #### color
 `String` `Optional`
 
@@ -181,8 +189,17 @@ Whether or not a node is selectable in the tree. False indicates the node should
 
 #### state
 `Object` `Optional`
-
 Describes a node's initial state.
+
+#### state.checked
+`Boolean` `Default: false`
+
+Whether or not a node is checked, represented by a checkbox style glyphicon.
+
+#### state.disabled
+`Boolean` `Default: false`
+
+Whether or not a node is disabled (not selectable, expandable or checkable).
 
 #### state.expanded
 `Boolean` `Default: false`
@@ -240,6 +257,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the border color for the component; set showBorder to false if you don't want a visible border.
 
+#### checkedIcon
+String, class names(s).  Default: "glyphicon glyphicon-check" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be as a checked checkbox, used in conjunction with showCheckbox.
+
 #### collapseIcon
 String, class name(s).  Default: "glyphicon glyphicon-minus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
@@ -295,6 +317,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the default background color activated when the users cursor hovers over a node.
 
+#### selectedIcon
+String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the default icon to be used on all selected nodes, except when overridden on a per node basis in data.
+
 #### searchResultBackColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: undefined, inherits.
 
@@ -320,11 +347,25 @@ Boolean.  Default: true
 
 Whether or not to display a border around nodes.
 
+#### showCheckbox
+Boolean.  Default: false
+
+Whether or not to display checkboxes on nodes.
+
+#### showIcon
+Boolean.  Default: true
+
+Whether or not to display a nodes icon.
+
 #### showTags
 Boolean.  Default: false
 
 Whether or not to display tags to the right of each node.  The values of which must be provided in the data structure on a per node basis.
 
+#### uncheckedIcon
+String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be as an unchecked checkbox, used in conjunction with showCheckbox.
 
 
 ## Methods
@@ -362,6 +403,26 @@ $('#tree').data('treeview')
 
 The following is a list of all available methods.
 
+#### checkAll(options)
+
+Checks all tree nodes
+
+```javascript
+$('#tree').treeview('checkAll', { silent: true });
+```
+
+Triggers `nodeChecked` event; pass silent to suppress events.
+
+#### checkNode(node | nodeId, options)
+
+Checks a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('checkNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeChecked` event; pass silent to suppress events.
+
 #### clearSearch()
 
 Clear the tree view of any previous search results e.g. remove their highlighted state.
@@ -384,13 +445,53 @@ Triggers `nodeCollapsed` event; pass silent to suppress events.
 
 #### collapseNode(node | nodeId, options)
 
-Collapse a given tree node, accepts node or nodeId
+Collapse a given tree node and it's child nodes.  If you don't want to collapse the child nodes, pass option `{ ignoreChildren: true }`.
 
 ```javascript
-$('#tree').treeview('collapseNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('collapseNode', [ nodeId, { silent: true, ignoreChildren: false } ]);
 ```
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
+
+#### disableAll(options)
+
+Disable all tree nodes
+
+```javascript
+$('#tree').treeview('disableAll', { silent: true });
+```
+
+Triggers `nodeDisabled` event; pass silent to suppress events.
+
+#### disableNode(node | nodeId, options)
+
+Disable a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('disableNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeDisabled` event; pass silent to suppress events.
+
+#### enableAll(options)
+
+Enable all tree nodes
+
+```javascript
+$('#tree').treeview('enableAll', { silent: true });
+```
+
+Triggers `nodeEnabled` event; pass silent to suppress events.
+
+#### enableNode(node | nodeId, options)
+
+Enable a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('enableNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeEnabled` event; pass silent to suppress events.
 
 #### expandAll(options)
 
@@ -412,6 +513,38 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### getCollapsed()
+
+Returns an array of collapsed nodes e.g. state.expanded = false.
+
+```javascript
+$('#tree').treeview('getCollapsed', nodeId);
+```
+
+#### getDisabled()
+
+Returns an array of disabled nodes e.g. state.disabled = true.
+
+```javascript
+$('#tree').treeview('getDisabled', nodeId);
+```
+
+#### getEnabled()
+
+Returns an array of enabled nodes e.g. state.disabled = false.
+
+```javascript
+$('#tree').treeview('getEnabled', nodeId);
+```
+
+#### getExpanded()
+
+Returns an array of expanded nodes e.g. state.expanded = true.
+
+```javascript
+$('#tree').treeview('getExpanded', nodeId);
+```
+
 #### getNode(nodeId)
 
 Returns a single node object that matches the given node id.
@@ -428,12 +561,28 @@ Returns the parent node of a given node, if valid otherwise returns undefined.
 $('#tree').treeview('getParent', node);
 ```
 
+#### getSelected()
+
+Returns an array of selected nodes e.g. state.selected = true.
+
+```javascript
+$('#tree').treeview('getSelected', nodeId);
+```
+
 #### getSiblings(node | nodeId)
 
 Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
 
 ```javascript
 $('#tree').treeview('getSiblings', node);
+```
+
+#### getUnselected()
+
+Returns an array of unselected nodes e.g. state.selected = false.
+
+```javascript
+$('#tree').treeview('getUnselected', nodeId);
 ```
 
 #### remove()
@@ -444,6 +593,16 @@ Removes the tree view component. Removing attached events, internal attached obj
 $('#tree').treeview('remove');
 ```
 
+#### revealNode(node | nodeId, options)
+
+Reveals a given tree node, expanding the tree from node to root.
+
+```javascript
+$('#tree').treeview('revealNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeExpanded` event; pass silent to suppress events.
+
 #### search(pattern, options)
 
 Searches the tree view for nodes that match a given string, highlighting them in the tree.  
@@ -452,8 +611,9 @@ Returns an array of matching nodes.
 
 ```javascript
 $('#tree').treeview('search', [ 'Parent', {
-  ignoreCase: true,
-  exactMatch: false
+  ignoreCase: true,     // case insensitive
+  exactMatch: false,    // like or equals
+  revealResults: true,  // reveal matching nodes
 }]);
 ```
 
@@ -468,6 +628,26 @@ $('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
 ```
 
 Triggers `nodeSelected` event; pass silent to suppress events.
+
+#### toggleNodeChecked(node | nodeId, options)
+
+Toggles a nodes checked state; checking if unchecked, unchecking if checked.
+
+```javascript
+$('#tree').treeview('toggleNodeChecked', [ nodeId, { silent: true } ]);
+```
+
+Triggers either `nodeChecked` or `nodeUnchecked` event; pass silent to suppress events.
+
+#### toggleNodeDisabled(node | nodeId, options)
+
+Toggles a nodes disabled state; disabling if enabled, enabling if disabled.
+
+```javascript
+$('#tree').treeview('toggleNodeDisabled', [ nodeId, { silent: true } ]);
+```
+
+Triggers either `nodeDisabled` or `nodeEnabled` event; pass silent to suppress events.
 
 #### toggleNodeExpanded(node | nodeId, options)
 
@@ -488,6 +668,26 @@ $('#tree').treeview('toggleNodeSelected', [ nodeId, { silent: true } ]);
 ```
 
 Triggers either `nodeSelected` or `nodeUnselected` event; pass silent to suppress events.
+
+#### uncheckAll(options)
+
+Uncheck all tree nodes.
+
+```javascript
+$('#tree').treeview('uncheckAll', { silent: true });
+```
+
+Triggers `nodeUnchecked` event; pass silent to suppress events.
+
+#### uncheckNode(node | nodeId, options)
+
+Uncheck a given tree node, accepts node or nodeId.
+
+```javascript
+$('#tree').treeview('uncheckNode', [ nodeId, { silent: true } ]);
+```
+
+Triggers `nodeUnchecked` event; pass silent to suppress events.
 
 #### unselectNode(node | nodeId, options)
 
@@ -527,11 +727,19 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
+`nodeChecked (event, node)`  - A node is checked.
+
 `nodeCollapsed (event, node)`  - A node is collapsed.
+
+`nodeDisabled (event, node)`  - A node is disabled.
+
+`nodeEnabled (event, node)`  - A node is enabled.
 
 `nodeExpanded (event, node)` - A node is expanded.
 
 `nodeSelected (event, node)`  - A node is selected.
+
+`nodeUnchecked (event, node)`  - A node is unchecked.
 
 `nodeUnselected (event, node)`  - A node is unselected.  
 
