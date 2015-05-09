@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## v1.2.0 - [Unreleased]
+## v1.2.0 - 9th May, 2015
 
 ### New Features
 
@@ -32,17 +32,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - New method `revealNode` which expands the tree view to reveal a given node
 
-- New methods to retrieve nodes by state : `getSelected`, `getUnselected`, `getExpanded`, `getCollapsed`, `getChecked`, `getUnchecked`, `getDisabled` and `getEnabled`. 
+- New methods to retrieve nodes by state : `getSelected`, `getUnselected`, `getExpanded`, `getCollapsed`, `getChecked`, `getUnchecked`, `getDisabled` and `getEnabled`
+
 
 ### Changes
-- Search behaviour, by default search will the expand tree view and reveal results.  Alternatively pass `{revealResults:false}`.
+- Removed nodeIcon by default, by popular demand.  Use `{nodeIcon: 'glyphicon glyphicon-stop'}` in initial options to add a node icon.
+
+- Search behaviour, by default search will the expand tree view and reveal results.  Alternatively pass `{revealResults:false}`
 
 - Method collapseNode accepts new option `{ ignoreChildren: true | false }`.  The default is false, passing true will leave child nodes uncollapsed
 
+
 ### Bug Fixes
+- Remove unnecessary render in clearSearch when called from search
+
 - Child nodes should collapse by default on collapseNode
 
 - Incorrect expand collapse icon displayed when nodes array is empty
+
+
 
 
 ## v1.1.0 - 29th March, 2015 
@@ -68,6 +76,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Adding events `searchComplete` and `searchCleared`
 
 - New global options `highlightSearchResults`, `searchResultColor` and `searchResultBackColor` for configuring how search results are displayed
+
+
 
 
 ## v1.0.2 - 6th February, 2015
