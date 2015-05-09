@@ -91,8 +91,8 @@
 		equal(options.expandIcon, 'glyphicon glyphicon-plus', 'expandIcon default ok');
 		equal(options.collapseIcon, 'glyphicon glyphicon-minus', 'collapseIcon default ok');
 		equal(options.emptyIcon, 'glyphicon', 'emptyIcon default ok');
-		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon default ok');
-		equal(options.selectedIcon, 'glyphicon glyphicon-stop', 'selectedIcon default ok');
+		equal(options.nodeIcon, '', 'nodeIcon default ok');
+		equal(options.selectedIcon, '', 'selectedIcon default ok');
 		equal(options.checkedIcon, 'glyphicon glyphicon-check', 'checkedIcon default ok');
 		equal(options.uncheckedIcon, 'glyphicon glyphicon-unchecked', 'uncheckedIcon default ok');
 		equal(options.color, undefined, 'color default ok');
@@ -128,7 +128,7 @@
 			expandIcon: 'glyphicon glyphicon-expand',
 			collapseIcon: 'glyphicon glyphicon-collapse',
 			emptyIcon: 'glyphicon',
-			nodeIcon: 'glyphicon glyphicon-node',
+			nodeIcon: 'glyphicon glyphicon-stop',
 			selectedIcon: 'glyphicon glyphicon-selected',
 			checkedIcon: 'glyphicon glyphicon-checked-icon',
 			uncheckedIcon: 'glyphicon glyphicon-unchecked-icon',
@@ -166,7 +166,7 @@
 		equal(options.expandIcon, 'glyphicon glyphicon-expand', 'expandIcon set ok');
 		equal(options.collapseIcon, 'glyphicon glyphicon-collapse', 'collapseIcon set ok');
 		equal(options.emptyIcon, 'glyphicon', 'emptyIcon set ok');
-		equal(options.nodeIcon, 'glyphicon glyphicon-node', 'nodeIcon set ok');
+		equal(options.nodeIcon, 'glyphicon glyphicon-stop', 'nodeIcon set ok');
 		equal(options.selectedIcon, 'glyphicon glyphicon-selected', 'selectedIcon set ok');
 		equal(options.checkedIcon, 'glyphicon glyphicon-checked-icon', 'checkedIcon set ok');
 		equal(options.uncheckedIcon, 'glyphicon glyphicon-unchecked-icon', 'uncheckedIcon set ok');
@@ -280,7 +280,7 @@
 	test('Selecting a node', function () {
 
 		var cbWorked, onWorked = false;
-		init({
+		var $tree = init({
 			data: data,
 			onNodeSelected: function(/*event, date*/) {
 				cbWorked = true;
@@ -289,14 +289,59 @@
 		.on('nodeSelected', function(/*event, date*/) {
 			onWorked = true;
 		});
+		var options = getOptions($tree);
 
-		var el = $('.list-group-item:first');
-		el.trigger('click');
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Node is correctly selected : class "node-selected" added');
+		// Simulate click
+		$('.list-group-item:first').trigger('click');
+
+		// Has class node-selected
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Node is correctly selected : class "node-selected" added');
+		
+		// Only one can be selected
 		ok(($('.node-selected').length === 1), 'There is only one selected node');
+
+		// Has correct icon
+		var iconClass = options.selectedIcon || options.nodeIcon;
+		ok(!iconClass || $('.expand-icon:first').hasClass(iconClass), 'Node icon is correct');
+
+		// Events triggered
 		ok(cbWorked, 'onNodeSelected function was called');
 		ok(onWorked, 'nodeSelected was fired');
+	});
+
+	test('Unselecting a node', function () {
+
+		var cbWorked, onWorked = false;
+		var $tree = init({
+			data: data,
+			onNodeUnselected: function(/*event, date*/) {
+				cbWorked = true;
+			}
+		})
+		.on('nodeUnselected', function(/*event, date*/) {
+			onWorked = true;
+		});
+		var options = getOptions($tree);
+
+		// First select a node
+		$('.list-group-item:first').trigger('click');
+		cbWorked = onWorked = false;
+
+		// Simulate click
+		$('.list-group-item:first').trigger('click');
+
+		// Has class node-selected
+		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Node is correctly unselected : class "node-selected" removed');
+		
+		// Only one can be selected
+		ok(($('.node-selected').length === 0), 'There are no selected nodes');
+
+		// Has correct icon
+		ok(!options.nodeIcon || $('.expand-icon:first').hasClass(options.nodeIcon), 'Node icon is correct');
+		
+		// Events triggered
+		ok(cbWorked, 'onNodeUnselected function was called');
+		ok(onWorked, 'nodeUnselected was fired');
 	});
 
 	test('Selecting multiple nodes (multiSelect true)', function () {
@@ -312,37 +357,9 @@
 		$firstEl = $('.list-group-item:nth-child(1)');
 		$secondEl = $('.list-group-item:nth-child(2)');
 
-		ok(($firstEl.attr('class').split(' ').indexOf('node-selected') !== -1), 'First node is correctly selected : class "node-selected" added');
-		ok(($secondEl.attr('class').split(' ').indexOf('node-selected') !== -1), 'Second node is correctly selected : class "node-selected" added');
+		ok($firstEl.hasClass('node-selected'), 'First node is correctly selected : class "node-selected" added');
+		ok($secondEl.hasClass('node-selected'), 'Second node is correctly selected : class "node-selected" added');
 		ok(($('.node-selected').length === 2), 'There are two selected nodes');
-	});
-
-	test('Unselecting a node', function () {
-
-		var cbWorked, onWorked = false;
-		init({
-			data: data,
-			onNodeUnselected: function(/*event, date*/) {
-				cbWorked = true;
-			}
-		})
-		.on('nodeUnselected', function(/*event, date*/) {
-			onWorked = true;
-		});
-
-		// First select a node
-		var el = $('.list-group-item:first');
-		el.trigger('click');
-
-		// Then test unselect by simulating another click
-		cbWorked = onWorked = false;
-		el = $('.list-group-item:first');
-		el.trigger('click');
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Node is correctly unselected : class "node-selected" removed');
-		ok(($('.node-selected').length === 0), 'There are no selected nodes');
-		ok(cbWorked, 'onNodeUnselected function was called');
-		ok(onWorked, 'nodeUnselected was fired');
 	});
 
 	test('Clicking a non-selectable, collapsed node expands the node', function () {
@@ -651,27 +668,27 @@
 
 		// Check node using node id
 		$tree.treeview('checkNode', nodeId);
-		ok(($('.list-group-item:first').attr('class').split(' ').indexOf('node-checked') !== -1), 'Check node (by id) : Node is checked');
+		ok($('.list-group-item:first').hasClass('node-checked'), 'Check node (by id) : Node has class node-checked');
 		ok(($('.node-checked').length === 1), 'Check node (by id) : There is only one checked node');
-		ok(($('.check-icon:first').attr('class').indexOf(options.checkedIcon) !== -1), 'Check node (by id) : Node icon is correct');
+		ok($('.check-icon:first').hasClass(options.checkedIcon), 'Check node (by id) : Node icon is correct');
 
 		// Uncheck node using node id
 		$tree.treeview('uncheckNode', nodeId);
-		ok(($('.list-group-item:first').attr('class').split(' ').indexOf('node-checked') === -1), 'Uncheck node (by id) : Node is no longer checked');
+		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Uncheck node (by id) : Node does not have class node-checked');
 		ok(($('.node-checked').length === 0), 'Uncheck node (by id) : There are no checked nodes');
-		ok(($('.check-icon:first').attr('class').indexOf(options.uncheckedIcon) !== -1), 'Uncheck node (by id) : Node icon is correct');
+		ok($('.check-icon:first').hasClass(options.uncheckedIcon), 'Uncheck node (by id) : Node icon is correct');
 
 		// Check node using node
 		$tree.treeview('checkNode', node);
-		ok(($('.list-group-item:first').attr('class').split(' ').indexOf('node-checked') !== -1), 'Check node (by node) : Node is checked');
+		ok($('.list-group-item:first').hasClass('node-checked'), 'Check node (by node) : Node has class node-checked');
 		ok(($('.node-checked').length === 1), 'Check node (by node) : There is only one checked node');
-		ok(($('.check-icon:first').attr('class').indexOf(options.checkedIcon) !== -1), 'Check node (by node) : Node icon is correct');
+		ok($('.check-icon:first').hasClass(options.checkedIcon), 'Check node (by node) : Node icon is correct');
 
 		// Uncheck node using node
 		$tree.treeview('uncheckNode', node);
-		ok(($('.list-group-item:first').attr('class').split(' ').indexOf('node-checked') === -1), 'Uncheck node (by node) : Node is no longer checked');
+		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Uncheck node (by node) : Node does not have class node-checked');
 		ok(($('.node-checked').length === 0), 'Uncheck node (by node) : There are no checked nodes');
-		ok(($('.check-icon:first').attr('class').indexOf(options.uncheckedIcon) !== -1), 'Uncheck node (by node) : Node icon is correct');
+		ok($('.check-icon:first').hasClass(options.uncheckedIcon), 'Uncheck node (by node) : Node icon is correct');
 	});
 
 	test('toggleNodeChecked', function () {
@@ -682,68 +699,56 @@
 
 		// Toggle checked using node id
 		$tree.treeview('toggleNodeChecked', nodeId);
-		ok(($('.list-group-item:first').attr('class').split(' ').indexOf('node-checked') !== -1), 'Toggle node (by id) : Node is checked');
+		ok($('.list-group-item:first').hasClass('node-checked'), 'Toggle node (by id) : Node has class node-checked');
 		ok(($('.node-checked').length === 1), 'Toggle node (by id) : There is only one checked node');
-		ok(($('.check-icon:first').attr('class').indexOf(options.checkedIcon) !== -1), 'Check node (by id) : Node icon is correct');
+		ok($('.check-icon:first').hasClass(options.checkedIcon), 'Toggle node (by id) : Node icon is correct');
 
 		// Toggle checked using node
 		$tree.treeview('toggleNodeChecked', node);
-		ok(($('.list-group-item:first').attr('class').split(' ').indexOf('node-checked') === -1), 'Toggle node (by node) : Node is unchecked');
+		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Toggle node (by node) : Node does not have class node-checked');
 		ok(($('.node-checked').length === 0), 'Toggle node (by node) : There are no checked nodes');
-		ok(($('.check-icon:first').attr('class').indexOf(options.uncheckedIcon) !== -1), 'Uncheck node (by id) : Node icon is correct');
+		ok($('.check-icon:first').hasClass(options.uncheckedIcon), 'Toggle node (by node) : Node icon is correct');
 	});
 
 	test('selectNode / unselectNode', function () {
 		var $tree = init({ data: data, selectedIcon: 'glyphicon glyphicon-selected' });
-		var el;
 		var nodeId = 0;
 		var node = $tree.treeview('getNode', 0);
 
 		// Select node using node id
 		$tree.treeview('selectNode', nodeId);
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by id) : Node is selected');
-		ok((el.find('.node-icon').attr('class').indexOf('glyphicon glyphicon-selected') !== -1), 'Select node (by id) : Node icon is correct');
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Select node (by id) : Node has class node-selected');
 		ok(($('.node-selected').length === 1), 'Select node (by id) : There is only one selected node');
 
 		// Unselect node using node id
 		$tree.treeview('unselectNode', nodeId);
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Unselect node (by id) : Node is no longer selected');
-		ok((el.find('.node-icon').attr('class').indexOf('icon node-icon glyphicon glyphicon-stop') !== -1), 'Unselect node (by id) : Node icon is correct');
+		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Unselect node (by id) : Node does not have class node-selected');
 		ok(($('.node-selected').length === 0), 'Unselect node (by id) : There are no selected nodes');
 
 		// Select node using node
 		$tree.treeview('selectNode', node);
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Select node (by node) : Node is selected');
-		ok((el.find('.node-icon').attr('class').indexOf('icon node-icon glyphicon glyphicon-selected') !== -1), 'Select node (by node) : Node icon is correct');
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Select node (by node) : Node has class node-selected');
 		ok(($('.node-selected').length === 1), 'Select node (by node) : There is only one selected node');
 
 		// Unselect node using node id
 		$tree.treeview('unselectNode', node);
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Unselect node (by node) : Node is no longer selected');
-		ok((el.find('.node-icon').attr('class').indexOf('icon node-icon glyphicon glyphicon-stop') !== -1), 'Unselect node (by node) : Node icon is correct');
+		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Unselect node (by node) : Node does not have class node-selected');
 		ok(($('.node-selected').length === 0), 'Unselect node (by node) : There are no selected nodes');
 	});
 
 	test('toggleNodeSelected', function () {
 		var $tree = init({ data: data });
-		var el;
 		var nodeId = 0;
 		var node = $tree.treeview('getNode', 0);
 
 		// Toggle selected using node id
 		$tree.treeview('toggleNodeSelected', nodeId);
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') !== -1), 'Toggle node (by id) : Node is selected');
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Toggle node (by id) : Node has class node-selected');
 		ok(($('.node-selected').length === 1), 'Toggle node (by id) : There is only one selected node');
 
 		// Toggle selected using node
 		$tree.treeview('toggleNodeSelected', node);
-		el = $('.list-group-item:first');
-		ok((el.attr('class').split(' ').indexOf('node-selected') === -1), 'Toggle node (by node) : Node is unselected');
+		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Toggle node (by id) : Node does not have class node-selected');
 		ok(($('.node-selected').length === 0), 'Toggle node (by node) : There are no selected nodes');
 	});
 

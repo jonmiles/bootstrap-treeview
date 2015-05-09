@@ -36,8 +36,8 @@
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
 		emptyIcon: 'glyphicon',
-		nodeIcon: 'glyphicon glyphicon-stop',
-		selectedIcon: 'glyphicon glyphicon-stop',
+		nodeIcon: '',
+		selectedIcon: '',
 		checkedIcon: 'glyphicon glyphicon-check',
 		uncheckedIcon: 'glyphicon glyphicon-unchecked',
 
@@ -550,11 +550,12 @@
 			if (_this.options.showIcon) {
 				
 				var classList = ['node-icon'];
+
+				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
-					classList.push(node.selectedIcon || _this.options.selectedIcon);
-				}
-				else {
-					classList.push(node.icon || _this.options.nodeIcon);
+					classList.pop();
+					classList.push(node.selectedIcon || _this.options.selectedIcon || 
+									node.icon || _this.options.nodeIcon);
 				}
 
 				treeItem
@@ -1154,7 +1155,6 @@
 			node.searchResult = false;
 		});
 
-		// TEMP FIX UNTIL #50 + #76
 		if (options.render) {
 			this.render();	
 		}
