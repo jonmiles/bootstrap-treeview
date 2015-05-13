@@ -714,7 +714,7 @@ $('#tree').treeview({
   // e.g. nodeSelected -> onNodeSelected
   onNodeSelected: function(event, data) {
     // Your logic goes here
-  });
+  }});
 ```
 
 and using jQuery .on method
