@@ -150,6 +150,7 @@
 
 		this.tree = [];
 		this.nodes = [];
+		this.initialized = false;
 
 		if (options.data) {
 			if (typeof options.data === 'string') {
@@ -321,27 +322,34 @@
 		var target = $(event.target);
 		var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
-		
+
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
 			this.toggleExpandedState(node, _default.options);
-			this.render();
+			// this.render();
+			// this._expandNode(node);
+			this._renderNode(node);
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
 			
 			this.toggleCheckedState(node, _default.options);
 			this.render();
+			// TODO this._checkNode();
 		}
 		else {
 			
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
+				this.render();
+				// TODO this._selectNode(node);
 			} else {
 				this.toggleExpandedState(node, _default.options);
+				// this._expandNode(node);
+				this._renderNode(node);
 			}
 
-			this.render();
+			// this.render();
 		}
 	};
 
@@ -386,6 +394,7 @@
 			// Collapse child nodes
 			if (node.nodes && !options.ignoreChildren) {
 				$.each(node.nodes, $.proxy(function (index, node) {
+					console.log('recurse children')
 					this.setExpandedState(node, false, options);
 				}, this));
 			}
@@ -484,136 +493,186 @@
 
 	Tree.prototype.render = function () {
 
+		console.log('RENDER');
+
 		if (!this.initialized) {
 
 			// Setup first time only components
-			this.$element.addClass(pluginName);
-			this.$wrapper = $(this.template.list);
+			this.$wrapper = $(this.template.tree);
+			this.$element.empty()
+				.addClass(pluginName)
+				.append(this.$wrapper);
 
 			this.injectStyle();
 
 			this.initialized = true;
 		}
 
-		this.$element.empty().append(this.$wrapper.empty());
+		if (!this.tree) return;
 
-		// Build tree
-		this.buildTree(this.tree, 0);
+		$.each(this.tree, $.proxy(function addRootNodes(id, node) {
+			node.level = 1;
+			this._renderNode(node);
+		}, this));
 	};
 
-	// Starting from the root node, and recursing down the
-	// structure we build the tree one node at a time
-	Tree.prototype.buildTree = function (nodes, level) {
+	// Creates a new node element from template and
+	// ensures the template is inserted at the correct position
+	Tree.prototype._newNodeEl = function (pEl) {
 
-		if (!nodes) return;
-		level += 1;
+		var $el = $(this.template.node);
+		
+		if (pEl) {
+			console.log('insert');
+			this.$wrapper.children().eq(pEl.index()).after($el);
+		}
+		else {
+			console.log('append');
+			this.$wrapper.append($el);
+		}
 
-		var _this = this;
-		$.each(nodes, function addNodes(id, node) {
+		return $el;
+	};
 
-			var treeItem = $(_this.template.item)
-				.addClass('node-' + _this.elementId)
-				.addClass(node.state.checked ? 'node-checked' : '')
-				.addClass(node.state.disabled ? 'node-disabled': '')
-				.addClass(node.state.selected ? 'node-selected' : '')
-				.addClass(node.searchResult ? 'search-result' : '') 
-				.attr('data-nodeid', node.nodeId)
-				.attr('style', _this.buildStyleOverride(node));
-
-			// Add indent/spacer to mimic tree structure
-			for (var i = 0; i < (level - 1); i++) {
-				treeItem.append(_this.template.indent);
+	Tree.prototype._collapseNode = function (node) {
+		if (!node.nodes) return;
+		console.log('collapseNode - ' + node.text);
+		$.each(node.nodes, $.proxy(function _collapseChildNodes(index, node) {
+			this._collapseNode(node);
+			if (node.$el) {
+				node.$el.remove();
+				node.$el = null;
 			}
+		}, this));
+	};
 
-			// Add expand, collapse or empty spacer icons
-			var classList = [];
-			if (node.nodes) {
-				classList.push('expand-icon');
-				if (node.state.expanded) {
-					classList.push(_this.options.collapseIcon);
-				}
-				else {
-					classList.push(_this.options.expandIcon);
-				}
+	Tree.prototype._expandNode = function (node) {
+		if (!node.nodes) return;
+		console.log('expandNode - ' + node.text);
+		var $pEl = node.$el;
+		$.each(node.nodes, $.proxy(function _addChildNodes(index, childNode) {
+			childNode.level = node.level + 1;
+			this._renderNode(childNode, $pEl);
+			$pEl = childNode.$el;
+		}, this));
+	}
+
+	Tree.prototype._renderNode = function (node, pEl) {
+		console.log('renderNode - ' + node.text);
+		if (!node) return;
+
+		// console.log(node);
+		if (!node.$el) {
+			node.$el = this._newNodeEl(pEl);
+		}
+		else {
+			// TODO Don't blanket empty, eval each action 
+			node.$el.empty();
+		}
+
+		node.$el
+			.addClass('node-' + this.elementId)
+			.addClass(node.state.checked ? 'node-checked' : '')
+			.addClass(node.state.disabled ? 'node-disabled': '')
+			.addClass(node.state.selected ? 'node-selected' : '')
+			.addClass(node.searchResult ? 'search-result' : '') 
+			.attr('data-nodeid', node.nodeId)
+			.attr('style', this.buildStyleOverride(node));
+
+
+		// Add indent/spacer to mimic tree structure
+		for (var i = 0; i < (node.level - 1); i++) {
+			node.$el.append(this.template.indent);
+		}
+
+		// Add expand, collapse or empty spacer icons
+		var classList = [];
+		if (node.nodes) {
+			classList.push('expand-icon');
+			if (node.state.expanded) {
+				classList.push(this.options.collapseIcon);
 			}
 			else {
-				classList.push(_this.options.emptyIcon);
+				classList.push(this.options.expandIcon);
+			}
+		}
+		else {
+			classList.push(this.options.emptyIcon);
+		}
+
+		node.$el
+			.append($(this.template.icon)
+				.addClass(classList.join(' '))
+			);
+
+
+		// Add node icon
+		if (this.options.showIcon) {
+			
+			var classList = ['node-icon'];
+
+			classList.push(node.icon || this.options.nodeIcon);
+			if (node.state.selected) {
+				classList.pop();
+				classList.push(node.selectedIcon || this.options.selectedIcon || 
+								node.icon || this.options.nodeIcon);
 			}
 
-			treeItem
-				.append($(_this.template.icon)
+			node.$el
+				.append($(this.template.icon)
 					.addClass(classList.join(' '))
 				);
+		}
 
+		// Add check / unchecked icon
+		if (this.options.showCheckbox) {
 
-			// Add node icon
-			if (_this.options.showIcon) {
-				
-				var classList = ['node-icon'];
-
-				classList.push(node.icon || _this.options.nodeIcon);
-				if (node.state.selected) {
-					classList.pop();
-					classList.push(node.selectedIcon || _this.options.selectedIcon || 
-									node.icon || _this.options.nodeIcon);
-				}
-
-				treeItem
-					.append($(_this.template.icon)
-						.addClass(classList.join(' '))
-					);
-			}
-
-			// Add check / unchecked icon
-			if (_this.options.showCheckbox) {
-
-				var classList = ['check-icon'];
-				if (node.state.checked) {
-					classList.push(_this.options.checkedIcon); 
-				}
-				else {
-					classList.push(_this.options.uncheckedIcon);
-				}
-
-				treeItem
-					.append($(_this.template.icon)
-						.addClass(classList.join(' '))
-					);
-			}
-
-			// Add text
-			if (_this.options.enableLinks) {
-				// Add hyperlink
-				treeItem
-					.append($(_this.template.link)
-						.attr('href', node.href)
-						.append(node.text)
-					);
+			var classList = ['check-icon'];
+			if (node.state.checked) {
+				classList.push(this.options.checkedIcon); 
 			}
 			else {
-				// otherwise just text
-				treeItem
-					.append(node.text);
+				classList.push(this.options.uncheckedIcon);
 			}
 
-			// Add tags as badges
-			if (_this.options.showTags && node.tags) {
-				$.each(node.tags, function addTag(id, tag) {
-					treeItem
-						.append($(_this.template.badge)
-							.append(tag)
-						);
-				});
-			}
+			node.$el
+				.append($(this.template.icon)
+					.addClass(classList.join(' '))
+				);
+		}
 
-			// Add item to the tree
-			_this.$wrapper.append(treeItem);
+		// Add text
+		if (this.options.enableLinks) {
+			// Add hyperlink
+			node.$el
+				.append($(this.template.link)
+					.attr('href', node.href)
+					.append(node.text)
+				);
+		}
+		else {
+			// otherwise just text
+			node.$el
+				.append(node.text);
+		}
 
-			// Recursively add child ndoes
-			if (node.nodes && node.state.expanded && !node.state.disabled) {
-				return _this.buildTree(node.nodes, level);
-			}
-		});
+		// Add tags as badges
+		if (this.options.showTags && node.tags) {
+			$.each(node.tags, $.proxy(function addTag(id, tag) {
+				node.$el
+					.append($(this.template.badge)
+						.append(tag)
+					);
+			}, this));
+		}
+
+		// Recursively add child ndoes
+		if (node.nodes && node.state.expanded && !node.state.disabled) {
+			this._expandNode(node);
+		}
+		else {
+			this._collapseNode(node);
+		}
 	};
 
 	// Define any node level style override for
@@ -687,8 +746,8 @@
 	};
 
 	Tree.prototype.template = {
-		list: '<ul class="list-group"></ul>',
-		item: '<li class="list-group-item"></li>',
+		tree: '<ul class="list-group"></ul>',
+		node: '<li class="list-group-item"></li>',
 		indent: '<span class="indent"></span>',
 		icon: '<span class="icon"></span>',
 		link: '<a href="#" style="color:inherit;"></a>',
@@ -841,12 +900,9 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseAll = function (options) {
-		var identifiers = this.findNodes('true', 'g', 'state.expanded');
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setExpandedState(node, false, options);
-		}, this));
-
-		this.render();
+		options = $.extend({}, _default.options, options);
+		options.levels = options.levels || 999;
+		this.collapseNode(this.tree, options);
 	};
 
 	/**
@@ -855,11 +911,11 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseNode = function (identifiers, options) {
+		options = $.extend({}, _default.options, options);
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setExpandedState(node, false, options);
+			this._renderNode(node);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -868,18 +924,8 @@
 	*/
 	Tree.prototype.expandAll = function (options) {
 		options = $.extend({}, _default.options, options);
-
-		if (options && options.levels) {
-			this.expandLevels(this.tree, options.levels, options);
-		}
-		else {
-			var identifiers = this.findNodes('false', 'g', 'state.expanded');
-			this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-				this.setExpandedState(node, true, options);
-			}, this));
-		}
-
-		this.render();
+		options.levels = options.levels || 999;
+		this.expandNode(this.tree, options);
 	};
 
 	/**
@@ -888,23 +934,22 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
+		options = $.extend({}, _default.options, options);
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setExpandedState(node, true, options);
-			if (node.nodes && (options && options.levels)) {
-				this.expandLevels(node.nodes, options.levels-1, options);
+			if (node.nodes) {
+				this._expandLevels(node.nodes, options.levels-1, options);
 			}
+			this._renderNode(node);
 		}, this));
-
-		this.render();
 	};
 
-	Tree.prototype.expandLevels = function (nodes, level, options) {
-		options = $.extend({}, _default.options, options);
-
+	Tree.prototype._expandLevels = function (nodes, level, options) {
 		$.each(nodes, $.proxy(function (index, node) {
+			console.log('test - ' + node.text);
 			this.setExpandedState(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
-				this.expandLevels(node.nodes, level-1, options);
+				this._expandLevels(node.nodes, level-1, options);
 			}
 		}, this));
 	};
@@ -916,14 +961,14 @@
 	*/
 	Tree.prototype.revealNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			var parentNode = this.getParent(node);
-			while (parentNode) {
+			var parentNode = node;
+			var tmpNode;
+			while (tmpNode = this.getParent(parentNode)) {
+				parentNode = tmpNode;
 				this.setExpandedState(parentNode, true, options);
-				parentNode = this.getParent(parentNode);
 			};
+			this._renderNode(parentNode);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -934,9 +979,10 @@
 	Tree.prototype.toggleNodeExpanded = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleExpandedState(node, options);
+			this._renderNode(node);
 		}, this));
 		
-		this.render();
+		// this.render();
 	};
 
 
