@@ -955,7 +955,6 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setExpandedState(node, false, options);
 			this._renderNode(node);
@@ -978,7 +977,6 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
-		options = $.extend({}, _default.options, options);
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setExpandedState(node, true, options);
 			if (node.nodes) {
