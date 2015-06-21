@@ -325,21 +325,16 @@
 
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
-
-			this.toggleExpandedState(node, _default.options);
-			this._renderNode(node);
+			this._toggleExpandedState(node, _default.options);
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			
 			this._toggleCheckedState(node, _default.options);
 		}
 		else {
-			
 			if (node.selectable) {
 				this._toggleSelectedState(node, _default.options);
 			} else {
-				this.toggleExpandedState(node, _default.options);
-				this._renderNode(node);
+				this._toggleExpandedState(node, _default.options);
 			}
 		}
 	};
@@ -357,37 +352,61 @@
 		return node;
 	};
 
-	Tree.prototype.toggleExpandedState = function (node, options) {
+	Tree.prototype._toggleExpandedState = function (node, options) {
 		if (!node) return;
-		this.setExpandedState(node, !node.state.expanded, options);
+		this._setExpandedState(node, !node.state.expanded, options);
 	};
 
-	Tree.prototype.setExpandedState = function (node, state, options) {
+	Tree.prototype._setExpandedState = function (node, state, options) {
 
-		if (state === node.state.expanded) return;
+		// if (state === node.state.expanded) return;
 
 		if (state && node.nodes) {
 
-			// Expand a node
+			// Set node state
 			node.state.expanded = true;
-			if (!options.silent) {
+
+			// Set element
+			if (node.$el) {
+				node.$el.children('span.expand-icon')
+					.removeClass(this.options.expandIcon)
+					.addClass(this.options.collapseIcon);
+			}
+
+			// Render child nodes
+			this._expandNode(node);
+
+			// Optionally trigger event
+			if (options && !options.silent) {
 				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
 			}
 		}
 		else if (!state) {
 
-			// Collapse a node
+			// Set node state
 			node.state.expanded = false;
-			if (!options.silent) {
-				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+
+			// Set element
+			if (node.$el) {
+				node.$el.children('span.expand-icon')
+					.removeClass(this.options.collapseIcon)
+					.addClass(this.options.expandIcon);
 			}
 
-			// Collapse child nodes
-			if (node.nodes && !options.ignoreChildren) {
+			// Collapse children 
+			if (node.nodes && options && !options.ignoreChildren) {
 				$.each(node.nodes, $.proxy(function (index, node) {
 					console.log('recurse children')
-					this.setExpandedState(node, false, options);
+					this._setExpandedState(node, false, options);
 				}, this));
+			}
+
+			// Remove child nodes
+			this._collapseNode(node);
+
+			// Optionally trigger event
+			if (options && !options.silent) {
+				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
 			}
 		}
 	};
@@ -450,6 +469,7 @@
 
 	Tree.prototype._setCheckedState = function (node, state, options) {
 
+		// TODO Doesn't work during initialize / first render
 		// if (state === node.state.checked) return;
 
 		if (state) {
@@ -490,29 +510,40 @@
 		}
 	};
 
-	Tree.prototype.setDisabledState = function (node, state, options) {
+	Tree.prototype._setDisabledState = function (node, state, options) {
 
-		if (state === node.state.disabled) return;
+		// if (state === node.state.disabled) return;
 
 		if (state) {
 
-			// Disable node
+			// Set node state to disabled
 			node.state.disabled = true;
 
 			// Disable all other states
-			this.setExpandedState(node, false, options);
 			this._setSelectedState(node, false, options);
 			this._setCheckedState(node, false, options);
+			this._setExpandedState(node, false, options);
 
-			if (!options.silent) {
+			// Set element
+			if (node.$el) {
+				node.$el.addClass('node-disabled');
+			}
+
+			if (options && !options.silent) {
 				this.$element.trigger('nodeDisabled', $.extend(true, {}, node));
 			}
 		}
 		else {
 
-			// Enabled node
+			// Set node state to enabled
 			node.state.disabled = false;
-			if (!options.silent) {
+
+			// Set element
+			if (node.$el) {
+				node.$el.removeClass('node-disabled');
+			}
+
+			if (options && !options.silent) {
 				this.$element.trigger('nodeEnabled', $.extend(true, {}, node));
 			}
 		}
@@ -610,12 +641,7 @@
 		this._setSelectedState(node, node.state.selected);
 
 		// Set disabled state
-		if (node.state.disabled) {
-			node.$el.addClass('node-disabled');
-		}
-		else {
-			node.$el.removeClass('node-disabled');
-		}
+		this._setDisabledState(node, node.state.disabled);
 
 		
 
@@ -640,12 +666,6 @@
 		var classList = [];
 		if (node.nodes) {
 			classList.push('expand-icon');
-			if (node.state.expanded) {
-				classList.push(this.options.collapseIcon);
-			}
-			else {
-				classList.push(this.options.expandIcon);
-			}
 		}
 		else {
 			classList.push(this.options.emptyIcon);
@@ -655,6 +675,8 @@
 			.append($(this.template.icon)
 				.addClass(classList.join(' '))
 			);
+
+		this._setExpandedState(node, node.state.expanded);
 
 
 		// Add node icon
@@ -965,8 +987,7 @@
 	*/
 	Tree.prototype.collapseNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setExpandedState(node, false, options);
-			this._renderNode(node);
+			this._setExpandedState(node, false, options);
 		}, this));
 	};
 
@@ -987,18 +1008,17 @@
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setExpandedState(node, true, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, options.levels-1, options);
 			}
-			this._renderNode(node);
+			this._setExpandedState(node, true, options);
 		}, this));
 	};
 
 	Tree.prototype._expandLevels = function (nodes, level, options) {
 		$.each(nodes, $.proxy(function (index, node) {
 			console.log('test - ' + node.text);
-			this.setExpandedState(node, (level > 0) ? true : false, options);
+			this._setExpandedState(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, level-1, options);
 			}
@@ -1016,9 +1036,8 @@
 			var tmpNode;
 			while (tmpNode = this.getParent(parentNode)) {
 				parentNode = tmpNode;
-				this.setExpandedState(parentNode, true, options);
+				this._setExpandedState(parentNode, true, options);
 			};
-			this._renderNode(parentNode);
 		}, this));
 	};
 
@@ -1029,11 +1048,8 @@
 	*/
 	Tree.prototype.toggleNodeExpanded = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.toggleExpandedState(node, options);
-			this._renderNode(node);
+			this._toggleExpandedState(node, options);
 		}, this));
-		
-		// this.render();
 	};
 
 
@@ -1100,10 +1116,8 @@
 	Tree.prototype.disableAll = function (options) {
 		var identifiers = this.findNodes('false', 'g', 'state.disabled');
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setDisabledState(node, true, options);
+			this._setDisabledState(node, true, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1113,10 +1127,8 @@
 	*/
 	Tree.prototype.disableNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setDisabledState(node, true, options);
+			this._setDisabledState(node, true, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1126,10 +1138,8 @@
 	Tree.prototype.enableAll = function (options) {
 		var identifiers = this.findNodes('true', 'g', 'state.disabled');
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setDisabledState(node, false, options);
+			this._setDisabledState(node, false, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1139,10 +1149,8 @@
 	*/
 	Tree.prototype.enableNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setDisabledState(node, false, options);
+			this._setDisabledState(node, false, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1152,10 +1160,8 @@
 	*/
 	Tree.prototype.toggleNodeDisabled = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setDisabledState(node, !node.state.disabled, options);
+			this._setDisabledState(node, !node.state.disabled, options);
 		}, this));
-
-		this.render();
 	};
 
 
