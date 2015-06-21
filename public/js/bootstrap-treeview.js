@@ -359,7 +359,9 @@
 
 	Tree.prototype._setExpandedState = function (node, state, options) {
 
-		// if (state === node.state.expanded) return;
+		// We never pass options when rendering, so the only time
+		// we need to validate state is from user interaction
+		if (options && state === node.state.expanded) return;
 
 		if (state && node.nodes) {
 
@@ -419,7 +421,9 @@
 
 	Tree.prototype._setSelectedState = function (node, state, options) {
 
-		// if (state === node.state.selected) return;
+		// We never pass options when rendering, so the only time
+		// we need to validate state is from user interaction
+		if (options && state === node.state.selected) return;
 
 		if (state) {
 
@@ -469,8 +473,9 @@
 
 	Tree.prototype._setCheckedState = function (node, state, options) {
 
-		// TODO Doesn't work during initialize / first render
-		// if (state === node.state.checked) return;
+		// We never pass options when rendering, so the only time
+		// we need to validate state is from user interaction
+		if (options && state === node.state.checked) return;
 
 		if (state) {
 
@@ -512,7 +517,9 @@
 
 	Tree.prototype._setDisabledState = function (node, state, options) {
 
-		// if (state === node.state.disabled) return;
+		// We never pass options when rendering, so the only time
+		// we need to validate state is from user interaction
+		if (options && state === node.state.disabled) return;
 
 		if (state) {
 
@@ -529,6 +536,7 @@
 				node.$el.addClass('node-disabled');
 			}
 
+			// Optionally trigger event
 			if (options && !options.silent) {
 				this.$element.trigger('nodeDisabled', $.extend(true, {}, node));
 			}
@@ -543,6 +551,7 @@
 				node.$el.removeClass('node-disabled');
 			}
 
+			// Optionally trigger event
 			if (options && !options.silent) {
 				this.$element.trigger('nodeEnabled', $.extend(true, {}, node));
 			}
@@ -581,7 +590,7 @@
 		var $el = $(this.template.node);
 		
 		if (pEl) {
-			console.log('insert');
+			console.log('insert - ' + pEl.text());
 			this.$wrapper.children().eq(pEl.index()).after($el);
 		}
 		else {
@@ -596,7 +605,7 @@
 		if (!node.nodes) return;
 
 		console.log('collapseNode - ' + node.text);
-		$.each(node.nodes, $.proxy(function _collapseChildNodes(index, node) {
+		$.each(node.nodes, $.proxy(function (index, node) {
 			this._collapseNode(node);
 			if (node.$el) {
 				node.$el.remove();
@@ -610,7 +619,8 @@
 
 		console.log('expandNode - ' + node.text);
 		var $pEl = node.$el;
-		$.each(node.nodes, $.proxy(function _addChildNodes(index, childNode) {
+		$.each(node.nodes/*.slice(0).reverse()*/, $.proxy(function (index, childNode) {
+			console.log('expandNode child ' + node.text + ' > ' + childNode.text);
 			childNode.level = node.level + 1;
 			this._renderNode(childNode, $pEl);
 			$pEl = childNode.$el;
@@ -636,12 +646,6 @@
 			// TODO Don't blanket empty, eval each action 
 			node.$el.empty();
 		}
-
-		// Set selected state
-		this._setSelectedState(node, node.state.selected);
-
-		// Set disabled state
-		this._setDisabledState(node, node.state.disabled);
 
 		
 
@@ -676,8 +680,6 @@
 				.addClass(classList.join(' '))
 			);
 
-		this._setExpandedState(node, node.state.expanded);
-
 
 		// Add node icon
 		if (this.options.showIcon) {
@@ -704,13 +706,10 @@
 				.append($(this.template.icon)
 					.addClass('check-icon')
 				);
-
-			this._setCheckedState(node, node.state.checked);
 		}
 
 		// Add text
 		if (this.options.enableLinks) {
-			// Add hyperlink
 			node.$el
 				.append($(this.template.link)
 					.attr('href', node.href)
@@ -718,7 +717,6 @@
 				);
 		}
 		else {
-			// otherwise just text
 			node.$el
 				.append(node.text);
 		}
@@ -733,13 +731,15 @@
 			}, this));
 		}
 
-		// Recursively add child ndoes
-		if (node.nodes && node.state.expanded && !node.state.disabled) {
-			this._expandNode(node);
-		}
-		else {
-			this._collapseNode(node);
-		}
+		// Set various node states
+		this._setSelectedState(node, node.state.selected);
+		this._setCheckedState(node, node.state.checked);
+
+		// Set expanded state also triggers recursive tree build
+		this._setExpandedState(node, node.state.expanded);
+
+		// Finally disabled, which will override any of previous states when true
+		this._setDisabledState(node, node.state.disabled);
 	};
 
 	// Define any node level style override for
@@ -1008,10 +1008,10 @@
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this._setExpandedState(node, true, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, options.levels-1, options);
 			}
-			this._setExpandedState(node, true, options);
 		}, this));
 	};
 
