@@ -331,9 +331,7 @@
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
 			
-			this.toggleCheckedState(node, _default.options);
-			this.render();
-			// TODO this._checkNode();
+			this._toggleCheckedState(node, _default.options);
 		}
 		else {
 			
@@ -402,7 +400,7 @@
 
 	Tree.prototype._setSelectedState = function (node, state, options) {
 
-		if (state === node.state.selected) return;
+		// if (state === node.state.selected) return;
 
 		if (state) {
 
@@ -416,8 +414,10 @@
 			// Set note state
 			node.state.selected = true;
 
-			// Add class
-			node.$el.addClass('node-selected');
+			// Set element
+			if (node.$el) {
+				node.$el.addClass('node-selected');
+			}
 
 			// Optionally trigger event
 			if (options && !options.silent) {
@@ -429,8 +429,10 @@
 			// Set node state
 			node.state.selected = false;
 
-			// Add class
-			node.$el.removeClass('node-selected');
+			// Set element
+			if (node.$el) {
+				node.$el.removeClass('node-selected');
+			}
 
 			// Optionally trigger event
 			if (options && !options.silent) {
@@ -441,29 +443,48 @@
 		return this;
 	};
 
-	Tree.prototype.toggleCheckedState = function (node, options) {
+	Tree.prototype._toggleCheckedState = function (node, options) {
 		if (!node) return;
-		this.setCheckedState(node, !node.state.checked, options);
+		this._setCheckedState(node, !node.state.checked, options);
 	};
 
-	Tree.prototype.setCheckedState = function (node, state, options) {
+	Tree.prototype._setCheckedState = function (node, state, options) {
 
-		if (state === node.state.checked) return;
+		// if (state === node.state.checked) return;
 
 		if (state) {
 
-			// Check node
+			// Set node state
 			node.state.checked = true;
 
-			if (!options.silent) {
+			// Set element
+			if (node.$el) {
+				node.$el.addClass('node-checked');
+				node.$el.children('span.check-icon')
+					.removeClass(this.options.uncheckedIcon)
+					.addClass(this.options.checkedIcon);
+			}
+
+			// Optionally trigger event
+			if (options && !options.silent) {
 				this.$element.trigger('nodeChecked', $.extend(true, {}, node));
 			}
 		}
 		else {
 
-			// Uncheck node
+			// Set node state to unchecked
 			node.state.checked = false;
-			if (!options.silent) {
+
+			// Set element
+			if (node.$el) {
+				node.$el.removeClass('node-checked');
+				node.$el.children('span.check-icon')
+					.removeClass(this.options.checkedIcon)
+					.addClass(this.options.uncheckedIcon);
+			}
+
+			// Optionally trigger event
+			if (options && !options.silent) {
 				this.$element.trigger('nodeUnchecked', $.extend(true, {}, node));
 			}
 		}
@@ -481,7 +502,7 @@
 			// Disable all other states
 			this.setExpandedState(node, false, options);
 			this._setSelectedState(node, false, options);
-			this.setCheckedState(node, false, options);
+			this._setCheckedState(node, false, options);
 
 			if (!options.silent) {
 				this.$element.trigger('nodeDisabled', $.extend(true, {}, node));
@@ -585,13 +606,8 @@
 			node.$el.empty();
 		}
 
-		// Set checked state
-		if (node.state.checked) {
-			node.$el.addClass('node-checked');
-		}
-		else {
-			node.$el.removeClass('node-checked');
-		}
+		// Set selected state
+		this._setSelectedState(node, node.state.selected);
 
 		// Set disabled state
 		if (node.state.disabled) {
@@ -601,8 +617,7 @@
 			node.$el.removeClass('node-disabled');
 		}
 
-		// Set selected state
-		this._setSelectedState(node, node.state.selected);
+		
 
 		// Set search result state
 		if (node.searchResult) {
@@ -663,18 +678,12 @@
 		// Add check / unchecked icon
 		if (this.options.showCheckbox) {
 
-			var classList = ['check-icon'];
-			if (node.state.checked) {
-				classList.push(this.options.checkedIcon); 
-			}
-			else {
-				classList.push(this.options.uncheckedIcon);
-			}
-
 			node.$el
 				.append($(this.template.icon)
-					.addClass(classList.join(' '))
+					.addClass('check-icon')
 				);
+
+			this._setCheckedState(node, node.state.checked);
 		}
 
 		// Add text
@@ -1035,10 +1044,8 @@
 	Tree.prototype.checkAll = function (options) {
 		var identifiers = this.findNodes('false', 'g', 'state.checked');
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setCheckedState(node, true, options);
+			this._setCheckedState(node, true, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1048,10 +1055,8 @@
 	*/
 	Tree.prototype.checkNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setCheckedState(node, true, options);
+			this._setCheckedState(node, true, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1061,10 +1066,8 @@
 	Tree.prototype.uncheckAll = function (options) {
 		var identifiers = this.findNodes('true', 'g', 'state.checked');
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setCheckedState(node, false, options);
+			this._setCheckedState(node, false, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1074,10 +1077,8 @@
 	*/
 	Tree.prototype.uncheckNode = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.setCheckedState(node, false, options);
+			this._setCheckedState(node, false, options);
 		}, this));
-
-		this.render();
 	};
 
 	/**
@@ -1087,10 +1088,8 @@
 	*/
 	Tree.prototype.toggleNodeChecked = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this.toggleCheckedState(node, options);
+			this._toggleCheckedState(node, options);
 		}, this));
-
-		this.render();
 	};
 
 
