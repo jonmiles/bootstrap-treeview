@@ -440,6 +440,12 @@
 			// Set element
 			if (node.$el) {
 				node.$el.addClass('node-selected');
+				
+				if (node.selectedIcon || this.options.selectedIcon) {
+					node.$el.children('span.node-icon')
+						.removeClass(node.icon || this.options.nodeIcon)
+						.addClass(node.selectedIcon || this.options.selectedIcon);
+				}
 			}
 
 			// Optionally trigger event
@@ -455,6 +461,12 @@
 			// Set element
 			if (node.$el) {
 				node.$el.removeClass('node-selected');
+
+				if (node.selectedIcon || this.options.selectedIcon) {
+					node.$el.children('span.node-icon')
+						.removeClass(node.selectedIcon || this.options.selectedIcon)
+						.addClass(node.icon || this.options.nodeIcon);
+				}
 			}
 
 			// Optionally trigger event
@@ -683,25 +695,15 @@
 
 		// Add node icon
 		if (this.options.showIcon) {
-			
-			var classList = ['node-icon'];
-
-			classList.push(node.icon || this.options.nodeIcon);
-			if (node.state.selected) {
-				classList.pop();
-				classList.push(node.selectedIcon || this.options.selectedIcon || 
-								node.icon || this.options.nodeIcon);
-			}
-
 			node.$el
 				.append($(this.template.icon)
-					.addClass(classList.join(' '))
+					.addClass('node-icon')
+					.addClass(node.icon || this.options.nodeIcon)
 				);
 		}
 
-		// Add check / unchecked icon
+		// Add checkable icon
 		if (this.options.showCheckbox) {
-
 			node.$el
 				.append($(this.template.icon)
 					.addClass('check-icon')
