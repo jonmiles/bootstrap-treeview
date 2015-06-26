@@ -658,10 +658,7 @@
 			// TODO Don't blanket empty, eval each action 
 			node.$el.empty();
 		}
-
-		// Set state based style overrides
-		// node.$el.attr('style', this.buildStyleOverride(node));
-
+		
 
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
@@ -734,38 +731,6 @@
 		this._setDisabledState(node, node.state.disabled);
 	};
 
-	// Define any node level style override for
-	// 1. selectedNode
-	// 2. node|data assigned color overrides
-	// Tree.prototype.buildStyleOverride = function (node) {
-
-	// 	if (node.state.disabled) return '';
-
-	// 	var color = node.color;
-	// 	var backColor = node.backColor;
-
-	// 	// if (this.options.highlightSelected && node.state.selected) {
-	// 	// 	if (this.options.selectedColor) {
-	// 	// 		color = this.options.selectedColor;
-	// 	// 	}
-	// 	// 	if (this.options.selectedBackColor) {
-	// 	// 		backColor = this.options.selectedBackColor;
-	// 	// 	}
-	// 	// }
-
-	// 	if (this.options.highlightSearchResults && node.searchResult && !node.state.disabled) {
-	// 		if (this.options.searchResultColor) {
-	// 			color = this.options.searchResultColor;
-	// 		}
-	// 		if (this.options.searchResultBackColor) {
-	// 			backColor = this.options.searchResultBackColor;
-	// 		}
-	// 	}
-
-	// 	// return 'color:' + color +
-	// 	// 	';background-color:' + backColor + ';';
-	// };
-
 	// Add inline style into head
 	Tree.prototype.injectStyle = function () {
 
@@ -779,6 +744,7 @@
 
 		var style = '.node-' + this.elementId + '{';
 
+		// Basic bootstrap style overrides
 		if (this.options.color) {
 			style += 'color:' + this.options.color + ';';
 		}
@@ -801,6 +767,7 @@
 			'}';
 		}
 
+		// Style search results
 		if (this.options.highlightSearchResults && (this.options.searchResultColor || this.options.searchResultBackColor)) {
 			
 			var innerStyle = ''
@@ -815,6 +782,7 @@
 			style += '.node-' + this.elementId + '.node-result:hover{' + innerStyle + '}';
 		}
 
+		// Style selected nodes
 		if (this.options.highlightSelected && (this.options.selectedColor || this.options.selectedBackColor)) {
 			
 			var innerStyle = ''
@@ -828,6 +796,20 @@
 			style += '.node-' + this.elementId + '.node-selected{' + innerStyle + '}';
 			style += '.node-' + this.elementId + '.node-selected:hover{' + innerStyle + '}';
 		}
+
+		// Node level style overrides
+		$.each(this.nodes, $.proxy(function (index, node) {
+			if (node.color || node.backColor) {
+				var innerStyle = '';
+				if (node.color) {
+					innerStyle += 'color:' + node.color + ';';
+				}
+				if (node.backColor) {
+					innerStyle += 'background-color:' + node.backColor + ';';
+				}
+				style += '.node-' + this.elementId + '[data-nodeid="' + node.nodeId + '"]{' + innerStyle + '}';
+			}
+		}, this));
 
 		return this.css + style;
 	};
