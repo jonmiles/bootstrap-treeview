@@ -440,7 +440,7 @@
 			// Set element
 			if (node.$el) {
 				node.$el.addClass('node-selected');
-				
+
 				if (node.selectedIcon || this.options.selectedIcon) {
 					node.$el.children('span.node-icon')
 						.removeClass(node.icon || this.options.nodeIcon)
@@ -659,16 +659,6 @@
 			node.$el.empty();
 		}
 
-		
-
-		// Set search result state
-		if (node.searchResult) {
-			node.$el.addClass('node-result');
-		}
-		else {
-			node.$el.removeClass('node-result');
-		}
-		
 		// Set state based style overrides
 		// node.$el.attr('style', this.buildStyleOverride(node));
 
@@ -809,6 +799,20 @@
 			style += '.node-' + this.elementId + ':not(.node-disabled):hover{' +
 				'background-color:' + this.options.onhoverColor + ';' +
 			'}';
+		}
+
+		if (this.options.highlightSearchResults && (this.options.searchResultColor || this.options.searchResultBackColor)) {
+			
+			var innerStyle = ''
+			if (this.options.searchResultColor) {
+				innerStyle += 'color:' + this.options.searchResultColor + ';';
+			}
+			if (this.options.searchResultBackColor) {
+				innerStyle += 'background-color:' + this.options.searchResultBackColor + ';';
+			}
+
+			style += '.node-' + this.elementId + '.node-result{' + innerStyle + '}';
+			style += '.node-' + this.elementId + '.node-result:hover{' + innerStyle + '}';
 		}
 
 		if (this.options.highlightSelected && (this.options.selectedColor || this.options.selectedBackColor)) {
@@ -1201,7 +1205,7 @@
 	Tree.prototype.search = function (pattern, options) {
 		options = $.extend({}, _default.searchOptions, options);
 
-		this.clearSearch({ render: false });
+		this.clearSearch();
 
 		var results = [];
 		if (pattern && pattern.length > 0) {
@@ -1222,6 +1226,7 @@
 			// and when identifying result to be cleared
 			$.each(results, function (index, node) {
 				node.searchResult = true;
+				node.$el.addClass('node-result');
 			})
 		}
 
@@ -1229,9 +1234,6 @@
 		// otherwise we just call render.
 		if (options.revealResults) {
 			this.revealNode(results);
-		}
-		else {
-			this.render();
 		}
 
 		this.$element.trigger('searchComplete', $.extend(true, {}, results));
@@ -1248,11 +1250,8 @@
 
 		var results = $.each(this.findNodes('true', 'g', 'searchResult'), function (index, node) {
 			node.searchResult = false;
+			node.$el.removeClass('node-result');
 		});
-
-		if (options.render) {
-			this.render();	
-		}
 		
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};

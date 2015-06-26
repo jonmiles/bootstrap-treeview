@@ -863,9 +863,9 @@
 
 		// Check results are cleared
 		$tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
-		equal($tree.find('.search-result').length, 1, 'Search results highlighted');
+		equal($tree.find('.node-result').length, 1, 'Search results highlighted');
 		$tree.treeview('clearSearch');
-		equal($tree.find('.search-result').length, 0, 'Search results cleared');
+		equal($tree.find('.node-result').length, 0, 'Search results cleared');
 
 		// Check events fire
 		ok(cbWorked, 'onSearchCleared function was called');

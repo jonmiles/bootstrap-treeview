@@ -35,12 +35,3 @@
 	color: silver;
 	cursor: not-allowed;
 }
-
-/*
-	Only valid when either options selectedColor or 
-	selectedBackColor are left undefined
-*/
-.treeview .node-selected {
-	background-color: #428bca !important;
-	color: #FFFFFF !important;
-}
