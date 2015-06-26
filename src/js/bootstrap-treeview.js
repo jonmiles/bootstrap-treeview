@@ -619,11 +619,11 @@
 
 		console.log('expandNode - ' + node.text);
 		var $pEl = node.$el;
-		$.each(node.nodes/*.slice(0).reverse()*/, $.proxy(function (index, childNode) {
+		$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
 			console.log('expandNode child ' + node.text + ' > ' + childNode.text);
 			childNode.level = node.level + 1;
 			this._renderNode(childNode, $pEl);
-			$pEl = childNode.$el;
+			// $pEl = childNode.$el;
 		}, this));
 	};
 
