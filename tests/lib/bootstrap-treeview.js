@@ -86,19 +86,19 @@
 	var Tree = function (element, options) {
 
 		this.$element = $(element);
-		this.elementId = element.id;
-		this.styleId = this.elementId + '-style';
+		this._elementId = element.id;
+		this._styleId = this._elementId + '-style';
 
-		this.init(options);
+		this._init(options);
 
 		return {
 
 			// Options (public access)
-			options: this.options,
+			options: this._options,
 
 			// Initialize / destroy methods
-			init: $.proxy(this.init, this),
-			remove: $.proxy(this.remove, this),
+			init: $.proxy(this._init, this),
+			remove: $.proxy(this._remove, this),
 
 			// Get methods
 			getNode: $.proxy(this.getNode, this),
@@ -146,48 +146,48 @@
 		};
 	};
 
-	Tree.prototype.init = function (options) {
+	Tree.prototype._init = function (options) {
 
-		this.tree = [];
-		this.nodes = [];
-		this.initialized = false;
+		this._tree = [];
+		this._nodes = [];
+		this._initialized = false;
 
 		if (options.data) {
 			if (typeof options.data === 'string') {
 				options.data = $.parseJSON(options.data);
 			}
-			this.tree = $.extend(true, [], options.data);
+			this._tree = $.extend(true, [], options.data);
 			delete options.data;
 		}
-		this.options = $.extend({}, _default.settings, options);
+		this._options = $.extend({}, _default.settings, options);
 
-		this.destroy();
-		this.subscribeEvents();
-		this.setInitialStates({ nodes: this.tree }, 0);
-		this.render();
+		this._destroy();
+		this._subscribeEvents();
+		this._setInitialStates({ nodes: this._tree }, 0);
+		this._render();
 	};
 
-	Tree.prototype.remove = function () {
-		this.destroy();
+	Tree.prototype._remove = function () {
+		this._destroy();
 		$.removeData(this, pluginName);
-		$('#' + this.styleId).remove();
+		$('#' + this._styleId).remove();
 	};
 
-	Tree.prototype.destroy = function () {
+	Tree.prototype._destroy = function () {
 
-		if (!this.initialized) return;
+		if (!this._initialized) return;
 
 		this.$wrapper.remove();
 		this.$wrapper = null;
 
 		// Switch off events
-		this.unsubscribeEvents();
+		this._unsubscribeEvents();
 
-		// Reset this.initialized flag
-		this.initialized = false;
+		// Reset this._initialized flag
+		this._initialized = false;
 	};
 
-	Tree.prototype.unsubscribeEvents = function () {
+	Tree.prototype._unsubscribeEvents = function () {
 
 		this.$element.off('click');
 		this.$element.off('nodeChecked');
@@ -202,50 +202,50 @@
 		this.$element.off('searchCleared');
 	};
 
-	Tree.prototype.subscribeEvents = function () {
+	Tree.prototype._subscribeEvents = function () {
 
-		this.unsubscribeEvents();
+		this._unsubscribeEvents();
 
-		this.$element.on('click', $.proxy(this.clickHandler, this));
+		this.$element.on('click', $.proxy(this._clickHandler, this));
 
-		if (typeof (this.options.onNodeChecked) === 'function') {
-			this.$element.on('nodeChecked', this.options.onNodeChecked);
+		if (typeof (this._options.onNodeChecked) === 'function') {
+			this.$element.on('nodeChecked', this._options.onNodeChecked);
 		}
 
-		if (typeof (this.options.onNodeCollapsed) === 'function') {
-			this.$element.on('nodeCollapsed', this.options.onNodeCollapsed);
+		if (typeof (this._options.onNodeCollapsed) === 'function') {
+			this.$element.on('nodeCollapsed', this._options.onNodeCollapsed);
 		}
 
-		if (typeof (this.options.onNodeDisabled) === 'function') {
-			this.$element.on('nodeDisabled', this.options.onNodeDisabled);
+		if (typeof (this._options.onNodeDisabled) === 'function') {
+			this.$element.on('nodeDisabled', this._options.onNodeDisabled);
 		}
 
-		if (typeof (this.options.onNodeEnabled) === 'function') {
-			this.$element.on('nodeEnabled', this.options.onNodeEnabled);
+		if (typeof (this._options.onNodeEnabled) === 'function') {
+			this.$element.on('nodeEnabled', this._options.onNodeEnabled);
 		}
 
-		if (typeof (this.options.onNodeExpanded) === 'function') {
-			this.$element.on('nodeExpanded', this.options.onNodeExpanded);
+		if (typeof (this._options.onNodeExpanded) === 'function') {
+			this.$element.on('nodeExpanded', this._options.onNodeExpanded);
 		}
 
-		if (typeof (this.options.onNodeSelected) === 'function') {
-			this.$element.on('nodeSelected', this.options.onNodeSelected);
+		if (typeof (this._options.onNodeSelected) === 'function') {
+			this.$element.on('nodeSelected', this._options.onNodeSelected);
 		}
 
-		if (typeof (this.options.onNodeUnchecked) === 'function') {
-			this.$element.on('nodeUnchecked', this.options.onNodeUnchecked);
+		if (typeof (this._options.onNodeUnchecked) === 'function') {
+			this.$element.on('nodeUnchecked', this._options.onNodeUnchecked);
 		}
 
-		if (typeof (this.options.onNodeUnselected) === 'function') {
-			this.$element.on('nodeUnselected', this.options.onNodeUnselected);
+		if (typeof (this._options.onNodeUnselected) === 'function') {
+			this.$element.on('nodeUnselected', this._options.onNodeUnselected);
 		}
 
-		if (typeof (this.options.onSearchComplete) === 'function') {
-			this.$element.on('searchComplete', this.options.onSearchComplete);
+		if (typeof (this._options.onSearchComplete) === 'function') {
+			this.$element.on('searchComplete', this._options.onSearchComplete);
 		}
 
-		if (typeof (this.options.onSearchCleared) === 'function') {
-			this.$element.on('searchCleared', this.options.onSearchCleared);
+		if (typeof (this._options.onSearchCleared) === 'function') {
+			this.$element.on('searchCleared', this._options.onSearchCleared);
 		}
 	};
 
@@ -255,7 +255,7 @@
 		For performance we also take this opportunity to
 		index nodes in a flattened structure
 	*/
-	Tree.prototype.setInitialStates = function (node, level) {
+	Tree.prototype._setInitialStates = function (node, level) {
 
 		if (!node.nodes) return;
 		level += 1;
@@ -265,7 +265,7 @@
 		$.each(node.nodes, function checkStates(index, node) {
 
 			// nodeId : unique, incremental identifier
-			node.nodeId = _this.nodes.length;
+			node.nodeId = _this._nodes.length;
 
 			// parentId : transversing up the tree
 			node.parentId = parent.nodeId;
@@ -291,7 +291,7 @@
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
 				if (!node.state.disabled &&
-						(level < _this.options.levels) &&
+						(level < _this._options.levels) &&
 						(node.nodes && node.nodes.length > 0)) {
 					node.state.expanded = true;
 				}
@@ -306,21 +306,21 @@
 			}
 
 			// index nodes in a flattened structure for use later
-			_this.nodes.push(node);
+			_this._nodes.push(node);
 
 			// recurse child nodes and transverse the tree
 			if (node.nodes) {
-				_this.setInitialStates(node, level);
+				_this._setInitialStates(node, level);
 			}
 		});
 	};
 
-	Tree.prototype.clickHandler = function (event) {
+	Tree.prototype._clickHandler = function (event) {
 
-		if (!this.options.enableLinks) event.preventDefault();
+		if (!this._options.enableLinks) event.preventDefault();
 
 		var target = $(event.target);
-		var node = this.findNode(target);
+		var node = this.targetNode(target);
 		if (!node || node.state.disabled) return;
 
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
@@ -341,10 +341,10 @@
 
 	// Looks up the DOM for the closest parent list item to retrieve the
 	// data attribute nodeid, which is used to lookup the node in the flattened structure.
-	Tree.prototype.findNode = function (target) {
+	Tree.prototype.targetNode = function (target) {
 
 		var nodeId = target.closest('li.list-group-item').attr('data-nodeid');
-		var node = this.nodes[nodeId];
+		var node = this._nodes[nodeId];
 
 		if (!node) {
 			console.log('Error: node does not exist');
@@ -371,8 +371,8 @@
 			// Set element
 			if (node.$el) {
 				node.$el.children('span.expand-icon')
-					.removeClass(this.options.expandIcon)
-					.addClass(this.options.collapseIcon);
+					.removeClass(this._options.expandIcon)
+					.addClass(this._options.collapseIcon);
 			}
 
 			// Render child nodes
@@ -391,14 +391,13 @@
 			// Set element
 			if (node.$el) {
 				node.$el.children('span.expand-icon')
-					.removeClass(this.options.collapseIcon)
-					.addClass(this.options.expandIcon);
+					.removeClass(this._options.collapseIcon)
+					.addClass(this._options.expandIcon);
 			}
 
 			// Collapse children 
 			if (node.nodes && options && !options.ignoreChildren) {
 				$.each(node.nodes, $.proxy(function (index, node) {
-					console.log('recurse children')
 					this._setExpandedState(node, false, options);
 				}, this));
 			}
@@ -428,8 +427,8 @@
 		if (state) {
 
 			// If multiSelect false, unselect previously selected
-			if (!this.options.multiSelect) {
-				$.each(this.findNodes('true', 'g', 'state.selected'), $.proxy(function (index, node) {
+			if (!this._options.multiSelect) {
+				$.each(this._findNodes('true', 'g', 'state.selected'), $.proxy(function (index, node) {
 					this._setSelectedState(node, false, options);
 				}, this));
 			}
@@ -441,10 +440,10 @@
 			if (node.$el) {
 				node.$el.addClass('node-selected');
 
-				if (node.selectedIcon || this.options.selectedIcon) {
+				if (node.selectedIcon || this._options.selectedIcon) {
 					node.$el.children('span.node-icon')
-						.removeClass(node.icon || this.options.nodeIcon)
-						.addClass(node.selectedIcon || this.options.selectedIcon);
+						.removeClass(node.icon || this._options.nodeIcon)
+						.addClass(node.selectedIcon || this._options.selectedIcon);
 				}
 			}
 
@@ -462,10 +461,10 @@
 			if (node.$el) {
 				node.$el.removeClass('node-selected');
 
-				if (node.selectedIcon || this.options.selectedIcon) {
+				if (node.selectedIcon || this._options.selectedIcon) {
 					node.$el.children('span.node-icon')
-						.removeClass(node.selectedIcon || this.options.selectedIcon)
-						.addClass(node.icon || this.options.nodeIcon);
+						.removeClass(node.selectedIcon || this._options.selectedIcon)
+						.addClass(node.icon || this._options.nodeIcon);
 				}
 			}
 
@@ -498,8 +497,8 @@
 			if (node.$el) {
 				node.$el.addClass('node-checked');
 				node.$el.children('span.check-icon')
-					.removeClass(this.options.uncheckedIcon)
-					.addClass(this.options.checkedIcon);
+					.removeClass(this._options.uncheckedIcon)
+					.addClass(this._options.checkedIcon);
 			}
 
 			// Optionally trigger event
@@ -516,8 +515,8 @@
 			if (node.$el) {
 				node.$el.removeClass('node-checked');
 				node.$el.children('span.check-icon')
-					.removeClass(this.options.checkedIcon)
-					.addClass(this.options.uncheckedIcon);
+					.removeClass(this._options.checkedIcon)
+					.addClass(this._options.uncheckedIcon);
 			}
 
 			// Optionally trigger event
@@ -570,80 +569,32 @@
 		}
 	};
 
-	Tree.prototype.render = function () {
+	Tree.prototype._render = function () {
 
-		console.log('RENDER');
-
-		if (!this.initialized) {
+		if (!this._initialized) {
 
 			// Setup first time only components
-			this.$wrapper = $(this.template.tree);
+			this.$wrapper = $(this._template.tree);
 			this.$element.empty()
 				.addClass(pluginName)
 				.append(this.$wrapper);
 
-			this.injectStyle();
+			this._injectStyle();
 
-			this.initialized = true;
+			this._initialized = true;
 		}
 
-		if (!this.tree) return;
+		if (!this._tree) return;
 
-		$.each(this.tree, $.proxy(function addRootNodes(id, node) {
+		$.each(this._tree, $.proxy(function addRootNodes(id, node) {
 			node.level = 1;
 			this._renderNode(node);
 		}, this));
 	};
 
-	// Creates a new node element from template and
-	// ensures the template is inserted at the correct position
-	Tree.prototype._newNodeEl = function (pEl) {
-
-		var $el = $(this.template.node);
-		
-		if (pEl) {
-			console.log('insert - ' + pEl.text());
-			this.$wrapper.children().eq(pEl.index()).after($el);
-		}
-		else {
-			console.log('append');
-			this.$wrapper.append($el);
-		}
-
-		return $el;
-	};
-
-	Tree.prototype._collapseNode = function (node) {
-		if (!node.nodes) return;
-
-		console.log('collapseNode - ' + node.text);
-		$.each(node.nodes, $.proxy(function (index, node) {
-			this._collapseNode(node);
-			if (node.$el) {
-				node.$el.remove();
-				node.$el = null;
-			}
-		}, this));
-	};
-
-	Tree.prototype._expandNode = function (node) {
-		if (!node.nodes) return;
-
-		console.log('expandNode - ' + node.text);
-		var $pEl = node.$el;
-		$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
-			console.log('expandNode child ' + node.text + ' > ' + childNode.text);
-			childNode.level = node.level + 1;
-			this._renderNode(childNode, $pEl);
-			// $pEl = childNode.$el;
-		}, this));
-	};
-
 	Tree.prototype._renderNode = function (node, pEl) {
-		console.log('renderNode - ' + node.text);
 		if (!node) return;
 
-		// console.log(node);
 		if (!node.$el) {
 
 			// New node, needs a new element
@@ -651,56 +602,45 @@
 
 			// One time setup
 			node.$el
-				.addClass('node-' + this.elementId)
+				.addClass('node-' + this._elementId)
 				.attr('data-nodeid', node.nodeId);
 		}
 		else {
-			// TODO Don't blanket empty, eval each action 
 			node.$el.empty();
 		}
-		
 
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
-			node.$el.append(this.template.indent);
+			node.$el.append(this._template.indent);
 		}
 
-		// Add expand, collapse or empty spacer icons
-		var classList = [];
-		if (node.nodes) {
-			classList.push('expand-icon');
-		}
-		else {
-			classList.push(this.options.emptyIcon);
-		}
-
+		// Add expand / collapse or empty spacer icons
 		node.$el
-			.append($(this.template.icon)
-				.addClass(classList.join(' '))
+			.append($(this._template.icon)
+				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
 			);
 
-
 		// Add node icon
-		if (this.options.showIcon) {
+		if (this._options.showIcon) {
 			node.$el
-				.append($(this.template.icon)
+				.append($(this._template.icon)
 					.addClass('node-icon')
-					.addClass(node.icon || this.options.nodeIcon)
+					.addClass(node.icon || this._options.nodeIcon)
 				);
 		}
 
 		// Add checkable icon
-		if (this.options.showCheckbox) {
+		if (this._options.showCheckbox) {
 			node.$el
-				.append($(this.template.icon)
+				.append($(this._template.icon)
 					.addClass('check-icon')
 				);
 		}
 
 		// Add text
-		if (this.options.enableLinks) {
+		if (this._options.enableLinks) {
 			node.$el
-				.append($(this.template.link)
+				.append($(this._template.link)
 					.attr('href', node.href)
 					.append(node.text)
 				);
@@ -711,10 +651,10 @@
 		}
 
 		// Add tags as badges
-		if (this.options.showTags && node.tags) {
+		if (this._options.showTags && node.tags) {
 			$.each(node.tags, $.proxy(function addTag(id, tag) {
 				node.$el
-					.append($(this.template.badge)
+					.append($(this._template.badge)
 						.append(tag)
 					);
 			}, this));
@@ -731,74 +671,115 @@
 		this._setDisabledState(node, node.state.disabled);
 	};
 
-	// Add inline style into head
-	Tree.prototype.injectStyle = function () {
+	// Creates a new node element from template and
+	// ensures the template is inserted at the correct position
+	Tree.prototype._newNodeEl = function (pEl) {
 
-		if (this.options.injectStyle && !document.getElementById(this.styleId)) {
-			$('<style type="text/css" id="' + this.styleId + '"> ' + this.buildStyle() + ' </style>').appendTo('head');
+		var $el = $(this._template.node);
+		
+		if (pEl) {
+			this.$wrapper.children()
+				.eq(pEl.index()).after($el);
+		}
+		else {
+			this.$wrapper.append($el);
+		}
+
+		return $el;
+	};
+
+	// Collapse node, removing it's immediate children
+	Tree.prototype._collapseNode = function (node) {
+		if (!node.nodes) return;
+
+		$.each(node.nodes, $.proxy(function (index, node) {
+			this._collapseNode(node);
+			if (node.$el) {
+				node.$el.remove();
+				node.$el = null;
+			}
+		}, this));
+	};
+
+	// Expand node, rendering it's immediate children
+	Tree.prototype._expandNode = function (node) {
+		if (!node.nodes) return;
+
+		var $pEl = node.$el;
+		$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
+			childNode.level = node.level + 1;
+			this._renderNode(childNode, $pEl);
+		}, this));
+	};
+
+	// Add inline style into head
+	Tree.prototype._injectStyle = function () {
+
+		if (this._options.injectStyle && !document.getElementById(this._styleId)) {
+			$('<style type="text/css" id="' + this._styleId + '"> ' + this._buildStyle() + ' </style>').appendTo('head');
 		}
 	};
 
 	// Construct trees style based on user options
-	Tree.prototype.buildStyle = function () {
+	Tree.prototype._buildStyle = function () {
 
-		var style = '.node-' + this.elementId + '{';
+		var style = '.node-' + this._elementId + '{';
 
 		// Basic bootstrap style overrides
-		if (this.options.color) {
-			style += 'color:' + this.options.color + ';';
+		if (this._options.color) {
+			style += 'color:' + this._options.color + ';';
 		}
 
-		if (this.options.backColor) {
-			style += 'background-color:' + this.options.backColor + ';';
+		if (this._options.backColor) {
+			style += 'background-color:' + this._options.backColor + ';';
 		}
 
-		if (!this.options.showBorder) {
+		if (!this._options.showBorder) {
 			style += 'border:none;';
 		}
-		else if (this.options.borderColor) {
-			style += 'border:1px solid ' + this.options.borderColor + ';';
+		else if (this._options.borderColor) {
+			style += 'border:1px solid ' + this._options.borderColor + ';';
 		}
 		style += '}';
 
-		if (this.options.onhoverColor) {
-			style += '.node-' + this.elementId + ':not(.node-disabled):hover{' +
-				'background-color:' + this.options.onhoverColor + ';' +
+		if (this._options.onhoverColor) {
+			style += '.node-' + this._elementId + ':not(.node-disabled):hover{' +
+				'background-color:' + this._options.onhoverColor + ';' +
 			'}';
 		}
 
 		// Style search results
-		if (this.options.highlightSearchResults && (this.options.searchResultColor || this.options.searchResultBackColor)) {
+		if (this._options.highlightSearchResults && (this._options.searchResultColor || this._options.searchResultBackColor)) {
 			
 			var innerStyle = ''
-			if (this.options.searchResultColor) {
-				innerStyle += 'color:' + this.options.searchResultColor + ';';
+			if (this._options.searchResultColor) {
+				innerStyle += 'color:' + this._options.searchResultColor + ';';
 			}
-			if (this.options.searchResultBackColor) {
-				innerStyle += 'background-color:' + this.options.searchResultBackColor + ';';
+			if (this._options.searchResultBackColor) {
+				innerStyle += 'background-color:' + this._options.searchResultBackColor + ';';
 			}
 
-			style += '.node-' + this.elementId + '.node-result{' + innerStyle + '}';
-			style += '.node-' + this.elementId + '.node-result:hover{' + innerStyle + '}';
+			style += '.node-' + this._elementId + '.node-result{' + innerStyle + '}';
+			style += '.node-' + this._elementId + '.node-result:hover{' + innerStyle + '}';
 		}
 
 		// Style selected nodes
-		if (this.options.highlightSelected && (this.options.selectedColor || this.options.selectedBackColor)) {
+		if (this._options.highlightSelected && (this._options.selectedColor || this._options.selectedBackColor)) {
 			
 			var innerStyle = ''
-			if (this.options.selectedColor) {
-				innerStyle += 'color:' + this.options.selectedColor + ';';
+			if (this._options.selectedColor) {
+				innerStyle += 'color:' + this._options.selectedColor + ';';
 			}
-			if (this.options.selectedBackColor) {
-				innerStyle += 'background-color:' + this.options.selectedBackColor + ';';
+			if (this._options.selectedBackColor) {
+				innerStyle += 'background-color:' + this._options.selectedBackColor + ';';
 			}
 
-			style += '.node-' + this.elementId + '.node-selected{' + innerStyle + '}';
-			style += '.node-' + this.elementId + '.node-selected:hover{' + innerStyle + '}';
+			style += '.node-' + this._elementId + '.node-selected{' + innerStyle + '}';
+			style += '.node-' + this._elementId + '.node-selected:hover{' + innerStyle + '}';
 		}
 
 		// Node level style overrides
-		$.each(this.nodes, $.proxy(function (index, node) {
+		$.each(this._nodes, $.proxy(function (index, node) {
 			if (node.color || node.backColor) {
 				var innerStyle = '';
 				if (node.color) {
@@ -807,14 +788,14 @@
 				if (node.backColor) {
 					innerStyle += 'background-color:' + node.backColor + ';';
 				}
-				style += '.node-' + this.elementId + '[data-nodeid="' + node.nodeId + '"]{' + innerStyle + '}';
+				style += '.node-' + this._elementId + '[data-nodeid="' + node.nodeId + '"]{' + innerStyle + '}';
 			}
 		}, this));
 
-		return this.css + style;
+		return this._css + style;
 	};
 
-	Tree.prototype.template = {
+	Tree.prototype._template = {
 		tree: '<ul class="list-group"></ul>',
 		node: '<li class="list-group-item"></li>',
 		indent: '<span class="indent"></span>',
@@ -823,7 +804,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
+	Tree.prototype._css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
 
 
 	/**
@@ -832,7 +813,7 @@
 		@return {Object} node - Matching node
 	*/
 	Tree.prototype.getNode = function (nodeId) {
-		return this.nodes[nodeId];
+		return this._nodes[nodeId];
 	};
 
 	/**
@@ -841,8 +822,8 @@
 		@returns {Object} node - The parent node
 	*/
 	Tree.prototype.getParent = function (identifier) {
-		var node = this.identifyNode(identifier);
-		return this.nodes[node.parentId];
+		var node = this._identifyNode(identifier);
+		return this._nodes[node.parentId];
 	};
 
 	/**
@@ -851,9 +832,9 @@
 		@returns {Array} nodes - Sibling nodes
 	*/
 	Tree.prototype.getSiblings = function (identifier) {
-		var node = this.identifyNode(identifier);
+		var node = this._identifyNode(identifier);
 		var parent = this.getParent(node);
-		var nodes = parent ? parent.nodes : this.tree;
+		var nodes = parent ? parent.nodes : this._tree;
 		return nodes.filter(function (obj) {
 				return obj.nodeId !== node.nodeId;
 			});
@@ -864,7 +845,7 @@
 		@returns {Array} nodes - Selected nodes
 	*/
 	Tree.prototype.getSelected = function () {
-		return this.findNodes('true', 'g', 'state.selected');
+		return this._findNodes('true', 'g', 'state.selected');
 	};
 
 	/**
@@ -872,7 +853,7 @@
 		@returns {Array} nodes - Unselected nodes
 	*/
 	Tree.prototype.getUnselected = function () {
-		return this.findNodes('false', 'g', 'state.selected');
+		return this._findNodes('false', 'g', 'state.selected');
 	};
 
 	/**
@@ -880,7 +861,7 @@
 		@returns {Array} nodes - Expanded nodes
 	*/
 	Tree.prototype.getExpanded = function () {
-		return this.findNodes('true', 'g', 'state.expanded');
+		return this._findNodes('true', 'g', 'state.expanded');
 	};
 
 	/**
@@ -888,7 +869,7 @@
 		@returns {Array} nodes - Collapsed nodes
 	*/
 	Tree.prototype.getCollapsed = function () {
-		return this.findNodes('false', 'g', 'state.expanded');
+		return this._findNodes('false', 'g', 'state.expanded');
 	};
 
 	/**
@@ -896,7 +877,7 @@
 		@returns {Array} nodes - Checked nodes
 	*/
 	Tree.prototype.getChecked = function () {
-		return this.findNodes('true', 'g', 'state.checked');
+		return this._findNodes('true', 'g', 'state.checked');
 	};
 
 	/**
@@ -904,7 +885,7 @@
 		@returns {Array} nodes - Unchecked nodes
 	*/
 	Tree.prototype.getUnchecked = function () {
-		return this.findNodes('false', 'g', 'state.checked');
+		return this._findNodes('false', 'g', 'state.checked');
 	};
 
 	/**
@@ -912,7 +893,7 @@
 		@returns {Array} nodes - Disabled nodes
 	*/
 	Tree.prototype.getDisabled = function () {
-		return this.findNodes('true', 'g', 'state.disabled');
+		return this._findNodes('true', 'g', 'state.disabled');
 	};
 
 	/**
@@ -920,7 +901,7 @@
 		@returns {Array} nodes - Enabled nodes
 	*/
 	Tree.prototype.getEnabled = function () {
-		return this.findNodes('false', 'g', 'state.disabled');
+		return this._findNodes('false', 'g', 'state.disabled');
 	};
 
 
@@ -930,7 +911,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.selectNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setSelectedState(node, true, options);
 		}, this));
 	};
@@ -941,7 +922,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.unselectNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setSelectedState(node, false, options);
 		}, this));
 	};
@@ -952,7 +933,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeSelected = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._toggleSelectedState(node, options);
 		}, this));
 	};
@@ -965,7 +946,7 @@
 	Tree.prototype.collapseAll = function (options) {
 		options = $.extend({}, _default.options, options);
 		options.levels = options.levels || 999;
-		this.collapseNode(this.tree, options);
+		this.collapseNode(this._tree, options);
 	};
 
 	/**
@@ -974,7 +955,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.collapseNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setExpandedState(node, false, options);
 		}, this));
 	};
@@ -986,7 +967,7 @@
 	Tree.prototype.expandAll = function (options) {
 		options = $.extend({}, _default.options, options);
 		options.levels = options.levels || 999;
-		this.expandNode(this.tree, options);
+		this.expandNode(this._tree, options);
 	};
 
 	/**
@@ -995,7 +976,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setExpandedState(node, true, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, options.levels-1, options);
@@ -1005,7 +986,6 @@
 
 	Tree.prototype._expandLevels = function (nodes, level, options) {
 		$.each(nodes, $.proxy(function (index, node) {
-			console.log('test - ' + node.text);
 			this._setExpandedState(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, level-1, options);
@@ -1019,7 +999,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.revealNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			var parentNode = node;
 			var tmpNode;
 			while (tmpNode = this.getParent(parentNode)) {
@@ -1035,7 +1015,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeExpanded = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._toggleExpandedState(node, options);
 		}, this));
 	};
@@ -1046,8 +1026,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkAll = function (options) {
-		var identifiers = this.findNodes('false', 'g', 'state.checked');
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		var identifiers = this._findNodes('false', 'g', 'state.checked');
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setCheckedState(node, true, options);
 		}, this));
 	};
@@ -1058,7 +1038,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setCheckedState(node, true, options);
 		}, this));
 	};
@@ -1068,8 +1048,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckAll = function (options) {
-		var identifiers = this.findNodes('true', 'g', 'state.checked');
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		var identifiers = this._findNodes('true', 'g', 'state.checked');
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setCheckedState(node, false, options);
 		}, this));
 	};
@@ -1080,7 +1060,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setCheckedState(node, false, options);
 		}, this));
 	};
@@ -1091,7 +1071,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeChecked = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._toggleCheckedState(node, options);
 		}, this));
 	};
@@ -1102,8 +1082,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.disableAll = function (options) {
-		var identifiers = this.findNodes('false', 'g', 'state.disabled');
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		var identifiers = this._findNodes('false', 'g', 'state.disabled');
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setDisabledState(node, true, options);
 		}, this));
 	};
@@ -1114,7 +1094,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.disableNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setDisabledState(node, true, options);
 		}, this));
 	};
@@ -1124,8 +1104,8 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.enableAll = function (options) {
-		var identifiers = this.findNodes('true', 'g', 'state.disabled');
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		var identifiers = this._findNodes('true', 'g', 'state.disabled');
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setDisabledState(node, false, options);
 		}, this));
 	};
@@ -1136,7 +1116,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.enableNode = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setDisabledState(node, false, options);
 		}, this));
 	};
@@ -1147,7 +1127,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeDisabled = function (identifiers, options) {
-		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this._setDisabledState(node, !node.state.disabled, options);
 		}, this));
 	};
@@ -1156,7 +1136,7 @@
 	/**
 		Common code for processing multiple identifiers
 	*/
-	Tree.prototype.forEachIdentifier = function (identifiers, options, callback) {
+	Tree.prototype._forEachIdentifier = function (identifiers, options, callback) {
 
 		options = $.extend({}, _default.options, options);
 
@@ -1165,16 +1145,16 @@
 		}
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
-			callback(this.identifyNode(identifier), options);
+			callback(this._identifyNode(identifier), options);
 		}, this));	
 	};
 
 	/*
 		Identifies a node from either a node id or object
 	*/
-	Tree.prototype.identifyNode = function (identifier) {
+	Tree.prototype._identifyNode = function (identifier) {
 		return ((typeof identifier) === 'number') ?
-						this.nodes[identifier] :
+						this._nodes[identifier] :
 						identifier;
 	};
 
@@ -1201,7 +1181,7 @@
 				modifier += 'i';
 			}
 
-			results = this.findNodes(pattern, modifier);
+			results = this._findNodes(pattern, modifier);
 
 			// Add searchResult property to all matching nodes
 			// This will be used to apply custom styles
@@ -1230,7 +1210,7 @@
 
 		options = $.extend({}, { render: true }, options);
 
-		var results = $.each(this.findNodes('true', 'g', 'searchResult'), function (index, node) {
+		var results = $.each(this._findNodes('true', 'g', 'searchResult'), function (index, node) {
 			node.searchResult = false;
 			node.$el.removeClass('node-result');
 		});
@@ -1245,14 +1225,14 @@
 		@param {optional String} attribute - Attribute to compare pattern against
 		@return {Array} nodes - Nodes that match your criteria
 	*/
-	Tree.prototype.findNodes = function (pattern, modifier, attribute) {
+	Tree.prototype._findNodes = function (pattern, modifier, attribute) {
 
 		modifier = modifier || 'g';
 		attribute = attribute || 'text';
 
 		var _this = this;
-		return $.grep(this.nodes, function (node) {
-			var val = _this.getNodeValue(node, attribute);
+		return $.grep(this._nodes, function (node) {
+			var val = _this._getNodeValue(node, attribute);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
 			}
@@ -1266,12 +1246,12 @@
 		@param {String} attr - Identifies an object property using dot notation
 		@return {String} value - Matching attributes string representation
 	*/
-	Tree.prototype.getNodeValue = function (obj, attr) {
+	Tree.prototype._getNodeValue = function (obj, attr) {
 		var index = attr.indexOf('.');
 		if (index > 0) {
 			var _obj = obj[attr.substring(0, index)];
 			var _attr = attr.substring(index + 1, attr.length);
-			return this.getNodeValue(_obj, _attr);
+			return this._getNodeValue(_obj, _attr);
 		}
 		else {
 			if (obj.hasOwnProperty(attr)) {
