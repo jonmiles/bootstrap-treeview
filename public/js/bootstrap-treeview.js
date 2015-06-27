@@ -325,16 +325,16 @@
 
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
-			this._toggleExpandedState(node, _default.options);
+			this._toggleExpanded(node, _default.options);
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			this._toggleCheckedState(node, _default.options);
+			this._toggleChecked(node, _default.options);
 		}
 		else {
 			if (node.selectable) {
-				this._toggleSelectedState(node, _default.options);
+				this._toggleSelected(node, _default.options);
 			} else {
-				this._toggleExpandedState(node, _default.options);
+				this._toggleExpanded(node, _default.options);
 			}
 		}
 	};
@@ -352,12 +352,12 @@
 		return node;
 	};
 
-	Tree.prototype._toggleExpandedState = function (node, options) {
+	Tree.prototype._toggleExpanded = function (node, options) {
 		if (!node) return;
-		this._setExpandedState(node, !node.state.expanded, options);
+		this._setExpanded(node, !node.state.expanded, options);
 	};
 
-	Tree.prototype._setExpandedState = function (node, state, options) {
+	Tree.prototype._setExpanded = function (node, state, options) {
 
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
@@ -398,7 +398,7 @@
 			// Collapse children 
 			if (node.nodes && options && !options.ignoreChildren) {
 				$.each(node.nodes, $.proxy(function (index, node) {
-					this._setExpandedState(node, false, options);
+					this._setExpanded(node, false, options);
 				}, this));
 			}
 
@@ -412,13 +412,13 @@
 		}
 	};
 
-	Tree.prototype._toggleSelectedState = function (node, options) {
+	Tree.prototype._toggleSelected = function (node, options) {
 		if (!node) return;
-		this._setSelectedState(node, !node.state.selected, options);
+		this._setSelected(node, !node.state.selected, options);
 		return this;
 	};
 
-	Tree.prototype._setSelectedState = function (node, state, options) {
+	Tree.prototype._setSelected = function (node, state, options) {
 
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
@@ -429,7 +429,7 @@
 			// If multiSelect false, unselect previously selected
 			if (!this._options.multiSelect) {
 				$.each(this._findNodes('true', 'g', 'state.selected'), $.proxy(function (index, node) {
-					this._setSelectedState(node, false, options);
+					this._setSelected(node, false, options);
 				}, this));
 			}
 
@@ -477,12 +477,12 @@
 		return this;
 	};
 
-	Tree.prototype._toggleCheckedState = function (node, options) {
+	Tree.prototype._toggleChecked = function (node, options) {
 		if (!node) return;
-		this._setCheckedState(node, !node.state.checked, options);
+		this._setChecked(node, !node.state.checked, options);
 	};
 
-	Tree.prototype._setCheckedState = function (node, state, options) {
+	Tree.prototype._setChecked = function (node, state, options) {
 
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
@@ -526,7 +526,7 @@
 		}
 	};
 
-	Tree.prototype._setDisabledState = function (node, state, options) {
+	Tree.prototype._setDisabled = function (node, state, options) {
 
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
@@ -538,9 +538,9 @@
 			node.state.disabled = true;
 
 			// Disable all other states
-			this._setSelectedState(node, false, options);
-			this._setCheckedState(node, false, options);
-			this._setExpandedState(node, false, options);
+			this._setSelected(node, false, options);
+			this._setChecked(node, false, options);
+			this._setExpanded(node, false, options);
 
 			// Set element
 			if (node.$el) {
@@ -661,14 +661,14 @@
 		}
 
 		// Set various node states
-		this._setSelectedState(node, node.state.selected);
-		this._setCheckedState(node, node.state.checked);
+		this._setSelected(node, node.state.selected);
+		this._setChecked(node, node.state.checked);
 
 		// Set expanded state also triggers recursive tree build
-		this._setExpandedState(node, node.state.expanded);
+		this._setExpanded(node, node.state.expanded);
 
 		// Finally disabled, which will override any of previous states when true
-		this._setDisabledState(node, node.state.disabled);
+		this._setDisabled(node, node.state.disabled);
 	};
 
 	// Creates a new node element from template and
@@ -912,7 +912,7 @@
 	*/
 	Tree.prototype.selectNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setSelectedState(node, true, options);
+			this._setSelected(node, true, options);
 		}, this));
 	};
 
@@ -923,7 +923,7 @@
 	*/
 	Tree.prototype.unselectNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setSelectedState(node, false, options);
+			this._setSelected(node, false, options);
 		}, this));
 	};
 
@@ -934,7 +934,7 @@
 	*/
 	Tree.prototype.toggleNodeSelected = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._toggleSelectedState(node, options);
+			this._toggleSelected(node, options);
 		}, this));
 	};
 
@@ -956,7 +956,7 @@
 	*/
 	Tree.prototype.collapseNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setExpandedState(node, false, options);
+			this._setExpanded(node, false, options);
 		}, this));
 	};
 
@@ -977,7 +977,7 @@
 	*/
 	Tree.prototype.expandNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setExpandedState(node, true, options);
+			this._setExpanded(node, true, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, options.levels-1, options);
 			}
@@ -986,7 +986,7 @@
 
 	Tree.prototype._expandLevels = function (nodes, level, options) {
 		$.each(nodes, $.proxy(function (index, node) {
-			this._setExpandedState(node, (level > 0) ? true : false, options);
+			this._setExpanded(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, level-1, options);
 			}
@@ -1004,7 +1004,7 @@
 			var tmpNode;
 			while (tmpNode = this.getParent(parentNode)) {
 				parentNode = tmpNode;
-				this._setExpandedState(parentNode, true, options);
+				this._setExpanded(parentNode, true, options);
 			};
 		}, this));
 	};
@@ -1016,7 +1016,7 @@
 	*/
 	Tree.prototype.toggleNodeExpanded = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._toggleExpandedState(node, options);
+			this._toggleExpanded(node, options);
 		}, this));
 	};
 
@@ -1028,7 +1028,7 @@
 	Tree.prototype.checkAll = function (options) {
 		var identifiers = this._findNodes('false', 'g', 'state.checked');
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setCheckedState(node, true, options);
+			this._setChecked(node, true, options);
 		}, this));
 	};
 
@@ -1039,7 +1039,7 @@
 	*/
 	Tree.prototype.checkNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setCheckedState(node, true, options);
+			this._setChecked(node, true, options);
 		}, this));
 	};
 
@@ -1050,7 +1050,7 @@
 	Tree.prototype.uncheckAll = function (options) {
 		var identifiers = this._findNodes('true', 'g', 'state.checked');
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setCheckedState(node, false, options);
+			this._setChecked(node, false, options);
 		}, this));
 	};
 
@@ -1061,7 +1061,7 @@
 	*/
 	Tree.prototype.uncheckNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setCheckedState(node, false, options);
+			this._setChecked(node, false, options);
 		}, this));
 	};
 
@@ -1072,7 +1072,7 @@
 	*/
 	Tree.prototype.toggleNodeChecked = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._toggleCheckedState(node, options);
+			this._toggleChecked(node, options);
 		}, this));
 	};
 
@@ -1084,7 +1084,7 @@
 	Tree.prototype.disableAll = function (options) {
 		var identifiers = this._findNodes('false', 'g', 'state.disabled');
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setDisabledState(node, true, options);
+			this._setDisabled(node, true, options);
 		}, this));
 	};
 
@@ -1095,7 +1095,7 @@
 	*/
 	Tree.prototype.disableNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setDisabledState(node, true, options);
+			this._setDisabled(node, true, options);
 		}, this));
 	};
 
@@ -1106,7 +1106,7 @@
 	Tree.prototype.enableAll = function (options) {
 		var identifiers = this._findNodes('true', 'g', 'state.disabled');
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setDisabledState(node, false, options);
+			this._setDisabled(node, false, options);
 		}, this));
 	};
 
@@ -1117,7 +1117,7 @@
 	*/
 	Tree.prototype.enableNode = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setDisabledState(node, false, options);
+			this._setDisabled(node, false, options);
 		}, this));
 	};
 
@@ -1128,7 +1128,7 @@
 	*/
 	Tree.prototype.toggleNodeDisabled = function (identifiers, options) {
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-			this._setDisabledState(node, !node.state.disabled, options);
+			this._setDisabled(node, !node.state.disabled, options);
 		}, this));
 	};
 
