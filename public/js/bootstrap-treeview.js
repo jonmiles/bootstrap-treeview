@@ -569,6 +569,27 @@
 		}
 	};
 
+	Tree.prototype._setSearchResult = function (node, state, options) {
+		if (options && state === node.searchResult) return;
+
+		if (state) {
+
+			node.searchResult = true;
+
+			if (node.$el) {
+				node.$el.addClass('node-result');
+			}
+		}
+		else {
+
+			node.searchResult = false;
+
+			if (node.$el) {
+				node.$el.removeClass('node-result');
+			}
+		}
+	};
+
 	Tree.prototype._render = function () {
 
 		if (!this._initialized) {
@@ -663,6 +684,7 @@
 		// Set various node states
 		this._setSelected(node, node.state.selected);
 		this._setChecked(node, node.state.checked);
+		this._setSearchResult(node, node.searchResult);
 
 		// Set expanded state also triggers recursive tree build
 		this._setExpanded(node, node.state.expanded);
@@ -1167,9 +1189,9 @@
 	Tree.prototype.search = function (pattern, options) {
 		options = $.extend({}, _default.searchOptions, options);
 
-		this.clearSearch();
-
+		var previous = this._getSearchResults();
 		var results = [];
+
 		if (pattern && pattern.length > 0) {
 
 			if (options.exactMatch) {
@@ -1183,19 +1205,20 @@
 
 			results = this._findNodes(pattern, modifier);
 
-			// Add searchResult property to all matching nodes
-			// This will be used to apply custom styles
-			// and when identifying result to be cleared
-			$.each(results, function (index, node) {
-				node.searchResult = true;
-				node.$el.addClass('node-result');
-			})
-		}
+			// Clear previous results no longer matched
+			$.each(this._diffArray(results, previous), $.proxy(function (index, node) {
+				this._setSearchResult(node, false, options);
+			}, this));
 
-		// If revealResults, then render is triggered from revealNode
-		// otherwise we just call render.
-		if (options.revealResults) {
-			this.revealNode(results);
+			// Set new results
+			$.each(this._diffArray(previous, results), $.proxy(function (index, node) {
+				this._setSearchResult(node, true, options);
+			}, this));
+
+			// Reveal hidden nodes
+			if (results && options.revealResults) {
+				this.revealNode(results);
+			}
 		}
 
 		this.$element.trigger('searchComplete', $.extend(true, {}, results));
@@ -1210,12 +1233,25 @@
 
 		options = $.extend({}, { render: true }, options);
 
-		var results = $.each(this._findNodes('true', 'g', 'searchResult'), function (index, node) {
-			node.searchResult = false;
-			node.$el.removeClass('node-result');
-		});
+		var results = $.each(this._getSearchResults(), $.proxy(function (index, node) {
+			this._setSearchResult(node, false, options);
+		}, this));
 		
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
+	};
+
+	Tree.prototype._getSearchResults = function () {
+		return this._findNodes('true', 'g', 'searchResult');
+	};
+
+	Tree.prototype._diffArray = function (a, b) {
+		var diff = [];
+		$.grep(b, function (n) {
+			if ($.inArray(n, a) === -1) {
+				diff.push(n);
+			}
+		});
+		return diff;
 	};
 
 	/**
