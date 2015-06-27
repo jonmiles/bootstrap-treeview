@@ -1204,21 +1204,21 @@
 			}
 
 			results = this._findNodes(pattern, modifier);
+		}
 
-			// Clear previous results no longer matched
-			$.each(this._diffArray(results, previous), $.proxy(function (index, node) {
-				this._setSearchResult(node, false, options);
-			}, this));
+		// Clear previous results no longer matched
+		$.each(this._diffArray(results, previous), $.proxy(function (index, node) {
+			this._setSearchResult(node, false, options);
+		}, this));
 
-			// Set new results
-			$.each(this._diffArray(previous, results), $.proxy(function (index, node) {
-				this._setSearchResult(node, true, options);
-			}, this));
+		// Set new results
+		$.each(this._diffArray(previous, results), $.proxy(function (index, node) {
+			this._setSearchResult(node, true, options);
+		}, this));
 
-			// Reveal hidden nodes
-			if (results && options.revealResults) {
-				this.revealNode(results);
-			}
+		// Reveal hidden nodes
+		if (results && options.revealResults) {
+			this.revealNode(results);
 		}
 
 		this.$element.trigger('searchComplete', $.extend(true, {}, results));
