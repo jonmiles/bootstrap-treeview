@@ -51,6 +51,7 @@
 		searchResultBackColor: undefined, //'#FFFFFF',
 
 		enableLinks: false,
+		enableTitles: false,
 		highlightSelected: true,
 		highlightSearchResults: true,
 		showBorder: true,
@@ -519,6 +520,10 @@
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
+
+			// Add title attribute
+			if (_this.options.enableTitles)
+				treeItem.attr('title', node.text);
 
 			// Add indent/spacer to mimic tree structure
 			for (var i = 0; i < (level - 1); i++) {
