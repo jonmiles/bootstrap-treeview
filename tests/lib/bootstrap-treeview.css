@@ -19,9 +19,6 @@
 
 .treeview .list-group-item {
 	cursor: pointer;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 
 .treeview span.indent {
