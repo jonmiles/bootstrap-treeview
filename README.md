@@ -282,6 +282,11 @@ Boolean.  Default: false
 
 Whether or not to present node text as a hyperlink.  The href value of which must be provided in the data structure on a per node basis.
 
+#### enableTitles
+Boolean.  Default: false
+
+Adds the node text as a title attribute.
+
 #### expandIcon
 String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
