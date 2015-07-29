@@ -102,6 +102,7 @@
 			remove: $.proxy(this.remove, this),
 
 			// Get methods
+			findNodes: $.proxy(this.findNodes, this),
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
