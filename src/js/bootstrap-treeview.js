@@ -503,10 +503,24 @@
 		this.buildTree(this.tree, 0);
 	};
 
+
 	// Starting from the root node, and recursing down the
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
 
+        var treeItem = $(self._template.item)
+            .addClass('node-' + self._elementId)
+            .addClass((node === self.selectedNode) ? 'node-selected' : '')
+            .attr('data-nodeid', node.nodeId)
+            .attr('style', self._buildStyleOverride(node));
+        
+        // add attrs defined in JSON
+        // but only ones starting with data-
+        $.each(node._data, function(k, v) {
+            if (k.match(/^data\-/))
+                treeItem.attr(k, v);
+        });
+				
 		if (!nodes) return;
 		level += 1;
 
