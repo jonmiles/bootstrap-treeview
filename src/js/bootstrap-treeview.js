@@ -509,18 +509,18 @@
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
-            // add attrs defined in JSON
-            // but only ones starting with data-
-            if(Object.keys(node).length > 0){
-                $.each(node, function(k, v) {
-                    // We match any data-* JSON property, except data-nodeid which is used internally
-                    if (k.match(/^data\-/) &&  (!k.match(/^data\-nodeid/)) )
-                        treeItem.attr(k, v);
-                });
-            }
+                        // add attrs defined in JSON
+                        // but only ones starting with data-
+                        if(Object.keys(node).length > 0){
+                            $.each(node, function(k, v) {
+                                // We match any data-* JSON property, except data-nodeid which is used internally
+                                if (k.match(/^data\-/) &&  (!k.match(/^data\-nodeid/)) )
+                                    treeItem.attr(k, v);
+                            });
+                        }
 				
 				
-		    // Add title attribute
+		        // Add title attribute
 			if (_this.options.enableTitles)
 				treeItem.attr('title', node.text);
 
