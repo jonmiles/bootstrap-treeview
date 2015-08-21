@@ -1,22 +1,3 @@
-/* =========================================================
- * bootstrap-treeview.js v1.2.0
- * =========================================================
- * Copyright 2013 Jonathan Miles
- * Project URL : http://www.jondmiles.com/bootstrap-treeview
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ========================================================= */
-
 ;(function ($, window, document, undefined) {
 
 	/*global jQuery, console*/
@@ -51,6 +32,7 @@
 		searchResultBackColor: undefined, //'#FFFFFF',
 
 		enableLinks: false,
+		enableTitles: false,
 		highlightSelected: true,
 		highlightSearchResults: true,
 		showBorder: true,
@@ -101,6 +83,7 @@
 			remove: $.proxy(this.remove, this),
 
 			// Get methods
+			findNodes: $.proxy(this.findNodes, this),
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
@@ -501,6 +484,7 @@
 		this.buildTree(this.tree, 0);
 	};
 
+
 	// Starting from the root node, and recursing down the
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
@@ -519,6 +503,21 @@
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
+
+                        // add attrs defined in JSON
+                        // but only ones starting with data-
+                        if(Object.keys(node).length > 0){
+                            $.each(node, function(k, v) {
+                                // We match any data-* JSON property, except data-nodeid which is used internally
+                                if (k.match(/^data\-/) &&  (!k.match(/^data\-nodeid/)) )
+                                    treeItem.attr(k, v);
+                            });
+                        }
+				
+				
+		        // Add title attribute
+			if (_this.options.enableTitles)
+				treeItem.attr('title', node.text);
 
 			// Add indent/spacer to mimic tree structure
 			for (var i = 0; i < (level - 1); i++) {
@@ -695,7 +694,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
 
 
 	/**
