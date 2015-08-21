@@ -1,8 +1,3 @@
-/*
- * Generic Impact Tree Gadget
- *
- * Copyright (C) CERN 2015 All rights reserved.
- */
 ;(function ($, window, document, undefined) {
 
 	/*global jQuery, console*/
