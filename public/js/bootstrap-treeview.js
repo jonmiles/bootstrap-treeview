@@ -1,22 +1,8 @@
-/* =========================================================
- * bootstrap-treeview.js v1.2.0
- * =========================================================
- * Copyright 2013 Jonathan Miles
- * Project URL : http://www.jondmiles.com/bootstrap-treeview
+/*
+ * Generic Impact Tree Gadget
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ========================================================= */
-
+ * Copyright (C) CERN 2015 All rights reserved.
+ */
 ;(function ($, window, document, undefined) {
 
 	/*global jQuery, console*/
@@ -508,19 +494,6 @@
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
 
-        var treeItem = $(self._template.item)
-            .addClass('node-' + self._elementId)
-            .addClass((node === self.selectedNode) ? 'node-selected' : '')
-            .attr('data-nodeid', node.nodeId)
-            .attr('style', self._buildStyleOverride(node));
-        
-        // add attrs defined in JSON
-        // but only ones starting with data-
-        $.each(node._data, function(k, v) {
-            if (k.match(/^data\-/))
-                treeItem.attr(k, v);
-        });
-				
 		if (!nodes) return;
 		level += 1;
 
@@ -536,7 +509,18 @@
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
-			// Add title attribute
+            // add attrs defined in JSON
+            // but only ones starting with data-
+            if(Object.keys(node).length > 0){
+                $.each(node, function(k, v) {
+                    // We match any data-* JSON property, except data-nodeid which is used internally
+                    if (k.match(/^data\-/) &&  (!k.match(/^data\-nodeid/)) )
+                        treeItem.attr(k, v);
+                });
+            }
+				
+				
+		    // Add title attribute
 			if (_this.options.enableTitles)
 				treeItem.attr('title', node.text);
 
