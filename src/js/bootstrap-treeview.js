@@ -274,6 +274,11 @@
 				node.selectable = true;
 			}
 
+			// if not provided set checkable default value
+			if (!node.hasOwnProperty('checkable')) {
+				node.checkable = true;
+			}
+
 			// where provided we should preserve states
 			node.state = node.state || {};
 
@@ -565,7 +570,7 @@
 			}
 
 			// Add check / unchecked icon
-			if (_this.options.showCheckbox) {
+			if (_this.options.showCheckbox && node.checkable) {
 
 				var classList = ['check-icon'];
 				if (node.state.checked) {
