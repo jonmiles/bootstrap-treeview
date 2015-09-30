@@ -1101,11 +1101,12 @@
 		Searches the tree for nodes (text) that match given criteria
 		@param {String} pattern - A given string to match against
 		@param {optional Object} options - Search criteria options
+		@param {optional String} attribute - Attribute to compare pattern against (default: 'text')
 		@return {Array} nodes - Matching nodes
 	*/
-	Tree.prototype.search = function (pattern, options) {
+	Tree.prototype.search = function (pattern, options, attribute) {
 		options = $.extend({}, _default.searchOptions, options);
-
+		attribute = attribute || 'text'
 		this.clearSearch({ render: false });
 
 		var results = [];
@@ -1120,7 +1121,7 @@
 				modifier += 'i';
 			}
 
-			results = this.findNodes(pattern, modifier);
+			results = this.findNodes(pattern, modifier, attribute);
 
 			// Add searchResult property to all matching nodes
 			// This will be used to apply custom styles
