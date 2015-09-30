@@ -1106,7 +1106,7 @@
 	*/
 	Tree.prototype.search = function (pattern, options, attribute) {
 		options = $.extend({}, _default.searchOptions, options);
-		attribute = atttribute || 'text'
+		attribute = attribute || 'text'
 		this.clearSearch({ render: false });
 
 		var results = [];
