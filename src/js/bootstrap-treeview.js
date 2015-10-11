@@ -57,6 +57,7 @@
     showIcon : true,
     showCheckbox : false,
     showTags : false,
+    showTips : false,
     multiSelect : false,
 
     // Event handlers
@@ -581,6 +582,11 @@
         });
       }
 
+      // Add def as badge tooltip
+      if (_this.options.showTip && node.def) {
+        treeItem.append($(_this.template.tip).attr('title', node.def).tooltip());
+      }
+
       // Add item to the tree
       _this.$wrapper.append(treeItem);
 
@@ -664,7 +670,8 @@
     indent : '<span class="indent"></span>',
     icon : '<span class="icon"></span>',
     link : '<a href="#" style="color:inherit;"></a>',
-    badge : '<span class="badge"></span>'
+    badge : '<span class="badge"></span>',
+    tip : '<span class="badge" data-toggle="tooltip" data-placement="right" data-container="body">?</span>'
   };
 
   Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}';
