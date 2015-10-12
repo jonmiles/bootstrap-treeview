@@ -335,6 +335,9 @@
 
       this.toggleCheckedState(node, _default.options);
       this.render();
+    } else if ((classList.indexOf('node-tip') !== -1)) {
+
+      return;
     } else {
 
       if (node.selectable) {
@@ -584,7 +587,10 @@
 
       // Add def as badge tooltip
       if (_this.options.showTip && node.def) {
-        treeItem.append($(_this.template.tip).attr('title', node.def).tooltip());
+        var template = '<div class="tooltip node-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
+        treeItem.append($(_this.template.tip).attr('title', node.def).tooltip({
+          template: template
+        }));
       }
 
       // Add item to the tree
@@ -671,7 +677,7 @@
     icon : '<span class="icon"></span>',
     link : '<a href="#" style="color:inherit;"></a>',
     badge : '<span class="badge"></span>',
-    tip : '<span class="badge" data-toggle="tooltip" data-placement="right" data-container="body">?</span>'
+    tip : '<span class="badge node-tip" data-toggle="tooltip" data-placement="auto right" data-container="body">?</span>'
   };
 
   Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}';
