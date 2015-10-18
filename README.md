@@ -140,6 +140,13 @@ If you want to do more, here's the full node specification
   nodes: [
     {},
     ...
+  ],
+  columns: [
+      class: '',
+      text: '',
+  ],
+  data: [
+      'someDataAttributeName': 'someDataAttributeValue'
   ]
 }
 ```
@@ -402,6 +409,34 @@ $('#tree').data('treeview')
 ### List of Methods
 
 The following is a list of all available methods.
+
+#### showColumns(bool)
+
+```javascript
+{
+  "columns": [
+      {
+          "class": "someDivClass",
+          "text": "div value"
+      },
+      {
+         "class": "someDivClass",
+         "text": "div value"
+      }
+  ]
+}
+
+$('#tree').treeview({showColumns: true});
+```
+
+#### callbackAfterRender(function)
+
+Trigger a method right after the tree is built
+
+```javascript
+function someMethod() {}
+$('#tree').treeview({callbackAfterRender: someMethod});
+```
 
 #### checkAll(options)
 
