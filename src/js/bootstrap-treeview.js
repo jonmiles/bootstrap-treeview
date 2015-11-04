@@ -337,6 +337,8 @@
 			
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
+			} else if (this.options.customize) {
+				// Do nothing
 			} else {
 				this.toggleExpandedState(node, _default.options);
 			}
@@ -604,6 +606,11 @@
 							.append(tag)
 						);
 				});
+			}
+
+			// Add customized content
+			if (_this.options.customize) {
+				_this.options.customize(treeItem, node);
 			}
 
 			// Add item to the tree
