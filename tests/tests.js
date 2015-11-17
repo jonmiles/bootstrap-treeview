@@ -209,7 +209,7 @@
 
 	test('Accepts JSON', function () {
 		var el = init({levels:1,data:json});
-		equal($(el.selector + ' ul li').length, 5, 'Correct number of root nodes');
+		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
 
 	});
 
@@ -224,19 +224,19 @@
 	test('Correct initial levels shown', function () {
 
 		var el = init({levels:1,data:data});
-		equal($(el.selector + ' ul li').length, 5, 'Correctly display 5 root nodes when levels set to 1');
+		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correctly display 5 root nodes when levels set to 1');
 
 		el = init({levels:2,data:data});
-		equal($(el.selector + ' ul li').length, 7, 'Correctly display 5 root and 2 child nodes when levels set to 2');
+		equal($(el.selector + ' ul li:not(.node-hidden)').length, 7, 'Correctly display 5 root and 2 child nodes when levels set to 2');
 
 		el = init({levels:3,data:data});
-		equal($(el.selector + ' ul li').length, 9, 'Correctly display 5 root, 2 children and 2 grand children nodes when levels set to 3');
+		equal($(el.selector + ' ul li:not(.node-hidden)').length, 9, 'Correctly display 5 root, 2 children and 2 grand children nodes when levels set to 3');
 	});
 
 	test('Expanding a node', function () {
 
 		var cbWorked, onWorked = false;
-		init({
+		var el = init({
 			data: data,
 			levels: 1,
 			onNodeExpanded: function(/*event, date*/) {
@@ -247,10 +247,10 @@
 			onWorked = true;
 		});
 
-		var nodeCount = $('.list-group-item').length;
-		var el = $('.expand-icon:first');
-		el.trigger('click');
-		ok(($('.list-group-item').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
+		var nodeCount = $(el.selector + ' ul li:not(.node-hidden)').length;
+		var firstNode = $('.expand-icon:first');
+		firstNode.trigger('click');
+		ok(($(el.selector + ' ul li:not(.node-hidden)').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
 		ok(cbWorked, 'onNodeExpanded function was called');
 		ok(onWorked, 'nodeExpanded was fired');
 	});
@@ -258,7 +258,7 @@
 	test('Collapsing a node', function () {
 
 		var cbWorked, onWorked = false;
-		init({
+		var el = init({
 			data: data,
 			levels: 2,
 			onNodeCollapsed: function(/*event, date*/) {
@@ -269,10 +269,10 @@
 			onWorked = true;
 		});
 
-		var nodeCount = $('.list-group-item').length;
-		var el = $('.expand-icon:first');
-		el.trigger('click');
-		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
+		var nodeCount = $(el.selector + ' ul li:not(.node-hidden)').length;
+		var firstNode = $('.expand-icon:first');
+		firstNode.trigger('click');
+		ok(($(el.selector + ' ul li:not(.node-hidden)').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 		ok(cbWorked, 'onNodeCollapsed function was called');
 		ok(onWorked, 'nodeCollapsed was fired');
 	});
@@ -367,7 +367,7 @@
 		testData[0].selectable = false;
 
 		var cbCalled, onCalled = false;
-		init({
+		var el = init({
 			levels: 1,
 			data: testData,
 			onNodeSelected: function(/*event, date*/) {
@@ -378,14 +378,14 @@
 			onCalled = true;
 		});
 
-		var nodeCount = $('.list-group-item').length;
-		var el = $('.list-group-item:first');
-		el.trigger('click');
-		el = $('.list-group-item:first');
-		ok(!el.hasClass('node-selected'), 'Node should not be selected');
+		var nodeCount = $(el.selector + ' ul li:not(.node-hidden)').length;
+		var firstNode = $('.list-group-item:first');
+		firstNode.trigger('click');
+		firstNode = $('.list-group-item:first');
+		ok(!firstNode.hasClass('node-selected'), 'Node should not be selected');
 		ok(!cbCalled, 'onNodeSelected function should not be called');
 		ok(!onCalled, 'nodeSelected should not fire');
-		ok(($('.list-group-item').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
+		ok(($(el.selector + ' ul li:not(.node-hidden)').length > nodeCount), 'Number of nodes are increased, so node must have expanded');
 	});
 
 	test('Clicking a non-selectable, expanded node collapses the node', function () {
@@ -393,7 +393,7 @@
 		testData[0].selectable = false;
 
 		var cbCalled, onCalled = false;
-		init({
+		var el = init({
 			levels: 2,
 			data: testData,
 			onNodeSelected: function(/*event, date*/) {
@@ -404,15 +404,15 @@
 			onCalled = true;
 		});
 
-		var nodeCount = $('.list-group-item').length;
-		var el = $('.list-group-item:first');
-		el.trigger('click');
-		el = $('.list-group-item:first');
+		var nodeCount = $(el.selector + ' ul li:not(.node-hidden)').length;
+		var firstNode = $('.list-group-item:first');
+		firstNode.trigger('click');
+		firstNode = $('.list-group-item:first');
 
-		ok(!el.hasClass('node-selected'), 'Node should not be selected');
+		ok(!firstNode.hasClass('node-selected'), 'Node should not be selected');
 		ok(!cbCalled, 'onNodeSelected function should not be called');
 		ok(!onCalled, 'nodeSelected should not fire');
-		ok(($('.list-group-item').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
+		ok(($(el.selector + ' ul li:not(.node-hidden)').length < nodeCount), 'Number of nodes has decreased, so node must have collapsed');
 	});
 
 	test('Checking a node', function () {
@@ -600,10 +600,10 @@
 		var $tree = init({ data: data, levels: 1 });
 
 		$tree.treeview('disableAll');
-		equal($($tree.selector + ' ul li.node-disabled').length, 5, 'Disable all works, 9 nodes with node-disabled class');
+		equal($($tree.selector + ' ul li:not(.node-hidden).node-disabled').length, 5, 'Disable all works, 9 nodes with node-disabled class');
 
 		$tree.treeview('enableAll');
-		equal($($tree.selector + ' ul li.node-disabled').length, 0, 'Check all works, 9 nodes non with node-disabled class');
+		equal($($tree.selector + ' ul li:not(.node-hidden).node-disabled').length, 0, 'Check all works, 9 nodes non with node-disabled class');
 	});
 
 	test('disableNode / enableNode', function () {
@@ -754,66 +754,66 @@
 
 	test('expandAll / collapseAll', function () {
 		var $tree = init({ data: data, levels: 1 });
-		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
 
 		$tree.treeview('expandAll');
-		equal($($tree.selector + ' ul li').length, 9, 'Expand all works, all 9 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Expand all works, all 9 nodes displayed');
 
 		$tree.treeview('collapseAll');
-		equal($($tree.selector + ' ul li').length, 5, 'Collapse all works, 5 original root nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse all works, 5 original root nodes displayed');
 
 		$tree.treeview('expandAll', { levels: 1 });
-		equal($($tree.selector + ' ul li').length, 7, 'Expand all (levels = 1) works, correctly displayed 7 nodes');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand all (levels = 1) works, correctly displayed 7 nodes');
 	});
 
 	test('expandNode / collapseNode / toggleExpanded', function () {
 		var $tree = init({ data: data, levels: 1 });
-		equal($($tree.selector + ' ul li').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
 
 		$tree.treeview('expandNode', 0);
-		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by id) works, 7 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand node (by id) works, 7 nodes displayed');
 
 		$tree.treeview('collapseNode', 0);
-		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by id) works, 5 original nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse node (by id) works, 5 original nodes displayed');
 
 		$tree.treeview('toggleNodeExpanded', 0);
-		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by id) works, 7 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Toggle node (by id) works, 7 nodes displayed');
 
 		$tree.treeview('toggleNodeExpanded', 0);
-		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
 
 		$tree.treeview('expandNode', [ 0, { levels: 2 } ]);
-		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
 
 		$tree = init({ data: data, levels: 1 });
-		equal($($tree.selector + ' ul li').length, 5, 'Reset to collapsed state, 5 root nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Reset to collapsed state, 5 root nodes displayed');
 
 		var nodeParent1 = $tree.treeview('getNode', 0);
 		$tree.treeview('expandNode', nodeParent1);
-		equal($($tree.selector + ' ul li').length, 7, 'Expand node (by node) works, 7 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand node (by node) works, 7 nodes displayed');
 
 		$tree.treeview('collapseNode', nodeParent1);
-		equal($($tree.selector + ' ul li').length, 5, 'Collapse node (by node) works, 5 original nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse node (by node) works, 5 original nodes displayed');
 
 		$tree.treeview('toggleNodeExpanded', nodeParent1);
-		equal($($tree.selector + ' ul li').length, 7, 'Toggle node (by node) works, 7 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Toggle node (by node) works, 7 nodes displayed');
 
 		$tree.treeview('toggleNodeExpanded', nodeParent1);
-		equal($($tree.selector + ' ul li').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
 
 		$tree.treeview('expandNode', [ nodeParent1, { levels: 2 } ]);
-		equal($($tree.selector + ' ul li').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
 	});
 
 	test('revealNode', function () {
 		var $tree = init({ data: data, levels: 1 });
 
 		$tree.treeview('revealNode', 1); // Child_1
-		equal($($tree.selector + ' ul li').length, 7, 'Reveal node (by id) works, reveal Child 1 and 7 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Reveal node (by id) works, reveal Child 1 and 7 nodes displayed');
 
 		var nodeGrandchild1 = $tree.treeview('getNode', 2); // Grandchild 1
 		$tree.treeview('revealNode', nodeGrandchild1);
-		equal($($tree.selector + ' ul li').length, 9, 'Reveal node (by node) works, reveal Grandchild 1 and 9 nodes displayed');
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Reveal node (by node) works, reveal Grandchild 1 and 9 nodes displayed');
 	});
 
 	test('search', function () {

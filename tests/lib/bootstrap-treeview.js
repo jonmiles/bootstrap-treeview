@@ -1294,13 +1294,12 @@
 		modifier = modifier || 'g';
 		attribute = attribute || 'text';
 
-		var _this = this;
-		return $.grep(this._nodes, function (node) {
-			var val = _this._getNodeValue(node, attribute);
+		return $.grep(this._nodes, $.proxy(function (node) {
+			var val = this._getNodeValue(node, attribute);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
 			}
-		});
+		}, this));
 	};
 
 	/**
