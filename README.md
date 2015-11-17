@@ -513,6 +513,14 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### getChecked()
+
+Returns an array of checked nodes e.g. state.checked = true.
+
+```javascript
+$('#tree').treeview('getChecked', nodeId);
+```
+
 #### getCollapsed()
 
 Returns an array of collapsed nodes e.g. state.expanded = false.
@@ -575,6 +583,14 @@ Returns an array of sibling nodes for a given node, if valid otherwise returns u
 
 ```javascript
 $('#tree').treeview('getSiblings', node);
+```
+
+#### getUnchecked()
+
+Returns an array of unchecked nodes e.g. state.checked = false.
+
+```javascript
+$('#tree').treeview('getUnchecked', nodeId);
 ```
 
 #### getUnselected()
