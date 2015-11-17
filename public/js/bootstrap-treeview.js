@@ -318,7 +318,12 @@
 
 			// recurse child nodes and transverse the tree
 			if (node.nodes) {
-				_this._setInitialStates(node, level);
+				if (node.nodes.length > 0) {
+					_this._setInitialStates(node, level);
+				}
+				else {
+					delete node.nodes;
+				}
 			}
 		});
 	};
