@@ -300,6 +300,14 @@
 				}
 			}
 
+			// set visible state; based purely on levels
+			if (level > _this._options.levels) {
+				node.state.visible = false;
+			}
+			else {
+				node.state.visible = true;
+			}
+
 			// set selected state; unless set always false
 			if (!node.state.hasOwnProperty('selected')) {
 				node.state.selected = false;
@@ -375,8 +383,12 @@
 					.addClass(this._options.collapseIcon);
 			}
 
-			// Render child nodes
-			this._expandNode(node);
+			// Expand children 
+			if (node.nodes && options) {
+				$.each(node.nodes, $.proxy(function (index, node) {
+					this._setVisible(node, true, options);
+				}, this));
+			}
 
 			// Optionally trigger event
 			if (options && !options.silent) {
@@ -396,18 +408,42 @@
 			}
 
 			// Collapse children 
-			if (node.nodes && options && !options.ignoreChildren) {
+			if (node.nodes && options) {
 				$.each(node.nodes, $.proxy(function (index, node) {
+					this._setVisible(node, false, options);
 					this._setExpanded(node, false, options);
 				}, this));
 			}
 
-			// Remove child nodes
-			this._collapseNode(node);
-
 			// Optionally trigger event
 			if (options && !options.silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+			}
+		}
+	};
+
+	Tree.prototype._setVisible = function (node, state, options) {
+
+		if (options && state === node.state.visible) return;
+
+		if (state) {
+
+			// Set node state
+			node.state.visible = true;
+
+			// Set element
+			if (node.$el) {
+				node.$el.removeClass('node-hidden');
+			}
+		}
+		else {
+
+			// Set node state to unchecked
+			node.state.visible = false;
+
+			// Set element
+			if (node.$el) {
+				node.$el.addClass('node-hidden');
 			}
 		}
 	};
@@ -685,12 +721,17 @@
 		this._setSelected(node, node.state.selected);
 		this._setChecked(node, node.state.checked);
 		this._setSearchResult(node, node.searchResult);
-
-		// Set expanded state also triggers recursive tree build
 		this._setExpanded(node, node.state.expanded);
-
-		// Finally disabled, which will override any of previous states when true
 		this._setDisabled(node, node.state.disabled);
+		this._setVisible(node, node.state.visible);
+
+		// If children exist, recursively add
+		if (node.nodes) {
+			$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
+				childNode.level = node.level + 1;
+				this._renderNode(childNode, node.$el);
+			}, this));
+		}
 	};
 
 	// Creates a new node element from template and
@@ -708,19 +749,6 @@
 		}
 
 		return $el;
-	};
-
-	// Collapse node, removing it's immediate children
-	Tree.prototype._collapseNode = function (node) {
-		if (!node.nodes) return;
-
-		$.each(node.nodes, $.proxy(function (index, node) {
-			this._collapseNode(node);
-			if (node.$el) {
-				node.$el.remove();
-				node.$el = null;
-			}
-		}, this));
 	};
 
 	// Expand node, rendering it's immediate children
