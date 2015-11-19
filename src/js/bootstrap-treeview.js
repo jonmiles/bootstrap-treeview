@@ -55,6 +55,7 @@
 		highlightSearchResults: true,
 		showBorder: true,
 		showIcon: true,
+		showImage: false,
 		showCheckbox: false,
 		showTags: false,
 		multiSelect: false,
@@ -563,6 +564,17 @@
 						.addClass(classList.join(' '))
 					);
 			}
+			
+			// Add node image
+			if (_this.options.showImage && node.image) {
++				treeItem
++					.append($(_this.template.image)
++						.css('background-image', 'url(\'' + node.image.url + '\')')
++						.css('background-size', node.image.width + 'px ' + node.image.height + 'px')
++						.css('width', node.image.width)
++						.css('height', node.image.height)
++					);
++			}
 
 			// Add check / unchecked icon
 			if (_this.options.showCheckbox) {
@@ -692,7 +704,8 @@
 		indent: '<span class="indent"></span>',
 		icon: '<span class="icon"></span>',
 		link: '<a href="#" style="color:inherit;"></a>',
-		badge: '<span class="badge"></span>'
+		badge: '<span class="badge"></span>',
+		image: '<span class="image"></span>'
 	};
 
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
