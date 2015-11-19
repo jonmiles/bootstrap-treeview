@@ -31,7 +31,17 @@
 	margin-right: 5px;
 }
 
+.treeview span.image {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
 .treeview .node-disabled {
 	color: silver;
 	cursor: not-allowed;
+}
+
+.list-group-item>a {
+	vertical-align: middle;
 }
