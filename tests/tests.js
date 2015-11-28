@@ -517,6 +517,33 @@
 		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
 	});
 
+	test('getNodesAlongPath', function () {
+		var $tree = init({ data: data });
+
+		var nodeParent1 = $tree.treeview('getNode', 0);
+		var nodesAlongPathParent1 = $tree.treeview('getNodesAlongPath', nodeParent1);
+		var isArray = (nodesAlongPathParent1 instanceof Array);
+		var countOK = nodesAlongPathParent1.length === 1;
+		var resultsOK = nodesAlongPathParent1[0].text === 'Parent 1';
+		ok(isArray, 'Correct nodes along path for "Parent 1" : is array');
+		ok(countOK, 'Correct nodes along path for "Parent 1" : count OK');
+		ok(resultsOK, 'Correct nodes along path for "Parent 1" : results OK');
+
+		var nodeGrandchild2 = $tree.treeview('getNode', 3);
+		var nodesAlongPathGrandchild2 = $tree.treeview('getNodesAlongPath', nodeGrandchild2);
+		var isArray = (nodesAlongPathGrandchild2 instanceof Array);
+		var countOK = nodesAlongPathGrandchild2.length === 3;
+		var results = $.map(nodesAlongPathGrandchild2, function (node) {
+			return node.text;
+		});
+		var resultsOK = $.inArray('Grandchild 2', results) > -1;
+		resultsOK = resultsOK && $.inArray('Child 1', results) > -1;
+		resultsOK = resultsOK && $.inArray('Parent 1', results) > -1;
+		ok(isArray, 'Correct nodes along path for "Grandchild 2" : is array');
+		ok(countOK, 'Correct nodes along path for "Grandchild 2" : count OK');
+		ok(resultsOK, 'Correct nodes along path for "Grandchild 2" : results OK');
+	});
+
 	test('getSelected', function () {
 		var $tree = init({ data: data })
 			.treeview('selectNode', 0);
@@ -870,6 +897,192 @@
 		// Check events fire
 		ok(cbWorked, 'onSearchCleared function was called');
 		ok(onWorked, 'searchCleared was fired');
+	});
+
+	test('search with result filtering', function () {
+		var $tree = init({
+			data: data
+		});
+
+		var results, node;
+
+		// No matches.
+		results = $tree.treeview('search', [ 'blargh', { ignoreCase: false, exactMatch: false, filterResults: true } ]);
+		equal(results.length, 0, 'Search "blargh" - returns 0 results');
+		node = $tree.treeview('getNode', 0);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 1);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 2);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 3);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 4);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 5);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 6);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 7);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 8);
+		isResultAncestor(node);
+
+		// Parent 1 matches.
+		results = $tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: false, filterResults: true } ]);
+		equal(results.length, 1, 'Search "Parent 1" - returns 1 result');
+		node = $tree.treeview('getNode', 0);
+		isResult(node);
+		isCollapsed(node);
+		node = $tree.treeview('getNode', 1);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 2);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 3);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 4);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 5);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 6);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 7);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 8);
+		isFiltered(node);
+
+		// Parent 5 matches.
+		results = $tree.treeview('search', [ 'Parent 5', { ignoreCase: false, exactMatch: false, filterResults: true } ]);
+		equal(results.length, 1, 'Search "Parent 5" - returns 1 result');
+		node = $tree.treeview('getNode', 0);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 1);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 2);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 3);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 4);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 5);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 6);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 7);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 8);
+		isResult(node);
+
+		// Child 1 matches.
+		results = $tree.treeview('search', [ 'Child 1', { ignoreCase: false, exactMatch: false, filterResults: true } ]);
+		equal(results.length, 1, 'Search "Child 1" - returns 1 result');
+		node = $tree.treeview('getNode', 0);
+		isResultAncestor(node);
+		isCollapsed(node);
+		node = $tree.treeview('getNode', 1);
+		isResult(node);
+		isCollapsed(node);
+		node = $tree.treeview('getNode', 2);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 3);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 4);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 5);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 6);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 7);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 8);
+		isFiltered(node);
+
+		// Grandchildren match.
+		results = $tree.treeview('search', [ 'Grandchild', { ignoreCase: false, exactMatch: false, filterResults: true } ]);
+		equal(results.length, 2, 'Search "Grandchild" - returns 2 results');
+		node = $tree.treeview('getNode', 0);
+		isResultAncestor(node);
+		isCollapsed(node);
+		node = $tree.treeview('getNode', 1);
+		isResultAncestor(node);
+		isExpanded(node);
+		node = $tree.treeview('getNode', 2);
+		isResult(node);
+		node = $tree.treeview('getNode', 3);
+		isResult(node);
+		node = $tree.treeview('getNode', 4);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 5);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 6);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 7);
+		isFiltered(node);
+		node = $tree.treeview('getNode', 8);
+		isFiltered(node);
+
+		// No matches - after previous 'Grandchild' matches.
+		results = $tree.treeview('search', [ 'blargh', { ignoreCase: false, exactMatch: false, filterResults: true } ]);
+		equal(results.length, 0, 'Search "blargh" - returns 0 results');
+		node = $tree.treeview('getNode', 0);
+		isResultAncestor(node);
+		isExpanded(node);
+		node = $tree.treeview('getNode', 1);
+		isResultAncestor(node);
+		isExpanded(node);
+		node = $tree.treeview('getNode', 2);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 3);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 4);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 5);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 6);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 7);
+		isResultAncestor(node);
+		node = $tree.treeview('getNode', 8);
+		isResultAncestor(node);
+
+		function isResult(node) {
+			ok(node.$el.hasClass('node-result'), 'Result node ' + node.nodeId + ' has result class');
+			ok(!node.$el.hasClass('node-hidden'), 'Result node ' + node.nodeId + ' does not have hidden class');
+		}
+
+		function isFiltered(node) {
+			ok(!node.$el.hasClass('node-result'), 'Filtered node ' + node.nodeId + ' does not have result class');
+			ok(node.$el.hasClass('node-hidden'), 'Filtered node ' + node.nodeId + ' has hidden class');
+		}
+
+		function isResultAncestor(node) {
+			ok(!node.$el.hasClass('node-result'), 'Result ancestor node ' + node.nodeId + ' does not have result class');
+			ok(!node.$el.hasClass('node-hidden'), 'Result ancestor node ' + node.nodeId + ' does not have hidden class');
+		}
+
+		function isExpanded(node) {
+			ok(node.state.expanded, 'Node ' + node.nodeId + ' state is expanded');
+			ok(node.$el.children('span.expand-icon').hasClass('glyphicon-minus'), 'Node ' + node.nodeId + ' has collapse icon');
+		}
+
+		function isCollapsed(node) {
+			ok(!node.state.expanded, 'Node ' + node.nodeId + ' state is collapsed');
+			ok(node.$el.children('span.expand-icon').hasClass('glyphicon-plus'), 'Node ' + node.nodeId + ' has expand icon');
+		}
+	});
+
+	test('clearSearch with result filtering', function () {
+		var $tree = init({
+			data: data
+		});
+
+		// Check results are cleared, filtered nodes are cleared
+		$tree.treeview('search', [ 'Grandchild 1', { ignoreCase: false, exactMatch: true, filterResults: true } ]);
+		equal($tree.find('.node-result').length, 1, 'Search results highlighted');
+		equal($tree.find('.node-hidden').length, 6, 'Non results filtered');
+		$tree.treeview('clearSearch');
+		equal($tree.find('.node-result').length, 0, 'Search results cleared');
+		equal($tree.find('.node-hidden').length, 0, 'Filtered nodes cleared');
 	});
 
 }());
