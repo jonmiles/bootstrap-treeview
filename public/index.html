@@ -91,7 +91,13 @@
                 Reveal Results
               </label>
             </div>
-            <button type="button" class="btn btn-success" id="btn-search">Search</button>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="checkbox" id="chk-filter-results" value="true" checked>
+                Filter Results
+              </label>
+            </div>
+          <button type="button" class="btn btn-success" id="btn-search">Search</button>
             <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
           <!-- </form> -->
         </div>
@@ -543,7 +549,8 @@
           var options = {
             ignoreCase: $('#chk-ignore-case').is(':checked'),
             exactMatch: $('#chk-exact-match').is(':checked'),
-            revealResults: $('#chk-reveal-results').is(':checked')
+            revealResults: $('#chk-reveal-results').is(':checked'),
+            filterResults: $('#chk-filter-results').is(':checked')
           };
           var results = $searchableTree.treeview('search', [ pattern, options ]);
 

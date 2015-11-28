@@ -80,7 +80,8 @@
 	_default.searchOptions = {
 		ignoreCase: true,
 		exactMatch: false,
-		revealResults: true
+		revealResults: true,
+		filterResults: false
 	};
 
 	var Tree = function (element, options) {
@@ -104,6 +105,7 @@
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
+			getNodesAlongPath: $.proxy(this.getNodesAlongPath, this),
 			getSelected: $.proxy(this.getSelected, this),
 			getUnselected: $.proxy(this.getUnselected, this),
 			getExpanded: $.proxy(this.getExpanded, this),
@@ -423,6 +425,37 @@
 			// Optionally trigger event
 			if (options && !options.silent) {
 				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
+			}
+		}
+	};
+
+	// Recursively walks tree and marks parent nodes as either collapsed or expanded
+	// depending on whether some of its children have been filtered.
+	Tree.prototype._updateExpandedStatusOnFilteredSearch = function (parent) {
+		if (parent.nodes) {
+			var hasFiltered = false;
+			$.each(parent.nodes, $.proxy(function (index, node) {
+				if (node.state.visible === false) {
+					hasFiltered = true;
+				}
+
+				this._updateExpandedStatusOnFilteredSearch(node);
+			}, this));
+
+			if (hasFiltered) {
+				parent.state.expanded = false;
+				if (parent.$el) {
+					parent.$el.children('span.expand-icon')
+						.removeClass(this._options.collapseIcon)
+						.addClass(this._options.expandIcon);
+				}
+			} else {
+				parent.state.expanded = true;
+				if (parent.$el) {
+					parent.$el.children('span.expand-icon')
+						.removeClass(this._options.expandIcon)
+						.addClass(this._options.collapseIcon);
+				}
 			}
 		}
 	};
@@ -896,6 +929,25 @@
 	};
 
 	/**
+		Returns an array of nodes along the path starting from the given node(s) all the way up to the root node.
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@returns {Array} nodes - Nodes along the path from the given nodes
+	*/
+	Tree.prototype.getNodesAlongPath = function (identifiers) {
+		var matches = {};
+		this._forEachIdentifier(identifiers, null, $.proxy(function (node, options) {
+			var parent = node;
+			do {
+				matches[parent.nodeId] = parent;
+			} while ((parent = this.getParent(parent)) != null);
+		}, this));
+
+		return $.map(Object.keys(matches), function (nodeId) {
+			return matches[nodeId];
+		});
+	};
+
+	/**
 		Returns an array of selected nodes.
 		@returns {Array} nodes - Selected nodes
 	*/
@@ -1250,8 +1302,58 @@
 		}, this));
 
 		// Reveal hidden nodes
-		if (results && options.revealResults) {
+		if (results && options.revealResults && !options.filterResults) {
 			this.revealNode(results);
+		}
+
+		if (options.filterResults) {
+			var prevMatchedNodes;
+			var prevFilteredNodes;
+			if (previous && previous.length) {
+				// If there were previous matches, get the set of filtered nodes
+				prevMatchedNodes = this.getNodesAlongPath(previous);
+				prevFilteredNodes = this._diffArray(prevMatchedNodes, this._nodes);
+			} else {
+				// If no previous matches, we were displaying the whole tree, thus no filtered nodes
+				prevMatchedNodes = [];
+				prevFilteredNodes = [];
+			}
+
+			if (results && results.length) {
+				// All nodes along the path from the current results to the root should remain visible
+				var currMatchedNodes = this.getNodesAlongPath(results);
+				var currFilteredNodes = this._diffArray(currMatchedNodes, this._nodes);
+
+				var nodesToHide = this._diffArray(prevFilteredNodes, currFilteredNodes);
+				$.each(nodesToHide, $.proxy(function (index, node) {
+					this._setVisible(node, false, options);
+				}, this));
+
+				var nodesToShow = this._diffArray(prevMatchedNodes, currMatchedNodes);
+				$.each(nodesToShow, $.proxy(function (index, node) {
+					this._setVisible(node, true, options);
+				}, this));
+			} else {
+				$.each(prevMatchedNodes, $.proxy(function (index, node) {
+					var parentNode = this.getParent(node);
+					if (parentNode && !parentNode.state.expanded) {
+						this.revealNode(node);
+					}
+				}, this));
+
+				$.each(prevFilteredNodes, $.proxy(function (index, node) {
+					var parentNode = this.getParent(node);
+					if (!parentNode) {
+						this._setVisible(node, true, options);
+					}
+				}, this));
+			}
+
+			// If a node has children that are filtered out, we want it to be marked as collapsed,
+			// so that it can be expanded to show the filtered nodes
+			$.each(this._tree, $.proxy(function (index, node) {
+				this._updateExpandedStatusOnFilteredSearch(node);
+			}, this));
 		}
 
 		this.$element.trigger('searchComplete', $.extend(true, {}, results));
@@ -1269,7 +1371,27 @@
 		var results = $.each(this._getSearchResults(), $.proxy(function (index, node) {
 			this._setSearchResult(node, false, options);
 		}, this));
-		
+
+		var currMatchedNodes = this.getNodesAlongPath(results);
+
+		// Make sure that for each matched node, its parent is expanded, if it's not already.
+		// Since the matched node is visible, the parent must be expanded
+		// (it might have been marked as collapsed if it had some of its children filtered).
+		$.each(currMatchedNodes, $.proxy(function (index, node) {
+			var parentNode = this.getParent(node);
+			if (parentNode && !parentNode.state.expanded) {
+				this.revealNode(node);
+			}
+		}, this));
+
+		var currFilteredNodes = this._diffArray(currMatchedNodes, this._nodes);
+		$.each(currFilteredNodes, $.proxy(function (index, node) {
+			var parentNode = this.getParent(node);
+			if (!parentNode) {
+				this._setVisible(node, true, options);
+			}
+		}, this));
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
