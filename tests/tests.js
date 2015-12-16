@@ -121,6 +121,7 @@
 		equal(options.onNodeUnselected, null, 'onNodeUnselected default ok');
 		equal(options.onSearchComplete, null, 'onSearchComplete default ok');
 		equal(options.onSearchCleared, null, 'onSearchCleared default ok');
+		equal(options.onSearchClearedonBeforeAppendNodeItem, null, 'onBeforeAppendNodeItem default ok');
 
 		// Then test user options are correctly set
 		var opts = {
@@ -157,7 +158,8 @@
 			onNodeUnchecked: function () {},
 			onNodeUnselected: function () {},
 			onSearchComplete: function () {},
-			onSearchCleared: function () {}
+			onSearchCleared: function () {},
+			onBeforeAppendNodeItem: function () {}
 		};
 
 		options = getOptions(init(opts));
@@ -196,6 +198,7 @@
 		equal(typeof options.onNodeUnselected, 'function', 'onNodeUnselected set ok');
 		equal(typeof options.onSearchComplete, 'function', 'onSearchComplete set ok');
 		equal(typeof options.onSearchCleared, 'function', 'onSearchCleared set ok');
+		equal(typeof options.onBeforeAppendNodeItem, 'function', 'onBeforeAppendNodeItem set ok');
 	});
 
 	test('Links enabled', function () {
@@ -870,6 +873,21 @@
 		// Check events fire
 		ok(cbWorked, 'onSearchCleared function was called');
 		ok(onWorked, 'searchCleared was fired');
+	});
+
+	test('itemCustomizationOnInit', function () {
+		var cbWorked = false;
+		var $tree = init({
+			data: data,
+			onBeforeAppendNodeItem: function(event, item, node) {
+				ok(item != null, 'item was not passed');
+				ok(node != null, 'node was not passed');
+				cbWorked = true;
+			}
+		});
+
+		// Check events fire
+		ok(cbWorked, 'onBeforeAppendNodeItem function was not called');
 	});
 
 }());

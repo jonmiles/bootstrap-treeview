@@ -69,7 +69,8 @@
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
-		onSearchCleared: undefined
+		onSearchCleared: undefined,
+		onBeforeAppendNodeItem: undefined
 	};
 
 	_default.options = {
@@ -199,6 +200,7 @@
 		this.$element.off('nodeUnselected');
 		this.$element.off('searchComplete');
 		this.$element.off('searchCleared');
+		this.$element.off('beforeAppendNodeItem');
 	};
 
 	Tree.prototype.subscribeEvents = function () {
@@ -245,6 +247,10 @@
 
 		if (typeof (this.options.onSearchCleared) === 'function') {
 			this.$element.on('searchCleared', this.options.onSearchCleared);
+		}
+
+		if (typeof (this.options.onBeforeAppendNodeItem) === 'function') {
+			this.$element.on('beforeAppendNodeItem', this.options.onBeforeAppendNodeItem);
 		}
 	};
 
@@ -605,6 +611,9 @@
 						);
 				});
 			}
+
+			// Callback for item customization
+			_this.$element.trigger('beforeAppendNodeItem', [treeItem, node]);
 
 			// Add item to the tree
 			_this.$wrapper.append(treeItem);
