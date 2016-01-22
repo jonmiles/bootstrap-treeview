@@ -388,7 +388,7 @@
 					.addClass(this._options.collapseIcon);
 			}
 
-			// Expand children 
+			// Expand children
 			if (node.nodes && options) {
 				$.each(node.nodes, $.proxy(function (index, node) {
 					this._setVisible(node, true, options);
@@ -412,7 +412,7 @@
 					.addClass(this._options.expandIcon);
 			}
 
-			// Collapse children 
+			// Collapse children
 			if (node.nodes && options) {
 				$.each(node.nodes, $.proxy(function (index, node) {
 					this._setVisible(node, false, options);
@@ -715,10 +715,17 @@
 		// Add tags as badges
 		if (this._options.showTags && node.tags) {
 			$.each(node.tags, $.proxy(function addTag(id, tag) {
-				node.$el
-					.append($(this._template.badge)
-						.append(tag)
-					);
+				if (jQuery.type(tag) == 'string') {
+					node.$el
+						.append($(this._template.badge)
+							.append(tag)
+						);
+				} else {
+					node.$el
+						.append($(this._template.badge)
+							.append(tag.text).css('background-color', tag.color)
+						);
+				}
 			}, this));
 		}
 
@@ -744,7 +751,7 @@
 	Tree.prototype._newNodeEl = function (pEl) {
 
 		var $el = $(this._template.node);
-		
+
 		if (pEl) {
 			this.$wrapper.children()
 				.eq(pEl.index()).after($el);
@@ -805,7 +812,7 @@
 
 		// Style search results
 		if (this._options.highlightSearchResults && (this._options.searchResultColor || this._options.searchResultBackColor)) {
-			
+
 			var innerStyle = ''
 			if (this._options.searchResultColor) {
 				innerStyle += 'color:' + this._options.searchResultColor + ';';
@@ -820,7 +827,7 @@
 
 		// Style selected nodes
 		if (this._options.highlightSelected && (this._options.selectedColor || this._options.selectedBackColor)) {
-			
+
 			var innerStyle = ''
 			if (this._options.selectedColor) {
 				innerStyle += 'color:' + this._options.selectedColor + ';';
@@ -1201,7 +1208,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this._identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
@@ -1269,7 +1276,7 @@
 		var results = $.each(this._getSearchResults(), $.proxy(function (index, node) {
 			this._setSearchResult(node, false, options);
 		}, this));
-		
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
