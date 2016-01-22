@@ -1,0 +1,26 @@
+{
+    "name": "jonmiles/bootstrap-treeview",
+    "description": "Tree View for Twitter Bootstrap.",
+    "type": "component",
+    "homepage": "https://github.com/jonmiles/bootstrap-treeview",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Jonathan Miles"
+        }
+    ],
+    "require": {
+        "components/bootstrap": ">=3.0.0",
+        "components/jquery": ">=1.9.0"
+    },
+    "extra": {
+        "component": {
+            "scripts": [
+                "dist/bootstrap-treeview.min.js"
+            ],
+            "files": [
+                "dist/bootstrap-treeview.min.css"
+            ]
+        }
+    }
+}
