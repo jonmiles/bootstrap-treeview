@@ -69,7 +69,8 @@
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
-		onSearchCleared: undefined
+		onSearchCleared: undefined,
+		onRendered: undefined,
 	};
 
 	_default.options = {
@@ -245,6 +246,10 @@
 
 		if (typeof (this.options.onSearchCleared) === 'function') {
 			this.$element.on('searchCleared', this.options.onSearchCleared);
+		}
+
+		if (typeof (this.options.onRendered) === 'function') {
+			this.$element.on('rendered', this.options.onRendered);
 		}
 	};
 
@@ -499,6 +504,7 @@
 
 		// Build tree
 		this.buildTree(this.tree, 0);
+		this.$element.trigger('rendered', $.extend(true, {}, this.tree));
 	};
 
 	// Starting from the root node, and recursing down the
