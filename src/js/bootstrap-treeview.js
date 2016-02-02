@@ -114,7 +114,9 @@
 			getEnabled: $.proxy(this.getEnabled, this),
 
 			// Select methods
+			selectAll: $.proxy(this.selectAll, this),
 			selectNode: $.proxy(this.selectNode, this),
+			unselectAll: $.proxy(this.unselectAll, this),
 			unselectNode: $.proxy(this.unselectNode, this),
 			toggleNodeSelected: $.proxy(this.toggleNodeSelected, this),
 
@@ -794,7 +796,19 @@
 	Tree.prototype.getEnabled = function () {
 		return this.findNodes('false', 'g', 'state.disabled');
 	};
+	
+	/**
+	 * Select all tree nodes
+	 * @param {optional Object} options 
+	 */
+	Tree.prototype.selectAll = function (options) {
+		var identifiers = this.findNodes('false', 'g', 'state.selected');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setSelectedState(node, true, options);
+		}, this));
 
+		this.render();
+	}
 
 	/**
 		Set a node state to selected
@@ -808,6 +822,19 @@
 
 		this.render();
 	};
+	
+	/**
+	 * Deselect all tree nodes
+	 * @param {optional Object} options 
+	 */
+	Tree.prototype.unselectAll = function (options) {
+		var identifiers = this.findNodes('true', 'g', 'state.selected');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setSelectedState(node, false, options);
+		}, this));
+
+		this.render();
+	}
 
 	/**
 		Set a node state to unselected
