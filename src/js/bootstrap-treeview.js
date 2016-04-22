@@ -520,7 +520,14 @@
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
-			// Add indent/spacer to mimic tree structure
+			// Added data-custom attribute into <li> elements
+                        // to be used for custom events by adding/remove item
+                        if(node.custom){
+                            treeItem
+                                    .attr('data-custom', node.custom);
+                        }
+
+                        // Add indent/spacer to mimic tree structure
 			for (var i = 0; i < (level - 1); i++) {
 				treeItem.append(_this.template.indent);
 			}
