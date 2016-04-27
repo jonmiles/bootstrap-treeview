@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ========================================================= */
-
 ;(function ($, window, document, undefined) {
 
 	/*global jQuery, console*/
@@ -112,6 +111,9 @@
 			getUnchecked: $.proxy(this.getUnchecked, this),
 			getDisabled: $.proxy(this.getDisabled, this),
 			getEnabled: $.proxy(this.getEnabled, this),
+
+                        // Add methods
+                        addNode: $.proxy(this.addNode, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -319,9 +321,9 @@
 		if (!this.options.enableLinks) event.preventDefault();
 
 		var target = $(event.target);
-		var node = this.findNode(target);
+               var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
-		
+
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
@@ -329,12 +331,12 @@
 			this.render();
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			
+
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
 		else {
-			
+
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
 			} else {
@@ -501,6 +503,21 @@
 		this.buildTree(this.tree, 0);
 	};
 
+        // Add a new node under another node specified by parentId
+        Tree.prototype.addNode = function(parentId, data) {
+
+          data = $.extend(true, [], data);
+
+          var node = this.nodes[parentId];
+          var nodes = node.nodes || [];
+
+          nodes.push(data);
+          node.nodes = nodes;
+
+          this.setInitialStates(node, 0);
+          this.render();
+        };
+
 	// Starting from the root node, and recursing down the
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
@@ -516,7 +533,7 @@
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
-				.addClass(node.searchResult ? 'search-result' : '') 
+				.addClass(node.searchResult ? 'search-result' : '')
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
@@ -548,13 +565,13 @@
 
 			// Add node icon
 			if (_this.options.showIcon) {
-				
+
 				var classList = ['node-icon'];
 
 				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
 					classList.pop();
-					classList.push(node.selectedIcon || _this.options.selectedIcon || 
+					classList.push(node.selectedIcon || _this.options.selectedIcon ||
 									node.icon || _this.options.nodeIcon);
 				}
 
@@ -569,7 +586,7 @@
 
 				var classList = ['check-icon'];
 				if (node.state.checked) {
-					classList.push(_this.options.checkedIcon); 
+					classList.push(_this.options.checkedIcon);
 				}
 				else {
 					classList.push(_this.options.uncheckedIcon);
@@ -935,7 +952,7 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleExpandedState(node, options);
 		}, this));
-		
+
 		this.render();
 	};
 
@@ -1085,7 +1102,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this.identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
@@ -1156,9 +1173,9 @@
 		});
 
 		if (options.render) {
-			this.render();	
+			this.render();
 		}
-		
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
