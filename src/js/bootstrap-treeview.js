@@ -57,7 +57,7 @@
     showIcon : true,
     showCheckbox : false,
     showTags : false,
-    showTips : false,
+    showTip : false,
     multiSelect : false,
 
     // Event handlers
