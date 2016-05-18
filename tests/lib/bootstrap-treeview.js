@@ -123,6 +123,7 @@
 			collapseNode: $.proxy(this.collapseNode, this),
 			expandAll: $.proxy(this.expandAll, this),
 			expandNode: $.proxy(this.expandNode, this),
+			expandNodeTree: $.proxy(this.expandNodeTree, this),
 			toggleNodeExpanded: $.proxy(this.toggleNodeExpanded, this),
 			revealNode: $.proxy(this.revealNode, this),
 
@@ -897,6 +898,20 @@
 
 		this.render();
 	};
+
+    /**
+     * Expand node tree 
+     * @param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+     * @param {optional Object} options
+     */
+    Tree.prototype.expandNodeTree = function (identifiers, options) {
+        this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+            this.expandNode(identifiers, options);
+            if(node.parentId >= 0){
+                this.expandNodeTree(node.parentId, options);
+            }
+        }, this));
+    };
 
 	Tree.prototype.expandLevels = function (nodes, level, options) {
 		options = $.extend({}, _default.options, options);
