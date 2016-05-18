@@ -513,6 +513,21 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### expandNodeTree(node | nodeId, options)
+
+Expand a given tree node, accepts node or nodeId.  Optionally can be expanded to any given number of levels.
+
+The `expandNode` method only expand the tree begin from the `nodeId` , but it's parents collapse state is still kept.
+
+`expandNodeTree` can expand the tree path from the root to your `level`.
+
+
+```javascript
+$('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
+```
+
+Triggers `nodeExpanded` event; pass silent to suppress events.
+
 #### getCollapsed()
 
 Returns an array of collapsed nodes e.g. state.expanded = false.
