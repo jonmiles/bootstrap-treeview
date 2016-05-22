@@ -103,7 +103,6 @@
 		equal(options.selectedBackColor, '#428bca', 'selectedBackColor default ok');
 		equal(options.searchResultColor, '#D9534F', 'searchResultColor default ok');
 		equal(options.searchResultBackColor, undefined, 'searchResultBackColor default ok');
-		equal(options.enableLinks, false, 'enableLinks default ok');
 		equal(options.highlightSelected, true, 'highlightSelected default ok');
 		equal(options.highlightSearchResults, true, 'highlightSearchResults default ok');
 		equal(options.showBorder, true, 'showBorder default ok');
@@ -140,7 +139,6 @@
 			selectedBackColor: 'darkorange',
 			searchResultColor: 'yellow',
 			searchResultBackColor: 'darkorange',
-			enableLinks: true,
 			highlightSelected: false,
 			highlightSearchResults: true,
 			showBorder: false,
@@ -178,7 +176,6 @@
 		equal(options.selectedBackColor, 'darkorange', 'selectedBackColor set ok');
 		equal(options.searchResultColor, 'yellow', 'searchResultColor set ok');
 		equal(options.searchResultBackColor, 'darkorange', 'searchResultBackColor set ok');
-		equal(options.enableLinks, true, 'enableLinks set ok');
 		equal(options.highlightSelected, false, 'highlightSelected set ok');
 		equal(options.highlightSearchResults, true, 'highlightSearchResults set ok');
 		equal(options.showBorder, false, 'showBorder set ok');
@@ -196,12 +193,6 @@
 		equal(typeof options.onNodeUnselected, 'function', 'onNodeUnselected set ok');
 		equal(typeof options.onSearchComplete, 'function', 'onSearchComplete set ok');
 		equal(typeof options.onSearchCleared, 'function', 'onSearchCleared set ok');
-	});
-
-	test('Links enabled', function () {
-		init({enableLinks:true, data:data});
-		ok($('.list-group-item:first').children('a').length, 'Links are enabled');
-
 	});
 
 
@@ -296,7 +287,7 @@
 
 		// Has class node-selected
 		ok($('.list-group-item:first').hasClass('node-selected'), 'Node is correctly selected : class "node-selected" added');
-		
+
 		// Only one can be selected
 		ok(($('.node-selected').length === 1), 'There is only one selected node');
 
@@ -332,13 +323,13 @@
 
 		// Has class node-selected
 		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Node is correctly unselected : class "node-selected" removed');
-		
+
 		// Only one can be selected
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
 
 		// Has correct icon
 		ok(!options.nodeIcon || $('.expand-icon:first').hasClass(options.nodeIcon), 'Node icon is correct');
-		
+
 		// Events triggered
 		ok(cbWorked, 'onNodeUnselected function was called');
 		ok(onWorked, 'nodeUnselected was fired');

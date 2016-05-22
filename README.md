@@ -128,7 +128,6 @@ If you want to do more, here's the full node specification
   selectedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
   backColor: "#FFFFFF",
-  href: "#node-1",
   selectable: true,
   state: {
     checked: true,
@@ -176,11 +175,6 @@ The foreground color used on a given node, overrides global color option.
 `String` `Optional`
 
 The background color used on a given node, overrides global color option.
-
-#### href
-`String` `Optional`
-
-Used in conjunction with global enableLinks option to specify anchor tag URL on a given node.
 
 #### selectable
 `Boolean` `Default: true`
@@ -276,11 +270,6 @@ Sets the default foreground color used by all nodes, except when overridden on a
 String, class name(s).  Default: "glyphicon" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
 Sets the icon to be used on a tree node with no child nodes.
-
-#### enableLinks
-Boolean.  Default: false
-
-Whether or not to present node text as a hyperlink.  The href value of which must be provided in the data structure on a per node basis.
 
 #### expandIcon
 String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)

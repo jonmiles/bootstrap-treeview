@@ -52,18 +52,6 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4">
-          <h2>Link enabled, or</h2>
-          <div id="treeview10" class=""></div>
-        </div>
-        <div class="col-sm-4">
-
-        </div>
-        <div class="col-sm-4">
-
-        </div>
-      </div>
-      <div class="row">
         <hr>
         <h2>Searchable Tree</h2>
         <div class="col-sm-4">
@@ -315,51 +303,42 @@
         var defaultData = [
           {
             text: 'Parent 1',
-            href: '#parent1',
             tags: ['4'],
             nodes: [
               {
                 text: 'Child 1',
-                href: '#child1',
                 tags: ['2'],
                 nodes: [
                   {
                     text: 'Grandchild 1',
-                    href: '#grandchild1',
                     tags: ['0']
                   },
                   {
                     text: 'Grandchild 2',
-                    href: '#grandchild2',
                     tags: ['0']
                   }
                 ]
               },
               {
                 text: 'Child 2',
-                href: '#child2',
                 tags: ['0']
               }
             ]
           },
           {
             text: 'Parent 2',
-            href: '#parent2',
             tags: ['0']
           },
           {
             text: 'Parent 3',
-            href: '#parent3',
              tags: ['0']
           },
           {
             text: 'Parent 4',
-            href: '#parent4',
             tags: ['0']
           },
           {
             text: 'Parent 5',
-            href: '#parent5'  ,
             tags: ['0']
           }
         ];
@@ -396,13 +375,11 @@
           {
             text: 'Parent 3',
             icon: 'glyphicon glyphicon-earphone',
-            href: '#demo',
             tags: ['11']
           },
           {
             text: 'Parent 4',
             icon: 'glyphicon glyphicon-cloud-download',
-            href: '/demo.html',
             tags: ['19'],
             selected: true
           },
@@ -411,7 +388,6 @@
             icon: 'glyphicon glyphicon-certificate',
             color: 'pink',
             backColor: 'red',
-            href: 'http://www.tesco.com',
             tags: ['available','0']
           }
         ];
@@ -526,12 +502,6 @@
           data: alternateData
         });
 
-        $('#treeview10').treeview({
-          color: "#428bca",
-          enableLinks: true,
-          data: defaultData
-        });
-
 
 
         var $searchableTree = $('#treeview-searchable').treeview({
@@ -586,7 +556,7 @@
         $('#chk-select-multi:checkbox').on('change', function () {
           console.log('multi-select change');
           $selectableTree = initSelectableTree();
-          selectableNodes = findSelectableNodes();          
+          selectableNodes = findSelectableNodes();
         });
 
         // Select/unselect/toggle nodes

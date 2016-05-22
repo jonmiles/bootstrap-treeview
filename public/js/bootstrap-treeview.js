@@ -41,16 +41,15 @@
 		checkedIcon: 'glyphicon glyphicon-check',
 		uncheckedIcon: 'glyphicon glyphicon-unchecked',
 
-		color: undefined, // '#000000',
-		backColor: undefined, // '#FFFFFF',
-		borderColor: undefined, // '#dddddd',
+		color: undefined,
+		backColor: undefined,
+		borderColor: undefined,
 		onhoverColor: '#F5F5F5',
 		selectedColor: '#FFFFFF',
 		selectedBackColor: '#428bca',
 		searchResultColor: '#D9534F',
-		searchResultBackColor: undefined, //'#FFFFFF',
+		searchResultBackColor: undefined,
 
-		enableLinks: false,
 		highlightSelected: true,
 		highlightSearchResults: true,
 		showBorder: true,
@@ -330,8 +329,6 @@
 
 	Tree.prototype._clickHandler = function (event) {
 
-		if (!this._options.enableLinks) event.preventDefault();
-
 		var target = $(event.target);
 		var node = this.targetNode(target);
 		if (!node || node.state.disabled) return;
@@ -388,7 +385,7 @@
 					.addClass(this._options.collapseIcon);
 			}
 
-			// Expand children 
+			// Expand children
 			if (node.nodes && options) {
 				$.each(node.nodes, $.proxy(function (index, node) {
 					this._setVisible(node, true, options);
@@ -412,7 +409,7 @@
 					.addClass(this._options.expandIcon);
 			}
 
-			// Collapse children 
+			// Collapse children
 			if (node.nodes && options) {
 				$.each(node.nodes, $.proxy(function (index, node) {
 					this._setVisible(node, false, options);
@@ -700,17 +697,7 @@
 		}
 
 		// Add text
-		if (this._options.enableLinks) {
-			node.$el
-				.append($(this._template.link)
-					.attr('href', node.href)
-					.append(node.text)
-				);
-		}
-		else {
-			node.$el
-				.append(node.text);
-		}
+		node.$el.append(node.text);
 
 		// Add tags as badges
 		if (this._options.showTags && node.tags) {
@@ -744,7 +731,7 @@
 	Tree.prototype._newNodeEl = function (pEl) {
 
 		var $el = $(this._template.node);
-		
+
 		if (pEl) {
 			this.$wrapper.children()
 				.eq(pEl.index()).after($el);
@@ -805,7 +792,7 @@
 
 		// Style search results
 		if (this._options.highlightSearchResults && (this._options.searchResultColor || this._options.searchResultBackColor)) {
-			
+
 			var innerStyle = ''
 			if (this._options.searchResultColor) {
 				innerStyle += 'color:' + this._options.searchResultColor + ';';
@@ -820,7 +807,7 @@
 
 		// Style selected nodes
 		if (this._options.highlightSelected && (this._options.selectedColor || this._options.selectedBackColor)) {
-			
+
 			var innerStyle = ''
 			if (this._options.selectedColor) {
 				innerStyle += 'color:' + this._options.selectedColor + ';';
@@ -855,7 +842,6 @@
 		node: '<li class="list-group-item"></li>',
 		indent: '<span class="indent"></span>',
 		icon: '<span class="icon"></span>',
-		link: '<a href="#" style="color:inherit;"></a>',
 		badge: '<span class="badge"></span>'
 	};
 
@@ -1201,7 +1187,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this._identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
@@ -1269,7 +1255,7 @@
 		var results = $.each(this._getSearchResults(), $.proxy(function (index, node) {
 			this._setSearchResult(node, false, options);
 		}, this));
-		
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
