@@ -306,7 +306,7 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the default background color activated when the users cursor hovers over a node.
 
-### preventUnselect
+#### preventUnselect
 Boolean.  Default: false
 
 Whether or not a node can be unselected without another node first being selected.
