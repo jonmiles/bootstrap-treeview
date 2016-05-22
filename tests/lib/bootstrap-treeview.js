@@ -57,6 +57,7 @@
 		showCheckbox: false,
 		showTags: false,
 		multiSelect: false,
+		preventUnselect: false,
 
 		// Event handlers
 		onNodeChecked: undefined,
@@ -335,16 +336,16 @@
 
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
-			this._toggleExpanded(node, _default.options);
+			this._toggleExpanded(node, $.extend({}, _default.options));
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			this._toggleChecked(node, _default.options);
+			this._toggleChecked(node, $.extend({}, _default.options));
 		}
 		else {
 			if (node.selectable) {
-				this._toggleSelected(node, _default.options);
+				this._toggleSelected(node, $.extend({}, _default.options));
 			} else {
-				this._toggleExpanded(node, _default.options);
+				this._toggleExpanded(node, $.extend({}, _default.options));
 			}
 		}
 	};
@@ -460,18 +461,18 @@
 
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
-		if (options && state === node.state.selected) return;
+		if (options && (state === node.state.selected)) return;
 
 		if (state) {
 
 			// If multiSelect false, unselect previously selected
 			if (!this._options.multiSelect) {
 				$.each(this._findNodes('true', 'g', 'state.selected'), $.proxy(function (index, node) {
-					this._setSelected(node, false, options);
+					this._setSelected(node, false, $.extend(options, {unselecting: true}));
 				}, this));
 			}
 
-			// Set note state
+			// Set node state
 			node.state.selected = true;
 
 			// Set element
@@ -491,6 +492,13 @@
 			}
 		}
 		else {
+
+			// If preventUnselect true + only one remaining selection, disable unselect
+			if (this._options.preventUnselect &&
+					(options && !options.unselecting) &&
+					(this._findNodes('true', 'g', 'state.selected').length === 1)) {
+				return this;
+			}
 
 			// Set node state
 			node.state.selected = false;
