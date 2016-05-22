@@ -507,12 +507,20 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### findNodes(pattern, field)
+
+Returns an array of matching node objects.
+
+```javascript
+$('#tree').treeview('findNode', ['Parent', 'text']);
+```
+
 #### getChecked()
 
 Returns an array of checked nodes e.g. state.checked = true.
 
 ```javascript
-$('#tree').treeview('getChecked', nodeId);
+$('#tree').treeview('getChecked');
 ```
 
 #### getCollapsed()
@@ -520,7 +528,7 @@ $('#tree').treeview('getChecked', nodeId);
 Returns an array of collapsed nodes e.g. state.expanded = false.
 
 ```javascript
-$('#tree').treeview('getCollapsed', nodeId);
+$('#tree').treeview('getCollapsed');
 ```
 
 #### getDisabled()
@@ -528,7 +536,7 @@ $('#tree').treeview('getCollapsed', nodeId);
 Returns an array of disabled nodes e.g. state.disabled = true.
 
 ```javascript
-$('#tree').treeview('getDisabled', nodeId);
+$('#tree').treeview('getDisabled');
 ```
 
 #### getEnabled()
@@ -536,7 +544,7 @@ $('#tree').treeview('getDisabled', nodeId);
 Returns an array of enabled nodes e.g. state.disabled = false.
 
 ```javascript
-$('#tree').treeview('getEnabled', nodeId);
+$('#tree').treeview('getEnabled');
 ```
 
 #### getExpanded()
@@ -544,15 +552,7 @@ $('#tree').treeview('getEnabled', nodeId);
 Returns an array of expanded nodes e.g. state.expanded = true.
 
 ```javascript
-$('#tree').treeview('getExpanded', nodeId);
-```
-
-#### getNode(nodeId)
-
-Returns a single node object that matches the given node id.
-
-```javascript
-$('#tree').treeview('getNode', nodeId);
+$('#tree').treeview('getExpanded');
 ```
 
 #### getParent(node | nodeId)
@@ -568,7 +568,7 @@ $('#tree').treeview('getParent', node);
 Returns an array of selected nodes e.g. state.selected = true.
 
 ```javascript
-$('#tree').treeview('getSelected', nodeId);
+$('#tree').treeview('getSelected');
 ```
 
 #### getSiblings(node | nodeId)
@@ -584,7 +584,7 @@ $('#tree').treeview('getSiblings', node);
 Returns an array of unchecked nodes e.g. state.checked = false.
 
 ```javascript
-$('#tree').treeview('getUnchecked', nodeId);
+$('#tree').treeview('getUnchecked');
 ```
 
 #### getUnselected()
@@ -592,7 +592,7 @@ $('#tree').treeview('getUnchecked', nodeId);
 Returns an array of unselected nodes e.g. state.selected = false.
 
 ```javascript
-$('#tree').treeview('getUnselected', nodeId);
+$('#tree').treeview('getUnselected');
 ```
 
 #### remove()
