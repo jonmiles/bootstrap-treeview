@@ -101,8 +101,8 @@
 			remove: $.proxy(this._remove, this),
 
 			// Get methods
-			getNode: $.proxy(this.getNode, this),
-			getParent: $.proxy(this.getParent, this),
+			findNodes: $.proxy(this.findNodes, this),
+			getParents: $.proxy(this.getParents, this),
 			getSiblings: $.proxy(this.getSiblings, this),
 			getSelected: $.proxy(this.getSelected, this),
 			getUnselected: $.proxy(this.getUnselected, this),
@@ -857,36 +857,56 @@
 
 
 	/**
-		Returns a single node object that matches the given node id.
-		@param {Number} nodeId - A node's unique identifier
-		@return {Object} node - Matching node
+		Returns an array of matching node objects.
+		@param {Number|String|Boolean|Undefined|Null} pattern - A pattern to match against a given field
+		@return {String} field - Field to query pattern against
 	*/
-	Tree.prototype.getNode = function (nodeId) {
-		return this._nodes[nodeId];
+	Tree.prototype.findNodes = function (pattern, field) {
+		return this._findNodes(pattern, 'g', field);
 	};
 
 	/**
-		Returns the parent node of a given node, if valid otherwise returns undefined.
-		@param {Object|Number} identifier - A valid node or node id
-		@returns {Object} node - The parent node
+		Returns parent nodes for given nodes, if valid otherwise returns undefined.
+		@param {Array} nodes - An array of nodes
+		@returns {Array} nodes - An array of parent nodes
 	*/
-	Tree.prototype.getParent = function (identifier) {
-		var node = this._identifyNode(identifier);
-		return this._nodes[node.parentId];
+	Tree.prototype.getParents = function (nodes) {
+		var parentNodes = [];
+		console.log('getParents nodes = ', nodes);
+		$.each(nodes, $.proxy(function (index, node) {
+			console.log('getParents node = ', index, node);
+			parentNodes.push(this._nodes[node.parentId]);
+		}, this));
+		console.log('getParenst [] = ', parentNodes);
+		return parentNodes;
 	};
 
 	/**
-		Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
-		@param {Object|Number} identifier - A valid node or node id
-		@returns {Array} nodes - Sibling nodes
+		Returns an array of sibling nodes for given nodes, if valid otherwise returns undefined.
+		@param {Array} nodes - An array of nodes
+		@returns {Array} nodes - An array of sibling nodes
 	*/
-	Tree.prototype.getSiblings = function (identifier) {
-		var node = this._identifyNode(identifier);
-		var parent = this.getParent(node);
-		var nodes = parent ? parent.nodes : this._tree;
-		return nodes.filter(function (obj) {
-				return obj.nodeId !== node.nodeId;
-			});
+	Tree.prototype.getSiblings = function (nodes) {
+		console.log('getSiblings nodes = ', nodes);
+		var siblingNodes = [];
+		$.each(nodes, $.proxy(function (index, node) {
+			console.log('getSiblings node =', node);
+			var parent = this.getParents([node]);
+			console.log('getSiblings parent = ', parent);
+			var nodes = parent[0] ? parent[0].nodes : this._tree;
+			console.log('getSiblings nodes 2 = ', nodes);
+			if (nodes) {
+				siblingNodes.push(nodes.filter(function (obj) {
+					console.log('** match ', obj.nodeId, node.nodeId);
+						return obj.nodeId !== node.nodeId;
+					})
+				);
+			}
+		}, this));
+		console.log('getSiblings siblingNodes = ', siblingNodes);
+		return $.map(siblingNodes, function (obj) {
+			return obj;
+		});
 	};
 
 	/**
@@ -1051,7 +1071,7 @@
 		this._forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			var parentNode = node;
 			var tmpNode;
-			while (tmpNode = this.getParent(parentNode)) {
+			while (tmpNode = this.getParents([parentNode])[0]) {
 				parentNode = tmpNode;
 				this._setExpanded(parentNode, true, options);
 			};
@@ -1202,6 +1222,7 @@
 		Identifies a node from either a node id or object
 	*/
 	Tree.prototype._identifyNode = function (identifier) {
+		console.log('_identifyNode ', identifier);
 		return ((typeof identifier) === 'number') ?
 						this._nodes[identifier] :
 						identifier;
@@ -1295,6 +1316,7 @@
 
 		return $.grep(this._nodes, $.proxy(function (node) {
 			var val = this._getNodeValue(node, attribute);
+			console.log('_findNode val = ', attribute, val);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
 			}

@@ -555,12 +555,12 @@ Returns an array of expanded nodes e.g. state.expanded = true.
 $('#tree').treeview('getExpanded');
 ```
 
-#### getParent(node | nodeId)
+#### getParents(nodes)
 
-Returns the parent node of a given node, if valid otherwise returns undefined.
+Returns parent nodes for given nodes, if valid otherwise returns undefined.
 
 ```javascript
-$('#tree').treeview('getParent', node);
+$('#tree').treeview('getParent', nodes);
 ```
 
 #### getSelected()
@@ -571,12 +571,12 @@ Returns an array of selected nodes e.g. state.selected = true.
 $('#tree').treeview('getSelected');
 ```
 
-#### getSiblings(node | nodeId)
+#### getSiblings(nodes)
 
-Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
+Returns an array of sibling nodes for given nodes, if valid otherwise returns undefined.
 
 ```javascript
-$('#tree').treeview('getSiblings', node);
+$('#tree').treeview('getSiblings', nodes);
 ```
 
 #### getUnchecked()
