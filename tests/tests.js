@@ -110,6 +110,7 @@
 		equal(options.showCheckbox, false, 'showCheckbox default ok');
 		equal(options.showTags, false, 'showTags default ok');
 		equal(options.multiSelect, false, 'multiSelect default ok');
+		equal(options.preventUnselect, false, 'preventUnselect default ok');
 		equal(options.onNodeChecked, null, 'onNodeChecked default ok');
 		equal(options.onNodeCollapsed, null, 'onNodeCollapsed default ok');
 		equal(options.onNodeDisabled, null, 'onNodeDisabled default ok');
@@ -146,6 +147,7 @@
 			showCheckbox: true,
 			showTags: true,
 			multiSelect: true,
+			preventUnselect: true,
 			onNodeChecked: function () {},
 			onNodeCollapsed: function () {},
 			onNodeDisabled: function () {},
@@ -183,6 +185,7 @@
 		equal(options.showCheckbox, true, 'showCheckbox set ok');
 		equal(options.showTags, true, 'showTags set ok');
 		equal(options.multiSelect, true, 'multiSelect set ok');
+		equal(options.preventUnselect, true, 'preventUnselect set ok');
 		equal(typeof options.onNodeChecked, 'function', 'onNodeChecked set ok');
 		equal(typeof options.onNodeCollapsed, 'function', 'onNodeCollapsed set ok');
 		equal(typeof options.onNodeDisabled, 'function', 'onNodeDisabled set ok');
@@ -321,10 +324,10 @@
 		// Simulate click
 		$('.list-group-item:first').trigger('click');
 
-		// Has class node-selected
+		// Does not have class node-selected
 		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Node is correctly unselected : class "node-selected" removed');
 
-		// Only one can be selected
+		// There are no selected nodes
 		ok(($('.node-selected').length === 0), 'There are no selected nodes');
 
 		// Has correct icon
@@ -333,6 +336,41 @@
 		// Events triggered
 		ok(cbWorked, 'onNodeUnselected function was called');
 		ok(onWorked, 'nodeUnselected was fired');
+	});
+
+	test('Prevent a node being unselected (preventUnselect true)', function () {
+		var cbWorked, onWorked = false;
+		var $tree = init({
+			data: data,
+			preventUnselect: true,
+			onNodeUnselected: function(/*event, date*/) {
+				cbWorked = true;
+			}
+		})
+		.on('nodeUnselected', function(/*event, date*/) {
+			onWorked = true;
+		});
+		var options = getOptions($tree);
+
+		// First select a node
+		$('.list-group-item:first').trigger('click');
+		cbWorked = onWorked = false;
+
+		// Simulate click
+		$('.list-group-item:first').trigger('click');
+
+		// Class node-selected was not removed
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Node was not unselected : class "node-selected" not removed');
+
+		// A single node remains selected
+		ok(($('.node-selected').length === 1), 'A single node is still selected');
+
+		// Has correct icon
+		ok(!options.nodeIcon || $('.expand-icon:first').hasClass(options.nodeIcon), 'Node icon is correct');
+
+		// Events where not triggered
+		ok(!cbWorked, 'onNodeUnselected function was not called');
+		ok(!onWorked, 'nodeUnselected was not fired');
 	});
 
 	test('Selecting multiple nodes (multiSelect true)', function () {
