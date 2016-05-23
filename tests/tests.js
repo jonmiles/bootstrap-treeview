@@ -506,25 +506,25 @@
 
 	module('Methods');
 
-	test('getNode', function () {
-		var $tree = init({ data: data });
-		var nodeParent1 = $tree.treeview('getNode', 0);
+	test('findNodes', function () {
+		var tree = init({ data: data }).treeview(true);
+		var nodeParent1 = tree.findNodes('Parent 1', 'text')[0];
 		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", got "Parent 1"');
 	});
 
-	test('getParent', function () {
-		var $tree = init({ data: data });
-		var nodeChild1 = $tree.treeview('getNode', 1);
-		var parentNode = $tree.treeview('getParent', nodeChild1);
+	test('getParents', function () {
+		var tree = init({ data: data }).treeview(true);
+		var nodeChild1 = tree.findNodes('Child 1', 'text');
+		var parentNode = tree.getParents(nodeChild1)[0];
 		equal(parentNode.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
 	});
 
 	test('getSiblings', function () {
-		var $tree = init({ data: data });
+		var tree = init({ data: data }).treeview(true);
 
 		// Test root level, internally uses the this.tree
-		var nodeParent1 = $tree.treeview('getNode', 0);
-		var nodeParent1Siblings = $tree.treeview('getSiblings', nodeParent1);
+		var nodeParent1 = tree.findNodes('Parent 1', 'text');
+		var nodeParent1Siblings = tree.getSiblings(nodeParent1);
 		var isArray = (nodeParent1Siblings instanceof Array);
 		var countOK = nodeParent1Siblings.length === 4;
 		var resultsOK = nodeParent1Siblings[0].text === 'Parent 2';
@@ -536,8 +536,8 @@
 		ok(resultsOK, 'Correct siblings for "Parent 1" [root] : results OK');
 
 		// Test non root level, internally uses getParent.nodes
-		var nodeChild1 = $tree.treeview('getNode', 1);
-		var nodeChild1Siblings = $tree.treeview('getSiblings', nodeChild1);
+		var nodeChild1 = tree.findNodes('Child 1', 'text');
+		var nodeChild1Siblings = tree.getSiblings(nodeChild1);
 		var isArray = (nodeChild1Siblings instanceof Array);
 		var countOK = nodeChild1Siblings.length === 1;
 		var results = nodeChild1Siblings[0].text === 'Child 2'
@@ -547,20 +547,20 @@
 	});
 
 	test('getSelected', function () {
-		var $tree = init({ data: data })
-			.treeview('selectNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.selectNode(tree.findNodes('Parent 1', 'text'));
 
-		var selectedNodes = $tree.treeview('getSelected');
+		var selectedNodes = tree.getSelected();
 		ok((selectedNodes instanceof Array), 'Result is an array');
 		equal(selectedNodes.length, 1, 'Correct number of nodes returned');
 		equal(selectedNodes[0].text, 'Parent 1', 'Correct node returned');
 	});
 
 	test('getUnselected', function () {
-		var $tree = init({ data: data })
-			.treeview('selectNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.selectNode(tree.findNodes('Parent 1', 'text'));
 
-		var unselectedNodes = $tree.treeview('getUnselected');
+		var unselectedNodes = tree.getUnselected();
 		ok((unselectedNodes instanceof Array), 'Result is an array');
 		equal(unselectedNodes.length, 8, 'Correct number of nodes returned');
 	});
@@ -569,8 +569,8 @@
 	// Default tree + expanded to 2 levels,
 	// means 1 node 'Parent 1' should be expanded and therefore returned
 	test('getExpanded', function () {
-		var $tree = init({ data: data });
-		var expandedNodes = $tree.treeview('getExpanded');
+		var tree = init({ data: data }).treeview(true);
+		var expandedNodes = tree.getExpanded();
 		ok((expandedNodes instanceof Array), 'Result is an array');
 		equal(expandedNodes.length, 1, 'Correct number of nodes returned');
 		equal(expandedNodes[0].text, 'Parent 1', 'Correct node returned');
@@ -581,268 +581,201 @@
 	// as all other parent nodes have no children their state will be collapsed
 	// which means 8 of the 9 nodes should be returned
 	test('getCollapsed', function () {
-		var $tree = init({ data: data });
-		var collapsedNodes = $tree.treeview('getCollapsed');
+		var tree = init({ data: data }).treeview(true);
+		var collapsedNodes = tree.getCollapsed();
 		ok((collapsedNodes instanceof Array), 'Result is an array');
 		equal(collapsedNodes.length, 8, 'Correct number of nodes returned');
 	});
 
 	test('getChecked', function () {
-		var $tree = init({ data: data, showCheckbox: true })
-			.treeview('checkNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.checkNode(tree.findNodes('Parent 1', 'text'));
 
-		var checkedNodes = $tree.treeview('getChecked');
+		var checkedNodes = tree.getChecked();
 		ok((checkedNodes instanceof Array), 'Result is an array');
 		equal(checkedNodes.length, 1, 'Correct number of nodes returned');
 		equal(checkedNodes[0].text, 'Parent 1', 'Correct node returned');
 	});
 
 	test('getUnchecked', function () {
-		var $tree = init({ data: data })
-			.treeview('checkNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.checkNode(tree.findNodes('Parent 1', 'text'));
 
-		var uncheckedNodes = $tree.treeview('getUnchecked');
+		var uncheckedNodes = tree.getUnchecked();
 		ok((uncheckedNodes instanceof Array), 'Result is an array');
 		equal(uncheckedNodes.length, 8, 'Correct number of nodes returned');
 	});
 
 	test('getDisabled', function () {
-		var $tree = init({ data: data })
-			.treeview('disableNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.disableNode(tree.findNodes('Parent 1', 'text'));
 
-		var disabledNodes = $tree.treeview('getDisabled');
+		var disabledNodes = tree.getDisabled();
 		ok((disabledNodes instanceof Array), 'Result is an array');
 		equal(disabledNodes.length, 1, 'Correct number of nodes returned');
 		equal(disabledNodes[0].text, 'Parent 1', 'Correct node returned');
 	});
 
 	test('getEnabled', function () {
-		var $tree = init({ data: data })
-			.treeview('disableNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.disableNode(tree.findNodes('Parent 1', 'text'));
 
-		var enabledNodes = $tree.treeview('getEnabled');
+		var enabledNodes = tree.getEnabled();
 		ok((enabledNodes instanceof Array), 'Result is an array');
 		equal(enabledNodes.length, 8, 'Correct number of nodes returned');
 	});
 
 	test('disableAll / enableAll', function () {
 		var $tree = init({ data: data, levels: 1 });
+		var tree = $tree.treeview(true);
 
-		$tree.treeview('disableAll');
+		tree.disableAll();
 		equal($($tree.selector + ' ul li:not(.node-hidden).node-disabled').length, 5, 'Disable all works, 9 nodes with node-disabled class');
 
-		$tree.treeview('enableAll');
+		tree.enableAll();
 		equal($($tree.selector + ' ul li:not(.node-hidden).node-disabled').length, 0, 'Check all works, 9 nodes non with node-disabled class');
 	});
 
 	test('disableNode / enableNode', function () {
-		var $tree = init({ data: data, levels: 1 });
-		var nodeId = 0;
-		var node = $tree.treeview('getNode', 0);
+		var tree = init({ data: data, levels: 1 }).treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
 
-		// Disable node using node id
-		$tree.treeview('disableNode', nodeId);
-		ok($('.list-group-item:first').hasClass('node-disabled'), 'Disable node (by id) : Node has class node-disabled');
-		ok(($('.node-disabled').length === 1), 'Disable node (by id) : There is only one disabled node');
+		tree.disableNode(node);
+		ok($('.list-group-item:first').hasClass('node-disabled'), 'Disable node : Node has class node-disabled');
+		ok(($('.node-disabled').length === 1), 'Disable node : There is only one disabled node');
 
-		// Enable node using node id
-		$tree.treeview('enableNode', nodeId);
-		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Enable node (by id) : Node does not have class node-disabled');
-		ok(($('.node-checked').length === 0), 'Enable node (by id) : There are no disabled nodes');
-
-		// Disable node using node
-		$tree.treeview('disableNode', node);
-		ok($('.list-group-item:first').hasClass('node-disabled'), 'Disable node (by node) : Node has class node-disabled');
-		ok(($('.node-disabled').length === 1), 'Disable node (by node) : There is only one disabled node');
-
-		// Enable node using node
-		$tree.treeview('enableNode', node);
-		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Enable node (by node) : Node does not have class node-disabled');
-		ok(($('.node-checked').length === 0), 'Enable node (by node) : There are no disabled nodes');
+		tree.enableNode(node);
+		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Enable node : Node does not have class node-disabled');
+		ok(($('.node-checked').length === 0), 'Enable node : There are no disabled nodes');
 	});
 
 	test('toggleNodeDisabled', function () {
-		var $tree = init({ data: data, levels: 1 });
-		var nodeId = 0;
-		var node = $tree.treeview('getNode', 0);
+		var tree = init({ data: data, levels: 1 }).treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
 
-		// Toggle disabled using node id
-		$tree.treeview('toggleNodeDisabled', nodeId);
-		ok($('.list-group-item:first').hasClass('node-disabled'), 'Toggle node (by id) : Node has class node-disabled');
-		ok(($('.node-disabled').length === 1), 'Toggle node (by id) : There is only one disabled node');
+		tree.toggleNodeDisabled(node);
+		ok($('.list-group-item:first').hasClass('node-disabled'), 'Toggle node : Node has class node-disabled');
+		ok(($('.node-disabled').length === 1), 'Toggle node : There is only one disabled node');
 
-		// Toggle disabled using node
-		$tree.treeview('toggleNodeDisabled', node);
-		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Toggle node (by node) : Node does not have class node-disabled');
-		ok(($('.node-disabled').length === 0), 'Toggle node (by node) : There are no disabled nodes');
+		tree.toggleNodeDisabled(node);
+		ok(!$('.list-group-item:first').hasClass('node-disabled'), 'Toggle node : Node does not have class node-disabled');
+		ok(($('.node-disabled').length === 0), 'Toggle node : There are no disabled nodes');
 	});
 
 	test('checkAll / uncheckAll', function () {
 		var $tree = init({ data: data, levels: 3, showCheckbox: true });
+		var tree = $tree.treeview(true);
 
-		$tree.treeview('checkAll');
+		tree.checkAll();
 		equal($($tree.selector + ' ul li.node-checked').length, 9, 'Check all works, 9 nodes with node-checked class');
 		equal($($tree.selector + ' ul li .glyphicon-check').length, 9, 'Check all works, 9 nodes with glyphicon-check icon');
 
-		$tree.treeview('uncheckAll');
+		tree.uncheckAll();
 		equal($($tree.selector + ' ul li.node-checked').length, 0, 'Check all works, 9 nodes non with node-checked class');
 		equal($($tree.selector + ' ul li .glyphicon-unchecked').length, 9, 'Check all works, 9 nodes with glyphicon-unchecked icon');
 	});
 
 	test('checkNode / uncheckNode', function () {
-		var $tree = init({ data: data, showCheckbox: true });
-		var options = getOptions($tree);
-		var nodeId = 0;
-		var node = $tree.treeview('getNode', 0);
+		var tree = init({ data: data, showCheckbox: true }).treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
 
-		// Check node using node id
-		$tree.treeview('checkNode', nodeId);
-		ok($('.list-group-item:first').hasClass('node-checked'), 'Check node (by id) : Node has class node-checked');
-		ok(($('.node-checked').length === 1), 'Check node (by id) : There is only one checked node');
-		ok($('.check-icon:first').hasClass(options.checkedIcon), 'Check node (by id) : Node icon is correct');
+		tree.checkNode(node);
+		ok($('.list-group-item:first').hasClass('node-checked'), 'Check node : Node has class node-checked');
+		ok(($('.node-checked').length === 1), 'Check node : There is only one checked node');
+		ok($('.check-icon:first').hasClass(tree.options.checkedIcon), 'Check node : Node icon is correct');
 
-		// Uncheck node using node id
-		$tree.treeview('uncheckNode', nodeId);
-		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Uncheck node (by id) : Node does not have class node-checked');
-		ok(($('.node-checked').length === 0), 'Uncheck node (by id) : There are no checked nodes');
-		ok($('.check-icon:first').hasClass(options.uncheckedIcon), 'Uncheck node (by id) : Node icon is correct');
-
-		// Check node using node
-		$tree.treeview('checkNode', node);
-		ok($('.list-group-item:first').hasClass('node-checked'), 'Check node (by node) : Node has class node-checked');
-		ok(($('.node-checked').length === 1), 'Check node (by node) : There is only one checked node');
-		ok($('.check-icon:first').hasClass(options.checkedIcon), 'Check node (by node) : Node icon is correct');
-
-		// Uncheck node using node
-		$tree.treeview('uncheckNode', node);
-		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Uncheck node (by node) : Node does not have class node-checked');
-		ok(($('.node-checked').length === 0), 'Uncheck node (by node) : There are no checked nodes');
-		ok($('.check-icon:first').hasClass(options.uncheckedIcon), 'Uncheck node (by node) : Node icon is correct');
+		tree.uncheckNode(node);
+		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Uncheck node : Node does not have class node-checked');
+		ok(($('.node-checked').length === 0), 'Uncheck node : There are no checked nodes');
+		ok($('.check-icon:first').hasClass(tree.options.uncheckedIcon), 'Uncheck node : Node icon is correct');
 	});
 
 	test('toggleNodeChecked', function () {
-		var $tree = init({ data: data, showCheckbox: true });
-		var options = getOptions($tree);
-		var nodeId = 0;
-		var node = $tree.treeview('getNode', 0);
+		var tree = init({ data: data, showCheckbox: true }).treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
 
-		// Toggle checked using node id
-		$tree.treeview('toggleNodeChecked', nodeId);
-		ok($('.list-group-item:first').hasClass('node-checked'), 'Toggle node (by id) : Node has class node-checked');
-		ok(($('.node-checked').length === 1), 'Toggle node (by id) : There is only one checked node');
-		ok($('.check-icon:first').hasClass(options.checkedIcon), 'Toggle node (by id) : Node icon is correct');
+		tree.toggleNodeChecked(node);
+		ok($('.list-group-item:first').hasClass('node-checked'), 'Toggle node : Node has class node-checked');
+		ok(($('.node-checked').length === 1), 'Toggle node : There is only one checked node');
+		ok($('.check-icon:first').hasClass(tree.options.checkedIcon), 'Toggle node : Node icon is correct');
 
-		// Toggle checked using node
-		$tree.treeview('toggleNodeChecked', node);
-		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Toggle node (by node) : Node does not have class node-checked');
-		ok(($('.node-checked').length === 0), 'Toggle node (by node) : There are no checked nodes');
-		ok($('.check-icon:first').hasClass(options.uncheckedIcon), 'Toggle node (by node) : Node icon is correct');
+		tree.toggleNodeChecked(node);
+		ok(!$('.list-group-item:first').hasClass('node-checked'), 'Toggle node : Node does not have class node-checked');
+		ok(($('.node-checked').length === 0), 'Toggle node : There are no checked nodes');
+		ok($('.check-icon:first').hasClass(tree.options.uncheckedIcon), 'Toggle node : Node icon is correct');
 	});
 
 	test('selectNode / unselectNode', function () {
-		var $tree = init({ data: data, selectedIcon: 'glyphicon glyphicon-selected' });
-		var nodeId = 0;
-		var node = $tree.treeview('getNode', 0);
+		var tree = init({ data: data, selectedIcon: 'glyphicon glyphicon-selected' }).treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
 
-		// Select node using node id
-		$tree.treeview('selectNode', nodeId);
-		ok($('.list-group-item:first').hasClass('node-selected'), 'Select node (by id) : Node has class node-selected');
-		ok(($('.node-selected').length === 1), 'Select node (by id) : There is only one selected node');
+		tree.selectNode(node);
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Select node : Node has class node-selected');
+		ok(($('.node-selected').length === 1), 'Select node : There is only one selected node');
 
-		// Unselect node using node id
-		$tree.treeview('unselectNode', nodeId);
-		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Unselect node (by id) : Node does not have class node-selected');
-		ok(($('.node-selected').length === 0), 'Unselect node (by id) : There are no selected nodes');
-
-		// Select node using node
-		$tree.treeview('selectNode', node);
-		ok($('.list-group-item:first').hasClass('node-selected'), 'Select node (by node) : Node has class node-selected');
-		ok(($('.node-selected').length === 1), 'Select node (by node) : There is only one selected node');
-
-		// Unselect node using node id
-		$tree.treeview('unselectNode', node);
-		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Unselect node (by node) : Node does not have class node-selected');
-		ok(($('.node-selected').length === 0), 'Unselect node (by node) : There are no selected nodes');
+		tree.unselectNode(node);
+		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Unselect node : Node does not have class node-selected');
+		ok(($('.node-selected').length === 0), 'Unselect node : There are no selected nodes');
 	});
 
 	test('toggleNodeSelected', function () {
-		var $tree = init({ data: data });
-		var nodeId = 0;
-		var node = $tree.treeview('getNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
 
-		// Toggle selected using node id
-		$tree.treeview('toggleNodeSelected', nodeId);
-		ok($('.list-group-item:first').hasClass('node-selected'), 'Toggle node (by id) : Node has class node-selected');
-		ok(($('.node-selected').length === 1), 'Toggle node (by id) : There is only one selected node');
+		tree.toggleNodeSelected(node);
+		ok($('.list-group-item:first').hasClass('node-selected'), 'Toggle node : Node has class node-selected');
+		ok(($('.node-selected').length === 1), 'Toggle node : There is only one selected node');
 
-		// Toggle selected using node
-		$tree.treeview('toggleNodeSelected', node);
-		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Toggle node (by id) : Node does not have class node-selected');
-		ok(($('.node-selected').length === 0), 'Toggle node (by node) : There are no selected nodes');
+		tree.toggleNodeSelected(node);
+		ok(!$('.list-group-item:first').hasClass('node-selected'), 'Toggle node : Node does not have class node-selected');
+		ok(($('.node-selected').length === 0), 'Toggle node : There are no selected nodes');
 	});
 
 	test('expandAll / collapseAll', function () {
 		var $tree = init({ data: data, levels: 1 });
+		var tree = $tree.treeview(true);
+
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
 
-		$tree.treeview('expandAll');
+		tree.expandAll();
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Expand all works, all 9 nodes displayed');
 
-		$tree.treeview('collapseAll');
+		tree.collapseAll();
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse all works, 5 original root nodes displayed');
 
-		$tree.treeview('expandAll', { levels: 1 });
+		tree.expandAll({ levels: 1 });
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand all (levels = 1) works, correctly displayed 7 nodes');
 	});
 
 	test('expandNode / collapseNode / toggleExpanded', function () {
 		var $tree = init({ data: data, levels: 1 });
+		var tree = $tree.treeview(true);
+		var node = tree.findNodes('Parent 1', 'text');
+
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Starts in collapsed state, 5 root nodes displayed');
 
-		$tree.treeview('expandNode', 0);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand node (by id) works, 7 nodes displayed');
+		tree.expandNode(node);
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand node works, 7 nodes displayed');
 
-		$tree.treeview('collapseNode', 0);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse node (by id) works, 5 original nodes displayed');
+		tree.collapseNode(node);
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse node works, 5 original nodes displayed');
 
-		$tree.treeview('toggleNodeExpanded', 0);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Toggle node (by id) works, 7 nodes displayed');
+		tree.toggleNodeExpanded(node);
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Toggle node works, 7 nodes displayed');
 
-		$tree.treeview('toggleNodeExpanded', 0);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Toggle node (by id) works, 5 original nodes displayed');
+		tree.toggleNodeExpanded(node);
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Toggle node works, 5 original nodes displayed');
 
-		$tree.treeview('expandNode', [ 0, { levels: 2 } ]);
+		tree.expandNode(node, { levels: 2 });
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Expand node (levels = 2, by id) works, 9 nodes displayed');
-
-		$tree = init({ data: data, levels: 1 });
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Reset to collapsed state, 5 root nodes displayed');
-
-		var nodeParent1 = $tree.treeview('getNode', 0);
-		$tree.treeview('expandNode', nodeParent1);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Expand node (by node) works, 7 nodes displayed');
-
-		$tree.treeview('collapseNode', nodeParent1);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Collapse node (by node) works, 5 original nodes displayed');
-
-		$tree.treeview('toggleNodeExpanded', nodeParent1);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Toggle node (by node) works, 7 nodes displayed');
-
-		$tree.treeview('toggleNodeExpanded', nodeParent1);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 5, 'Toggle node (by node) works, 5 original nodes displayed');
-
-		$tree.treeview('expandNode', [ nodeParent1, { levels: 2 } ]);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Expand node (levels = 2, by node) works, 9 nodes displayed');
 	});
 
 	test('revealNode', function () {
 		var $tree = init({ data: data, levels: 1 });
+		var tree = $tree.treeview(true);
 
-		$tree.treeview('revealNode', 1); // Child_1
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Reveal node (by id) works, reveal Child 1 and 7 nodes displayed');
-
-		var nodeGrandchild1 = $tree.treeview('getNode', 2); // Grandchild 1
-		$tree.treeview('revealNode', nodeGrandchild1);
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Reveal node (by node) works, reveal Grandchild 1 and 9 nodes displayed');
+		tree.revealNode(tree.findNodes('Child 1', 'text'));
+		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Reveal node works, reveal Child 1 and 7 nodes displayed');
 	});
 
 	test('search', function () {
@@ -856,21 +789,22 @@
 		.on('searchComplete', function(/*event, results*/) {
 			onWorked = true;
 		});
+		var tree = $tree.treeview(true);
 
 		// Case sensitive, exact match
-		var result = $tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
+		var result = tree.search('Parent 1', { ignoreCase: false, exactMatch: true });
 		equal(result.length, 1, 'Search "Parent 1" case sensitive, exact match - returns 1 result');
 
 		// Case sensitive, like
-		result = $tree.treeview('search', [ 'Parent', { ignoreCase: false, exactMatch: false } ]);
+		result = tree.search('Parent', { ignoreCase: false, exactMatch: false });
 		equal(result.length, 5, 'Search "Parent" case sensitive, exact match - returns 5 results');
 
 		// Case insensitive, exact match
-		result = $tree.treeview('search', [ 'parent 1', { ignoreCase: true, exactMatch: true } ]);
+		result = tree.search('parent 1', { ignoreCase: true, exactMatch: true });
 		equal(result.length, 1, 'Search "parent 1" case insensitive, exact match - returns 1 result');
 
 		// Case insensitive, like
-		result = $tree.treeview('search', [ 'parent', { ignoreCase: true, exactMatch: false } ]);
+		result = tree.search('parent', { ignoreCase: true, exactMatch: false });
 		equal(result.length, 5, 'Search "parent" case insensitive, exact match - returns 5 results')
 
 		// Check events fire
@@ -889,11 +823,12 @@
 		.on('searchCleared', function(/*event, results*/) {
 			onWorked = true;
 		});
+		var tree = $tree.treeview(true);
 
 		// Check results are cleared
-		$tree.treeview('search', [ 'Parent 1', { ignoreCase: false, exactMatch: true } ]);
+		tree.search('Parent 1', { ignoreCase: false, exactMatch: true });
 		equal($tree.find('.node-result').length, 1, 'Search results highlighted');
-		$tree.treeview('clearSearch');
+		tree.clearSearch();
 		equal($tree.find('.node-result').length, 0, 'Search results cleared');
 
 		// Check events fire

@@ -407,12 +407,12 @@ $('#tree').treeview('checkAll', { silent: true });
 
 Triggers `nodeChecked` event; pass silent to suppress events.
 
-#### checkNode(node | nodeId, options)
+#### checkNode(nodes, options)
 
-Checks a given tree node, accepts node or nodeId.
+Checks given tree nodes.
 
 ```javascript
-$('#tree').treeview('checkNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('checkNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeChecked` event; pass silent to suppress events.
@@ -437,12 +437,12 @@ $('#tree').treeview('collapseAll', { silent: true });
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
 
-#### collapseNode(node | nodeId, options)
+#### collapseNode(nodes, options)
 
 Collapse a given tree node and it's child nodes.  If you don't want to collapse the child nodes, pass option `{ ignoreChildren: true }`.
 
 ```javascript
-$('#tree').treeview('collapseNode', [ nodeId, { silent: true, ignoreChildren: false } ]);
+$('#tree').treeview('collapseNode', [ nodes, { silent: true, ignoreChildren: false } ]);
 ```
 
 Triggers `nodeCollapsed` event; pass silent to suppress events.
@@ -457,12 +457,12 @@ $('#tree').treeview('disableAll', { silent: true });
 
 Triggers `nodeDisabled` event; pass silent to suppress events.
 
-#### disableNode(node | nodeId, options)
+#### disableNode(nodes, options)
 
-Disable a given tree node, accepts node or nodeId.
+Disable given tree nodes.
 
 ```javascript
-$('#tree').treeview('disableNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('disableNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeDisabled` event; pass silent to suppress events.
@@ -477,12 +477,12 @@ $('#tree').treeview('enableAll', { silent: true });
 
 Triggers `nodeEnabled` event; pass silent to suppress events.
 
-#### enableNode(node | nodeId, options)
+#### enableNode(nodes, options)
 
-Enable a given tree node, accepts node or nodeId.
+Enable given tree nodes.
 
 ```javascript
-$('#tree').treeview('enableNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('enableNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeEnabled` event; pass silent to suppress events.
@@ -497,22 +497,30 @@ $('#tree').treeview('expandAll', { levels: 2, silent: true });
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
-#### expandNode(node | nodeId, options)
+#### expandNode(nodes, options)
 
-Expand a given tree node, accepts node or nodeId.  Optionally can be expanded to any given number of levels.
+Expand given tree nodes.  Optionally can be expanded to any given number of levels.
 
 ```javascript
-$('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
+$('#tree').treeview('expandNode', [ nodes, { levels: 2, silent: true } ]);
 ```
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
+
+#### findNodes(pattern, field)
+
+Returns an array of matching node objects.
+
+```javascript
+$('#tree').treeview('findNode', ['Parent', 'text']);
+```
 
 #### getChecked()
 
 Returns an array of checked nodes e.g. state.checked = true.
 
 ```javascript
-$('#tree').treeview('getChecked', nodeId);
+$('#tree').treeview('getChecked');
 ```
 
 #### getCollapsed()
@@ -520,7 +528,7 @@ $('#tree').treeview('getChecked', nodeId);
 Returns an array of collapsed nodes e.g. state.expanded = false.
 
 ```javascript
-$('#tree').treeview('getCollapsed', nodeId);
+$('#tree').treeview('getCollapsed');
 ```
 
 #### getDisabled()
@@ -528,7 +536,7 @@ $('#tree').treeview('getCollapsed', nodeId);
 Returns an array of disabled nodes e.g. state.disabled = true.
 
 ```javascript
-$('#tree').treeview('getDisabled', nodeId);
+$('#tree').treeview('getDisabled');
 ```
 
 #### getEnabled()
@@ -536,7 +544,7 @@ $('#tree').treeview('getDisabled', nodeId);
 Returns an array of enabled nodes e.g. state.disabled = false.
 
 ```javascript
-$('#tree').treeview('getEnabled', nodeId);
+$('#tree').treeview('getEnabled');
 ```
 
 #### getExpanded()
@@ -544,23 +552,15 @@ $('#tree').treeview('getEnabled', nodeId);
 Returns an array of expanded nodes e.g. state.expanded = true.
 
 ```javascript
-$('#tree').treeview('getExpanded', nodeId);
+$('#tree').treeview('getExpanded');
 ```
 
-#### getNode(nodeId)
+#### getParents(nodes)
 
-Returns a single node object that matches the given node id.
-
-```javascript
-$('#tree').treeview('getNode', nodeId);
-```
-
-#### getParent(node | nodeId)
-
-Returns the parent node of a given node, if valid otherwise returns undefined.
+Returns parent nodes for given nodes, if valid otherwise returns undefined.
 
 ```javascript
-$('#tree').treeview('getParent', node);
+$('#tree').treeview('getParent', nodes);
 ```
 
 #### getSelected()
@@ -568,15 +568,15 @@ $('#tree').treeview('getParent', node);
 Returns an array of selected nodes e.g. state.selected = true.
 
 ```javascript
-$('#tree').treeview('getSelected', nodeId);
+$('#tree').treeview('getSelected');
 ```
 
-#### getSiblings(node | nodeId)
+#### getSiblings(nodes)
 
-Returns an array of sibling nodes for a given node, if valid otherwise returns undefined.
+Returns an array of sibling nodes for given nodes, if valid otherwise returns undefined.
 
 ```javascript
-$('#tree').treeview('getSiblings', node);
+$('#tree').treeview('getSiblings', nodes);
 ```
 
 #### getUnchecked()
@@ -584,7 +584,7 @@ $('#tree').treeview('getSiblings', node);
 Returns an array of unchecked nodes e.g. state.checked = false.
 
 ```javascript
-$('#tree').treeview('getUnchecked', nodeId);
+$('#tree').treeview('getUnchecked');
 ```
 
 #### getUnselected()
@@ -592,7 +592,7 @@ $('#tree').treeview('getUnchecked', nodeId);
 Returns an array of unselected nodes e.g. state.selected = false.
 
 ```javascript
-$('#tree').treeview('getUnselected', nodeId);
+$('#tree').treeview('getUnselected');
 ```
 
 #### remove()
@@ -603,12 +603,12 @@ Removes the tree view component. Removing attached events, internal attached obj
 $('#tree').treeview('remove');
 ```
 
-#### revealNode(node | nodeId, options)
+#### revealNode(nodes, options)
 
-Reveals a given tree node, expanding the tree from node to root.
+Reveals given tree nodes, expanding the tree from node to root.
 
 ```javascript
-$('#tree').treeview('revealNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('revealNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
@@ -629,52 +629,52 @@ $('#tree').treeview('search', [ 'Parent', {
 
 Triggers `searchComplete` event
 
-#### selectNode(node | nodeId, options)
+#### selectNode(nodes, options)
 
-Selects a given tree node, accepts node or nodeId.
+Selects given tree nodes.
 
 ```javascript
-$('#tree').treeview('selectNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('selectNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeSelected` event; pass silent to suppress events.
 
-#### toggleNodeChecked(node | nodeId, options)
+#### toggleNodeChecked(nodes, options)
 
-Toggles a nodes checked state; checking if unchecked, unchecking if checked.
+Toggles a node's checked state; checking if unchecked, unchecking if checked.
 
 ```javascript
-$('#tree').treeview('toggleNodeChecked', [ nodeId, { silent: true } ]);
+$('#tree').treeview('toggleNodeChecked', [ nodes, { silent: true } ]);
 ```
 
 Triggers either `nodeChecked` or `nodeUnchecked` event; pass silent to suppress events.
 
-#### toggleNodeDisabled(node | nodeId, options)
+#### toggleNodeDisabled(nodes, options)
 
-Toggles a nodes disabled state; disabling if enabled, enabling if disabled.
+Toggles a node's disabled state; disabling if enabled, enabling if disabled.
 
 ```javascript
-$('#tree').treeview('toggleNodeDisabled', [ nodeId, { silent: true } ]);
+$('#tree').treeview('toggleNodeDisabled', [ nodes, { silent: true } ]);
 ```
 
 Triggers either `nodeDisabled` or `nodeEnabled` event; pass silent to suppress events.
 
-#### toggleNodeExpanded(node | nodeId, options)
+#### toggleNodeExpanded(nodes, options)
 
-Toggles a nodes expanded state; collapsing if expanded, expanding if collapsed.
+Toggles a node's expanded state; collapsing if expanded, expanding if collapsed.
 
 ```javascript
-$('#tree').treeview('toggleNodeExpanded', [ nodeId, { silent: true } ]);
+$('#tree').treeview('toggleNodeExpanded', [ nodes, { silent: true } ]);
 ```
 
 Triggers either `nodeExpanded` or `nodeCollapsed` event; pass silent to suppress events.
 
-#### toggleNodeSelected(node | nodeId, options)
+#### toggleNodeSelected(nodes, options)
 
 Toggles a node selected state; selecting if unselected, unselecting if selected.
 
 ```javascript
-$('#tree').treeview('toggleNodeSelected', [ nodeId, { silent: true } ]);
+$('#tree').treeview('toggleNodeSelected', [ nodes, { silent: true } ]);
 ```
 
 Triggers either `nodeSelected` or `nodeUnselected` event; pass silent to suppress events.
@@ -689,22 +689,22 @@ $('#tree').treeview('uncheckAll', { silent: true });
 
 Triggers `nodeUnchecked` event; pass silent to suppress events.
 
-#### uncheckNode(node | nodeId, options)
+#### uncheckNode(nodes, options)
 
-Uncheck a given tree node, accepts node or nodeId.
+Uncheck given tree nodes.
 
 ```javascript
-$('#tree').treeview('uncheckNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('uncheckNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeUnchecked` event; pass silent to suppress events.
 
-#### unselectNode(node | nodeId, options)
+#### unselectNode(nodes, options)
 
-Unselects a given tree node, accepts node or nodeId.
+Unselects given tree nodes.
 
 ```javascript
-$('#tree').treeview('unselectNode', [ nodeId, { silent: true } ]);
+$('#tree').treeview('unselectNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeUnselected` event; pass silent to suppress events.
