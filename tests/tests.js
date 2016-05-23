@@ -547,20 +547,20 @@
 	});
 
 	test('getSelected', function () {
-		var $tree = init({ data: data })
-			.treeview('selectNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.selectNode(tree.findNodes('Parent 1', 'text'));
 
-		var selectedNodes = $tree.treeview('getSelected');
+		var selectedNodes = tree.getSelected();
 		ok((selectedNodes instanceof Array), 'Result is an array');
 		equal(selectedNodes.length, 1, 'Correct number of nodes returned');
 		equal(selectedNodes[0].text, 'Parent 1', 'Correct node returned');
 	});
 
 	test('getUnselected', function () {
-		var $tree = init({ data: data })
-			.treeview('selectNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.selectNode(tree.findNodes('Parent 1', 'text'));
 
-		var unselectedNodes = $tree.treeview('getUnselected');
+		var unselectedNodes = tree.getUnselected();
 		ok((unselectedNodes instanceof Array), 'Result is an array');
 		equal(unselectedNodes.length, 8, 'Correct number of nodes returned');
 	});
@@ -569,8 +569,8 @@
 	// Default tree + expanded to 2 levels,
 	// means 1 node 'Parent 1' should be expanded and therefore returned
 	test('getExpanded', function () {
-		var $tree = init({ data: data });
-		var expandedNodes = $tree.treeview('getExpanded');
+		var tree = init({ data: data }).treeview(true);
+		var expandedNodes = tree.getExpanded();
 		ok((expandedNodes instanceof Array), 'Result is an array');
 		equal(expandedNodes.length, 1, 'Correct number of nodes returned');
 		equal(expandedNodes[0].text, 'Parent 1', 'Correct node returned');
@@ -581,46 +581,46 @@
 	// as all other parent nodes have no children their state will be collapsed
 	// which means 8 of the 9 nodes should be returned
 	test('getCollapsed', function () {
-		var $tree = init({ data: data });
-		var collapsedNodes = $tree.treeview('getCollapsed');
+		var tree = init({ data: data }).treeview(true);
+		var collapsedNodes = tree.getCollapsed();
 		ok((collapsedNodes instanceof Array), 'Result is an array');
 		equal(collapsedNodes.length, 8, 'Correct number of nodes returned');
 	});
 
 	test('getChecked', function () {
-		var $tree = init({ data: data, showCheckbox: true })
-			.treeview('checkNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.checkNode(tree.findNodes('Parent 1', 'text'));
 
-		var checkedNodes = $tree.treeview('getChecked');
+		var checkedNodes = tree.getChecked();
 		ok((checkedNodes instanceof Array), 'Result is an array');
 		equal(checkedNodes.length, 1, 'Correct number of nodes returned');
 		equal(checkedNodes[0].text, 'Parent 1', 'Correct node returned');
 	});
 
 	test('getUnchecked', function () {
-		var $tree = init({ data: data })
-			.treeview('checkNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.checkNode(tree.findNodes('Parent 1', 'text'));
 
-		var uncheckedNodes = $tree.treeview('getUnchecked');
+		var uncheckedNodes = tree.getUnchecked();
 		ok((uncheckedNodes instanceof Array), 'Result is an array');
 		equal(uncheckedNodes.length, 8, 'Correct number of nodes returned');
 	});
 
 	test('getDisabled', function () {
-		var $tree = init({ data: data })
-			.treeview('disableNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.disableNode(tree.findNodes('Parent 1', 'text'));
 
-		var disabledNodes = $tree.treeview('getDisabled');
+		var disabledNodes = tree.getDisabled();
 		ok((disabledNodes instanceof Array), 'Result is an array');
 		equal(disabledNodes.length, 1, 'Correct number of nodes returned');
 		equal(disabledNodes[0].text, 'Parent 1', 'Correct node returned');
 	});
 
 	test('getEnabled', function () {
-		var $tree = init({ data: data })
-			.treeview('disableNode', 0);
+		var tree = init({ data: data }).treeview(true);
+		tree.disableNode(tree.findNodes('Parent 1', 'text'));
 
-		var enabledNodes = $tree.treeview('getEnabled');
+		var enabledNodes = tree.getEnabled();
 		ok((enabledNodes instanceof Array), 'Result is an array');
 		equal(enabledNodes.length, 8, 'Correct number of nodes returned');
 	});
@@ -776,9 +776,6 @@
 
 		tree.revealNode(tree.findNodes('Child 1', 'text'));
 		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 7, 'Reveal node works, reveal Child 1 and 7 nodes displayed');
-
-		$tree.treeview('revealNode', tree.findNodes('Grandchild 1', 'text'));
-		equal($($tree.selector + ' ul li:not(.node-hidden)').length, 9, 'Reveal node (by node) works, reveal Grandchild 1 and 9 nodes displayed');
 	});
 
 	test('search', function () {
