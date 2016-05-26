@@ -40,6 +40,7 @@
 		selectedIcon: '',
 		checkedIcon: 'glyphicon glyphicon-check',
 		uncheckedIcon: 'glyphicon glyphicon-unchecked',
+		intermediateIcon: 'glyphicon glyphicon-stop',
 
 		color: undefined, // '#000000',
 		backColor: undefined, // '#FFFFFF',
@@ -65,6 +66,7 @@
 		onNodeDisabled: undefined,
 		onNodeEnabled: undefined,
 		onNodeExpanded: undefined,
+		onNodeIntermediate: undefined,
 		onNodeSelected: undefined,
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
@@ -131,6 +133,7 @@
 			checkNode: $.proxy(this.checkNode, this),
 			uncheckAll: $.proxy(this.uncheckAll, this),
 			uncheckNode: $.proxy(this.uncheckNode, this),
+			intermediateNode: $.proxy(this.intermediateNode, this),
 			toggleNodeChecked: $.proxy(this.toggleNodeChecked, this),
 
 			// Disable / enable methods
@@ -194,6 +197,7 @@
 		this.$element.off('nodeDisabled');
 		this.$element.off('nodeEnabled');
 		this.$element.off('nodeExpanded');
+		this.$element.off('nodeIntermediate');
 		this.$element.off('nodeSelected');
 		this.$element.off('nodeUnchecked');
 		this.$element.off('nodeUnselected');
@@ -225,6 +229,10 @@
 
 		if (typeof (this.options.onNodeExpanded) === 'function') {
 			this.$element.on('nodeExpanded', this.options.onNodeExpanded);
+		}
+		
+		if (typeof (this.options.onNodeIntermediate) === 'function') {
+			this.$element.on('nodeIntermediate', this.options.onNodeIntermediate);
 		}
 
 		if (typeof (this.options.onNodeSelected) === 'function') {
@@ -444,12 +452,20 @@
 				this.$element.trigger('nodeChecked', $.extend(true, {}, node));
 			}
 		}
-		else {
+		else if (state === false) {
 
 			// Uncheck node
 			node.state.checked = false;
 			if (!options.silent) {
 				this.$element.trigger('nodeUnchecked', $.extend(true, {}, node));
+			}
+		}
+		else {
+		
+			// Intermediate node
+			node.state.checked = null;
+			if (!options.silent) {
+				this.$element.trigger('nodeIntermediate', $.extend(true, {}, node));
 			}
 		}
 	};
@@ -571,8 +587,11 @@
 				if (node.state.checked) {
 					classList.push(_this.options.checkedIcon); 
 				}
-				else {
+				else if (node.state.checked === false) {
 					classList.push(_this.options.uncheckedIcon);
+				}
+				else {
+					classList.push(_this.options.intermediateIcon);
 				}
 
 				treeItem
@@ -992,6 +1011,19 @@
 		this.render();
 	};
 
+	/**
+		Intermediate a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.intermediateNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setCheckedState(node, null, options);
+		}, this));
+
+		this.render();
+	};
+	
 	/**
 		Toggles a nodes checked state; checking if unchecked, unchecking if checked.
 		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
