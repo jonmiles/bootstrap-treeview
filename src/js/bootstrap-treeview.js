@@ -52,6 +52,7 @@
 		searchResultBackColor: undefined, //'#FFFFFF',
 
 		enableLinks: false,
+		enableSelectable: true,
 		highlightSelected: true,
 		highlightSearchResults: true,
 		showBorder: true,
@@ -279,7 +280,7 @@
 
 			// if not provided set selectable default value
 			if (!node.hasOwnProperty('selectable')) {
-				node.selectable = true;
+				node.selectable = _this.options.enableSelectable;
 			}
 
 			// where provided we should preserve states
@@ -343,7 +344,7 @@
 		}
 		else {
 			
-			if (node.selectable) {
+			if (this.options.enableSelectable && node.selectable) {
 				this.toggleSelectedState(node, _default.options);
 			} else {
 				this.toggleExpandedState(node, _default.options);
