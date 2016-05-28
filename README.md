@@ -282,6 +282,11 @@ Boolean.  Default: false
 
 Whether or not to present node text as a hyperlink.  The href value of which must be provided in the data structure on a per node basis.
 
+#### linksOnNewTab
+Boolean.  Default: false
+
+In conjunction with *enableLinks* set to true, opens the linked document in a new tab.
+
 #### expandIcon
 String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
