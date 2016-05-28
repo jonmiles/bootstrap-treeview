@@ -1,8 +1,8 @@
 {
   "name": "bootstrap-treeview",
   "description": "Tree View for Twitter Bootstrap",
-  "version": "1.2.1",
-  "homepage": "https://github.com/carvilsi/bootstrap-treeview",
+  "version": "1.2.0",
+  "homepage": "https://github.com/jonmiles/bootstrap-treeview",
   "main": [
     "dist/bootstrap-treeview.min.js",
     "dist/bootstrap-treeview.min.css"
