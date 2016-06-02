@@ -735,7 +735,22 @@ $('#tree').on('nodeSelected', function(event, data) {
 });
 ```
 
+
 ### List of Events
+
+#### Lifecycle Events
+
+> Use callback handlers for lifecycle events otherwise you'll miss the events fired during creation.
+
+`initialized (event, nodes)`  - The tree has initialized itself and data ready for rendering.
+
+`nodeRendered (event, node)`  - A new node is rendered;
+
+`rendered (event, nodes)`  - The tree is rendered;
+
+`destroyed (event)`  The tree is being destroyed;
+
+#### State Events
 
 `nodeChecked (event, node)`  - A node is checked.
 
@@ -752,6 +767,8 @@ $('#tree').on('nodeSelected', function(event, data) {
 `nodeUnchecked (event, node)`  - A node is unchecked.
 
 `nodeUnselected (event, node)`  - A node is unselected.  
+
+#### Other Events
 
 `searchComplete (event, results)`  - After a search completes
 

@@ -60,6 +60,11 @@
 		preventUnselect: false,
 
 		// Event handlers
+		onInitialized: undefined,
+		onNodeRendered: undefined,
+		onRendered: undefined,
+		onDestroyed: undefined,
+
 		onNodeChecked: undefined,
 		onNodeCollapsed: undefined,
 		onNodeDisabled: undefined,
@@ -68,6 +73,7 @@
 		onNodeSelected: undefined,
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
+
 		onSearchComplete: undefined,
 		onSearchCleared: undefined
 	};
@@ -84,7 +90,6 @@
 	};
 
 	var Tree = function (element, options) {
-
 		this.$element = $(element);
 		this._elementId = element.id;
 		this._styleId = this._elementId + '-style';
@@ -147,7 +152,6 @@
 	};
 
 	Tree.prototype._init = function (options) {
-
 		this._tree = [];
 		this._nodes = [];
 		this._initialized = false;
@@ -163,7 +167,14 @@
 
 		this._destroy();
 		this._subscribeEvents();
-		this._setInitialStates({ nodes: this._tree }, 0);
+
+		// index nodes
+		$.when.apply(this, this._setInitialStates({ nodes: this._tree }, 0))
+			.done($.proxy(function () {
+				this._triggerEvent('initialized', this._nodes, _default.options);
+			}, this));
+
+		// render to DOM
 		this._render();
 	};
 
@@ -174,21 +185,24 @@
 	};
 
 	Tree.prototype._destroy = function () {
-
 		if (!this._initialized) return;
+		this._initialized = false;
 
-		this.$wrapper.remove();
-		this.$wrapper = null;
+		this._triggerEvent('destroyed', null, _default.options);
 
 		// Switch off events
 		this._unsubscribeEvents();
 
-		// Reset this._initialized flag
-		this._initialized = false;
+		// Tear down
+		this.$wrapper.remove();
+		this.$wrapper = null;
 	};
 
 	Tree.prototype._unsubscribeEvents = function () {
-
+		this.$element.off('initialized');
+		this.$element.off('nodeRendered');
+		this.$element.off('rendered');
+		this.$element.off('destroyed');
 		this.$element.off('click');
 		this.$element.off('nodeChecked');
 		this.$element.off('nodeCollapsed');
@@ -203,8 +217,23 @@
 	};
 
 	Tree.prototype._subscribeEvents = function () {
-
 		this._unsubscribeEvents();
+
+		if (typeof (this._options.onInitialized) === 'function') {
+			this.$element.on('initialized', this._options.onInitialized);
+		}
+
+		if (typeof (this._options.onNodeRendered) === 'function') {
+			this.$element.on('nodeRendered', this._options.onNodeRendered);
+		}
+
+		if (typeof (this._options.onRendered) === 'function') {
+			this.$element.on('rendered', this._options.onRendered);
+		}
+
+		if (typeof (this._options.onDestroyed) === 'function') {
+			this.$element.on('destroyed', this._options.onDestroyed);
+		}
 
 		this.$element.on('click', $.proxy(this._clickHandler, this));
 
@@ -249,20 +278,29 @@
 		}
 	};
 
+	Tree.prototype._triggerEvent = function (event, data, options) {
+		if (options && !options.silent) {
+			this.$element.trigger(event, $.extend(true, {}, data));
+		}
+	}
+
 	/*
 		Recurse the tree structure and ensure all nodes have
 		valid initial states.  User defined states will be preserved.
 		For performance we also take this opportunity to
 		index nodes in a flattened structure
 	*/
-	Tree.prototype._setInitialStates = function (node, level) {
+	Tree.prototype._setInitialStates = function (node, level, ready) {
 
 		if (!node.nodes) return;
 		level += 1;
+		ready = ready || [];
 
 		var parent = node;
 		var _this = this;
 		$.each(node.nodes, function checkStates(index, node) {
+			var deferred = new $.Deferred();
+			ready.push(deferred.promise());
 
 			// nodeId : unique, incremental identifier
 			node.nodeId = _this._nodes.length;
@@ -319,13 +357,17 @@
 			// recurse child nodes and transverse the tree
 			if (node.nodes) {
 				if (node.nodes.length > 0) {
-					_this._setInitialStates(node, level);
+					_this._setInitialStates(node, level, ready);
 				}
 				else {
 					delete node.nodes;
 				}
 			}
+
+			deferred.resolve();
 		});
+
+		return ready;
 	};
 
 	Tree.prototype._clickHandler = function (event) {
@@ -394,9 +436,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeExpanded', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeExpanded', node, options);
 		}
 		else if (!state) {
 
@@ -419,9 +459,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeCollapsed', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeCollapsed', node, options);
 		}
 	};
 
@@ -487,9 +525,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeSelected', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeSelected', node, options);
 		}
 		else {
 
@@ -515,9 +551,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeUnselected', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeUnselected', node, options);
 		}
 
 		return this;
@@ -548,9 +582,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeChecked', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeChecked', node, options);
 		}
 		else {
 
@@ -566,9 +598,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeUnchecked', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeUnchecked', node, options);
 		}
 	};
 
@@ -594,9 +624,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeDisabled', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeDisabled', node, options);
 		}
 		else {
 
@@ -609,9 +637,7 @@
 			}
 
 			// Optionally trigger event
-			if (options && !options.silent) {
-				this.$element.trigger('nodeEnabled', $.extend(true, {}, node));
-			}
+			this._triggerEvent('nodeEnabled', node, options);
 		}
 	};
 
@@ -637,7 +663,6 @@
 	};
 
 	Tree.prototype._render = function () {
-
 		if (!this._initialized) {
 
 			// Setup first time only components
@@ -657,6 +682,8 @@
 			node.level = 1;
 			this._renderNode(node);
 		}, this));
+
+		this._triggerEvent('rendered', this._nodes, _default.options);
 	};
 
 	Tree.prototype._renderNode = function (node, pEl) {
@@ -732,12 +759,14 @@
 				this._renderNode(childNode, node.$el);
 			}, this));
 		}
+
+		// Trigger nodeRendered event
+		this._triggerEvent('nodeRendered', node, _default.options);
 	};
 
 	// Creates a new node element from template and
 	// ensures the template is inserted at the correct position
 	Tree.prototype._newNodeEl = function (pEl) {
-
 		var $el = $(this._template.node);
 
 		if (pEl) {
@@ -764,7 +793,6 @@
 
 	// Add inline style into head
 	Tree.prototype._injectStyle = function () {
-
 		if (this._options.injectStyle && !document.getElementById(this._styleId)) {
 			$('<style type="text/css" id="' + this._styleId + '"> ' + this._buildStyle() + ' </style>').appendTo('head');
 		}
@@ -772,7 +800,6 @@
 
 	// Construct trees style based on user options
 	Tree.prototype._buildStyle = function () {
-
 		var style = '.node-' + this._elementId + '{';
 
 		// Basic bootstrap style overrides
@@ -1250,7 +1277,7 @@
 			this.revealNode(results);
 		}
 
-		this.$element.trigger('searchComplete', $.extend(true, {}, results));
+		this._triggerEvent('searchComplete', results, options);
 
 		return results;
 	};
@@ -1265,7 +1292,7 @@
 			this._setSearchResult(node, false, options);
 		}, this));
 
-		this.$element.trigger('searchCleared', $.extend(true, {}, results));
+		this._triggerEvent('searchCleared', results, options);
 	};
 
 	Tree.prototype._getSearchResults = function () {
@@ -1290,10 +1317,8 @@
 		@return {Array} nodes - Nodes that match your criteria
 	*/
 	Tree.prototype._findNodes = function (pattern, attribute, modifier) {
-
 		attribute = attribute || 'text';
 		modifier = modifier || 'g';
-
 		return $.grep(this._nodes, $.proxy(function (node) {
 			var val = this._getNodeValue(node, attribute);
 			if (typeof val === 'string') {
