@@ -177,7 +177,7 @@
 		// index nodes
 		$.when.apply(this, this._setInitialStates({ nodes: this._tree }, 0))
 			.done($.proxy(function () {
-				this._triggerEvent('initialized', this._nodes);
+				this._triggerEvent('initialized', this._nodes, _default.options);
 			}, this));
 
 		// render to DOM
@@ -194,7 +194,7 @@
 		if (!this._initialized) return;
 		this._initialized = false;
 
-		this._triggerEvent('destroyed', null);
+		this._triggerEvent('destroyed', null, _default.options);
 
 		// Switch off events
 		this._unsubscribeEvents();
@@ -285,7 +285,7 @@
 	};
 
 	Tree.prototype._triggerEvent = function (event, data, options) {
-		if (!options || (options && !options.silent)) {
+		if (options && !options.silent) {
 			this.$element.trigger(event, $.extend(true, {}, data));
 		}
 	}
@@ -442,7 +442,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeExpanded', node);
+			this._triggerEvent('nodeExpanded', node, options);
 		}
 		else if (!state) {
 
@@ -465,7 +465,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeCollapsed', node);
+			this._triggerEvent('nodeCollapsed', node, options);
 		}
 	};
 
@@ -531,7 +531,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeSelected', node);
+			this._triggerEvent('nodeSelected', node, options);
 		}
 		else {
 
@@ -557,7 +557,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeUnselected', node);
+			this._triggerEvent('nodeUnselected', node, options);
 		}
 
 		return this;
@@ -588,7 +588,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeChecked', node);
+			this._triggerEvent('nodeChecked', node, options);
 		}
 		else {
 
@@ -604,7 +604,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeUnchecked', node);
+			this._triggerEvent('nodeUnchecked', node, options);
 		}
 	};
 
@@ -630,7 +630,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeDisabled', node);
+			this._triggerEvent('nodeDisabled', node, options);
 		}
 		else {
 
@@ -643,7 +643,7 @@
 			}
 
 			// Optionally trigger event
-			this._triggerEvent('nodeEnabled', node);
+			this._triggerEvent('nodeEnabled', node, options);
 		}
 	};
 
@@ -689,7 +689,7 @@
 			this._renderNode(node);
 		}, this));
 
-		this._triggerEvent('rendered', this._nodes);
+		this._triggerEvent('rendered', this._nodes, _default.options);
 	};
 
 	Tree.prototype._renderNode = function (node, pEl) {
@@ -767,7 +767,7 @@
 		}
 
 		// Trigger nodeRendered event
-		this._triggerEvent('nodeRendered', node);
+		this._triggerEvent('nodeRendered', node, _default.options);
 	};
 
 	// Creates a new node element from template and
@@ -1283,7 +1283,7 @@
 			this.revealNode(results);
 		}
 
-		this._triggerEvent('searchComplete', results);
+		this._triggerEvent('searchComplete', results, options);
 
 		return results;
 	};
@@ -1298,7 +1298,7 @@
 			this._setSearchResult(node, false, options);
 		}, this));
 
-		this._triggerEvent('searchCleared', results);
+		this._triggerEvent('searchCleared', results, options);
 	};
 
 	Tree.prototype._getSearchResults = function () {
