@@ -735,9 +735,12 @@ $('#tree').on('nodeSelected', function(event, data) {
 });
 ```
 
+
 ### List of Events
 
 #### Lifecycle Events
+
+> Use callback handlers for lifecycle events otherwise you'll miss the events fired during creation.
 
 `initialized (event, nodes)`  - The tree has initialized itself and data ready for rendering.
 

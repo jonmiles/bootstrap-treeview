@@ -111,6 +111,10 @@
 		equal(options.showTags, false, 'showTags default ok');
 		equal(options.multiSelect, false, 'multiSelect default ok');
 		equal(options.preventUnselect, false, 'preventUnselect default ok');
+		equal(options.onInitialized, null, 'onInitialized default ok');
+		equal(options.onNodeRendered, null, 'onNodeRendered default ok');
+		equal(options.onRendered, null, 'onRendered default ok');
+		equal(options.onDestroyed, null, 'onDestroyed default ok');
 		equal(options.onNodeChecked, null, 'onNodeChecked default ok');
 		equal(options.onNodeCollapsed, null, 'onNodeCollapsed default ok');
 		equal(options.onNodeDisabled, null, 'onNodeDisabled default ok');
@@ -148,6 +152,10 @@
 			showTags: true,
 			multiSelect: true,
 			preventUnselect: true,
+			onInitialized: function () {},
+			onNodeRendered: function () {},
+			onRendered: function () {},
+			onDestroyed: function () {},
 			onNodeChecked: function () {},
 			onNodeCollapsed: function () {},
 			onNodeDisabled: function () {},
@@ -186,6 +194,10 @@
 		equal(options.showTags, true, 'showTags set ok');
 		equal(options.multiSelect, true, 'multiSelect set ok');
 		equal(options.preventUnselect, true, 'preventUnselect set ok');
+		equal(typeof options.onInitialized, 'function', 'onInitialized set ok');
+		equal(typeof options.onNodeRendered, 'function', 'onNodeRendered set ok');
+		equal(typeof options.onRendered, 'function', 'onRendered set ok');
+		equal(typeof options.onDestroyed, 'function', 'onDestroyed set ok');
 		equal(typeof options.onNodeChecked, 'function', 'onNodeChecked set ok');
 		equal(typeof options.onNodeCollapsed, 'function', 'onNodeCollapsed set ok');
 		equal(typeof options.onNodeDisabled, 'function', 'onNodeDisabled set ok');
@@ -834,6 +846,30 @@
 		// Check events fire
 		ok(cbWorked, 'onSearchCleared function was called');
 		ok(onWorked, 'searchCleared was fired');
+	});
+
+
+	module('Events');
+
+	test('Lifecycle Events', function () {
+		var cbInitialized = false;
+		var cbNodeRendered = false;
+		var cbRendered = false;
+		var cbDestroyed = false;
+		var $tree = init({
+			data: data,
+			onInitialized: function(/*event, results*/) { cbInitialized = true; },
+			onNodeRendered: function(/*event, results*/) { cbNodeRendered = true; },
+			onRendered: function(/*event, results*/) { cbRendered = true; },
+			onDestroyed: function(/*event, results*/) { cbDestroyed = true; }
+		})
+		.treeview(true)
+		.remove();
+
+		ok(cbInitialized, 'onInitialized triggered');
+		ok(cbNodeRendered, 'onNodeRendered triggered');
+		ok(cbRendered, 'onRendered triggered');
+		ok(cbDestroyed, 'onDestroyed triggered');
 	});
 
 }());
