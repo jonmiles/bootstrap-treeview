@@ -971,7 +971,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkAll = function (options) {
-		var identifiers = this.findNodes('false', 'g', 'state.checked');
+		var identifiers = this.findNodes('false|null', 'g', 'state.checked');
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setCheckedState(node, true, options);
 		}, this));
@@ -997,7 +997,7 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckAll = function (options) {
-		var identifiers = this.findNodes('true', 'g', 'state.checked');
+		var identifiers = this.findNodes('true|null', 'g', 'state.checked');
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setCheckedState(node, false, options);
 		}, this));
@@ -1238,6 +1238,9 @@
 		}
 		else {
 			if (obj.hasOwnProperty(attr)) {
+				if (obj[attr] === null) {
+					return 'null'
+				}
 				return obj[attr].toString();
 			}
 			else {
