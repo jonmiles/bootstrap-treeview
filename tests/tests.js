@@ -223,9 +223,15 @@
 		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
 	});
 
-	test('Accepts remove JSON', function () {
-		var el = init({levels: 1, dataUrl: {url: 'data.json'}});
-		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
+	asyncTest('Accepts remote JSON', function (assert) {
+		var el = init({
+			levels: 1,
+			dataUrl: {url: 'data.json'},
+			onRendered: function () {
+				assert.equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
+				start();
+			}
+		});
 	});
 
 
@@ -233,7 +239,7 @@
 
 	test('Is chainable', function () {
 		var el = init();
-		equal(el.addClass('test').attr('class'), 'treeview test', 'Is chainable');
+		equal(el.addClass('test').attr('class'), 'test', 'Is chainable');
 	});
 
 	test('Correct initial levels shown', function () {
