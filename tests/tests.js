@@ -213,10 +213,19 @@
 
 	module('Data');
 
-	test('Accepts JSON', function () {
-		var el = init({levels:1,data:json});
+	test('Accepts local data', function () {
+		var el = init({levels: 1, data: data});
 		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
+	});
 
+	test('Accepts local JSON', function () {
+		var el = init({levels: 1, data: json});
+		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
+	});
+
+	test('Accepts remove JSON', function () {
+		var el = init({levels: 1, dataUrl: {url: 'data.json'}});
+		equal($(el.selector + ' ul li:not(.node-hidden)').length, 5, 'Correct number of root nodes');
 	});
 
 
