@@ -752,10 +752,12 @@
 			node.$el.empty();
 		}
 
-		// Add indent/spacer to mimic tree structure
-		for (var i = 0; i < (node.level - 1); i++) {
-			node.$el.append(this._template.indent);
-		}
+		 // Add indent/spacer to mimic tree structure
+	        var spaceCal = 15;
+	        for (var i = 0; i < (level - 1); i++) {
+	            spaceCal += 20;
+	        }
+            	treeItem.css("padding-left", spaceCal + 'px');
 
 		// Add expand / collapse or empty spacer icons
 		node.$el
