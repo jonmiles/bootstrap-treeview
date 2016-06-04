@@ -377,6 +377,7 @@ String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by 
 Sets the icon to be as an unchecked checkbox, used in conjunction with showCheckbox.
 
 
+
 ## Methods
 
 Methods provide a way of interacting with the plugin programmatically.  For example, expanding a node is possible via the expandNode method.
@@ -408,9 +409,48 @@ $('#tree').data('treeview')
 ```
 > A better approach, if you plan a lot of interaction.
 
+
 ### List of Methods
 
 The following is a list of all available methods.
+
+#### addNode(nodes, parentNode, index, options)
+
+Add / append nodes to the tree.
+
+```javascript
+$('#tree').treeview('addNode', [ nodes, parentNode, index, { silent: true } ]);
+```
+
+> If parentNode evaluates to false, node will be added to root
+
+> If index evaluates to false, node will be appended to the nodes
+
+Triggers `nodeRendered` event; pass silent to suppress events.
+
+#### addNodeAfter(nodes, node, options)
+
+Add nodes to the tree after given node.
+
+```javascript
+$('#tree').treeview('addNodeAfter', [ nodes, node, { silent: true } ]);
+```
+
+> If node evaluates to false, node will be prepended to the tree's root
+
+Triggers `nodeRendered` event; pass silent to suppress events.
+
+#### addNodeBefore(nodes, node, options)
+
+Add nodes to the tree before given node.
+
+```javascript
+$('#tree').treeview('addNodeAfter', [ nodes, node, { silent: true } ]);
+```
+
+> If node evaluates to false, node will be appended to the tree's root
+
+Triggers `nodeRendered` event; pass silent to suppress events.
 
 #### checkAll(options)
 
@@ -618,6 +658,14 @@ Removes the tree view component. Removing attached events, internal attached obj
 $('#tree').treeview('remove');
 ```
 
+#### removeNode()
+
+Removes given nodes from the tree.
+
+```javascript
+$('#tree').treeview('removeNode', [ nodes, { silent: true } ]);
+```
+
 #### revealNode(nodes, options)
 
 Reveals given tree nodes, expanding the tree from node to root.
@@ -714,6 +762,16 @@ $('#tree').treeview('uncheckNode', [ nodes, { silent: true } ]);
 
 Triggers `nodeUnchecked` event; pass silent to suppress events.
 
+#### updateNode(node, newNode, option)
+
+Updates / replaces a given tree node.
+
+```javascript
+$('#tree').treeview('updateNode', [ node, newNode, { silent: true } ]);
+```
+
+Triggers `nodeRendered` event; pass silent to suppress events.
+
 #### unselectNode(nodes, options)
 
 Unselects given tree nodes.
@@ -723,6 +781,8 @@ $('#tree').treeview('unselectNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeUnselected` event; pass silent to suppress events.
+
+
 
 ## Events
 
