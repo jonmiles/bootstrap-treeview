@@ -351,6 +351,9 @@
 			var deferred = new $.Deferred();
 			ready.push(deferred.promise());
 
+			// index : relative to siblings
+			node.index = index;
+
 			// nodeId : unique, incremental identifier
 			node.nodeId = _this._nodes.length;
 
