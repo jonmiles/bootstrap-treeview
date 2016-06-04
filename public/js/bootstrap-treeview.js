@@ -60,6 +60,8 @@
 		preventUnselect: false,
 
 		// Event handlers
+		onLoading: undefined,
+		onLoadingFailed: undefined,
 		onInitialized: undefined,
 		onNodeRendered: undefined,
 		onRendered: undefined,
@@ -87,6 +89,12 @@
 		ignoreCase: true,
 		exactMatch: false,
 		revealResults: true
+	};
+
+	_default.dataUrl = {
+		method: 'GET',
+		dataType: 'json',
+		cache: false
 	};
 
 	var Tree = function (element, options) {
@@ -156,26 +164,57 @@
 		this._nodes = [];
 		this._initialized = false;
 
-		if (options.data) {
-			if (typeof options.data === 'string') {
-				options.data = $.parseJSON(options.data);
-			}
-			this._tree = $.extend(true, [], options.data);
-			delete options.data;
-		}
 		this._options = $.extend({}, _default.settings, options);
 
 		this._destroy();
 		this._subscribeEvents();
 
-		// index nodes
-		$.when.apply(this, this._setInitialStates({ nodes: this._tree }, 0))
-			.done($.proxy(function () {
-				this._triggerEvent('initialized', this._nodes, _default.options);
+		this._triggerEvent('loading', null, _default.options);
+		this._load(options)
+			.then($.proxy(function (data) {
+				// load done
+				return this._tree = $.extend(true, [], data);
+			}, this), $.proxy(function (error) {
+				// load fail
+				this._triggerEvent('loadingFailed', error, _default.options);
+			}, this))
+			.then($.proxy(function (treeData) {
+				// initialize data
+				return $.when.apply(this, this._setInitialStates({ nodes: treeData }, 0))
+					.done($.proxy(function () {
+						this._triggerEvent('initialized', this._nodes, _default.options);
+					}, this));
+			}, this))
+			.then($.proxy(function () {
+				// render to DOM
+				this._render();
 			}, this));
+	};
 
-		// render to DOM
-		this._render();
+	Tree.prototype._load = function (options) {
+		var done = new $.Deferred();
+		if (options.data) {
+			this._loadLocalData(options, done);
+		} else if (options.dataUrl) {
+			this._loadRemoteData(options, done);
+		}
+		return done.promise();
+	};
+
+	Tree.prototype._loadRemoteData = function (options, done) {
+		$.ajax($.extend(true, {}, _default.dataUrl, options.dataUrl))
+			.done(function (data) {
+				done.resolve(data);
+			})
+			.fail(function (xhr, status, error) {
+				done.reject(error);
+			});
+	};
+
+	Tree.prototype._loadLocalData = function (options, done) {
+		done.resolve((typeof options.data === 'string') ?
+								$.parseJSON(options.data) :
+								$.extend(true, [], options.data));
 	};
 
 	Tree.prototype._remove = function () {
@@ -199,6 +238,8 @@
 	};
 
 	Tree.prototype._unsubscribeEvents = function () {
+		this.$element.off('loading');
+		this.$element.off('loadingFailed');
 		this.$element.off('initialized');
 		this.$element.off('nodeRendered');
 		this.$element.off('rendered');
@@ -218,6 +259,14 @@
 
 	Tree.prototype._subscribeEvents = function () {
 		this._unsubscribeEvents();
+
+		if (typeof (this._options.onLoading) === 'function') {
+			this.$element.on('loading', this._options.onLoading);
+		}
+
+		if (typeof (this._options.onLoadingFailed) === 'function') {
+			this.$element.on('loadingFailed', this._options.onLoadingFailed);
+		}
 
 		if (typeof (this._options.onInitialized) === 'function') {
 			this.$element.on('initialized', this._options.onInitialized);
