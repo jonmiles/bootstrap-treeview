@@ -757,6 +757,10 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 > Use callback handlers for lifecycle events otherwise you'll miss the events fired during creation.
 
+`loading (event)`  - The tree has initiated data loading.
+
+`loadingFailed (event, error)`  - The tree failed to load data (ajax error)
+
 `initialized (event, nodes)`  - The tree has initialized itself and data ready for rendering.
 
 `nodeRendered (event, node)`  - A new node is rendered;

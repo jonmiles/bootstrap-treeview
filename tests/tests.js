@@ -111,6 +111,8 @@
 		equal(options.showTags, false, 'showTags default ok');
 		equal(options.multiSelect, false, 'multiSelect default ok');
 		equal(options.preventUnselect, false, 'preventUnselect default ok');
+		equal(options.onLoading, null, 'onLoading default ok');
+		equal(options.onLoadingFailed, null, 'onLoadingFailed default ok');
 		equal(options.onInitialized, null, 'onInitialized default ok');
 		equal(options.onNodeRendered, null, 'onNodeRendered default ok');
 		equal(options.onRendered, null, 'onRendered default ok');
@@ -152,6 +154,8 @@
 			showTags: true,
 			multiSelect: true,
 			preventUnselect: true,
+			onLoading: function () {},
+			onLoadingFailed: function () {},
 			onInitialized: function () {},
 			onNodeRendered: function () {},
 			onRendered: function () {},
@@ -194,6 +198,8 @@
 		equal(options.showTags, true, 'showTags set ok');
 		equal(options.multiSelect, true, 'multiSelect set ok');
 		equal(options.preventUnselect, true, 'preventUnselect set ok');
+		equal(typeof options.onLoading, 'function', 'onLoading set ok');
+		equal(typeof options.onLoadingFailed, 'function', 'onLoadingFailed set ok');
 		equal(typeof options.onInitialized, 'function', 'onInitialized set ok');
 		equal(typeof options.onNodeRendered, 'function', 'onNodeRendered set ok');
 		equal(typeof options.onRendered, 'function', 'onRendered set ok');
@@ -866,25 +872,48 @@
 
 	module('Events');
 
-	test('Lifecycle Events', function () {
-		var cbInitialized = false;
-		var cbNodeRendered = false;
-		var cbRendered = false;
-		var cbDestroyed = false;
+	asyncTest('Lifecycle Events', function (assert) {
+		expect(5);
+
+		var nodeRenderedTriggered = false;
 		var $tree = init({
 			data: data,
-			onInitialized: function(/*event, results*/) { cbInitialized = true; },
-			onNodeRendered: function(/*event, results*/) { cbNodeRendered = true; },
-			onRendered: function(/*event, results*/) { cbRendered = true; },
-			onDestroyed: function(/*event, results*/) { cbDestroyed = true; }
+			onLoading: function(/*event, results*/) {
+				ok(true, 'onLoading triggered');
+			},
+			onInitialized: function(/*event, results*/) {
+				ok(true, 'onLoading triggered');
+			},
+			onNodeRendered: function(/*event, results*/) {
+				// nodeRendered triggers per node
+				if (!nodeRenderedTriggered) {
+					nodeRenderedTriggered = true;
+					ok(true, 'onLoading triggered');
+				}
+			},
+			onRendered: function(/*event, results*/) {
+				ok(true, 'onLoading triggered');
+			},
+			onDestroyed: function(/*event, results*/) {
+				ok(true, 'onLoading triggered');
+				start()
+			}
 		})
 		.treeview(true)
 		.remove();
+	});
 
-		ok(cbInitialized, 'onInitialized triggered');
-		ok(cbNodeRendered, 'onNodeRendered triggered');
-		ok(cbRendered, 'onRendered triggered');
-		ok(cbDestroyed, 'onDestroyed triggered');
+	asyncTest('Loading Failed Event', function (assert) {
+		expect(1);
+
+		var $tree = init({
+			dataUrl: {url: 'no.json'},
+			onLoadingFailed: function(/*event, results*/) {
+				ok(true, 'onLoadingFailed triggered');
+				start();
+			}
+		})
+		.treeview(true);
 	});
 
 }());
