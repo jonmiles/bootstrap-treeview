@@ -242,7 +242,7 @@ Array of Objects.  No default, expects either data or dataUrl.
 This is the core data to be displayed by the tree view.  If data is provided, dataUrl will be ignored.
 
 #### dataUrl
-jQuery Ajax settings object, [as documents here](http://api.jquery.com/jquery.ajax/#jQuery-ajax-settings).
+jQuery Ajax settings object, [as documented here](http://api.jquery.com/jquery.ajax/#jQuery-ajax-settings).
 
 Accepts a set of key/value pairs that configure an Ajax request.  All settings are optional, any provided will be merge with the following default configuration.
 
@@ -254,7 +254,7 @@ Accepts a set of key/value pairs that configure an Ajax request.  All settings a
 }
 ```
 
-> JSON is the only formatted accepted.
+> JSON is the only format accepted.
 
 #### backColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: inherits from Bootstrap.css.
