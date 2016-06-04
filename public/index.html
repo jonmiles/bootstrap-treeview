@@ -296,18 +296,17 @@
       </div>
       <div class="row">
         <hr>
-        <h2>Data</h2>
+        <h2>Data Options</h2>
         <div class="col-sm-4">
-          <h2>JSON Data</h2>
-          <div id="treeview12"></div>
+          <h2>Local JSON</h2>
+          <div id="treeview-json"></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Remote JSON</h2>
+          <div id="treeview-ajax"></div>
         </div>
         <div class="col-sm-4">
           <h2></h2>
-          <div id="treeview13"></div>
-        </div>
-        <div class="col-sm-4">
-          <h2></h2>
-          <div id="treeview14"></div>
         </div>
       </div>
       <br/>
@@ -796,8 +795,14 @@
 
 
 
-        var $tree = $('#treeview12').treeview({
+        var $jsonTree = $('#treeview-json').treeview({
           data: json
+        });
+
+        var $ajaxTree = $('#treeview-ajax').treeview({
+          dataUrl: {
+            url: './data.json'
+          }
         });
   		});
   	</script>
