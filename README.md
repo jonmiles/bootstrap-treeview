@@ -225,7 +225,7 @@ Options allow you to customise the treeview's default appearance and behaviour. 
 // expanded to 5 levels
 // with a background color of green
 $('#tree').treeview({
-  data: data,         // data is not optional
+  data: data,
   levels: 5,
   backColor: 'green'
 });
@@ -237,9 +237,24 @@ You can pass a new options object to the treeview at any time but this will have
 The following is a list of all available options.
 
 #### data
-Array of Objects.  No default, expects data
+Array of Objects.  No default, expects either data or dataUrl.
 
-This is the core data to be displayed by the tree view.
+This is the core data to be displayed by the tree view.  If data is provided, dataUrl will be ignored.
+
+#### dataUrl
+jQuery Ajax settings object, [as documents here](http://api.jquery.com/jquery.ajax/#jQuery-ajax-settings).
+
+Accepts a set of key/value pairs that configure an Ajax request.  All settings are optional, any provided will be merge with the following default configuration.
+
+```javascript
+{
+  method: 'GET',
+  dataType: 'json',
+  cache: false
+}
+```
+
+> JSON is the only formatted accepted.
 
 #### backColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: inherits from Bootstrap.css.
