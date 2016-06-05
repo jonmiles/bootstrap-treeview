@@ -139,7 +139,7 @@
 			toggleNodeExpanded: $.proxy(this.toggleNodeExpanded, this),
 			revealNode: $.proxy(this.revealNode, this),
 
-			// Expand / collapse methods
+			// Check / uncheck methods
 			checkAll: $.proxy(this.checkAll, this),
 			checkNode: $.proxy(this.checkNode, this),
 			uncheckAll: $.proxy(this.uncheckAll, this),
@@ -161,7 +161,8 @@
 
 	Tree.prototype._init = function (options) {
 		this._tree = [];
-		this._nodes = [];
+		this._nodes = {};
+		this._orderedNodes = [];
 		this._initialized = false;
 
 		this._options = $.extend({}, _default.settings, options);
@@ -180,10 +181,7 @@
 			}, this))
 			.then($.proxy(function (treeData) {
 				// initialize data
-				return $.when.apply(this, this._setInitialStates({ nodes: treeData }, 0))
-					.done($.proxy(function () {
-						this._triggerEvent('initialized', this._nodes, _default.options);
-					}, this));
+				return this._setInitialStates({ nodes: treeData }, 0);
 			}, this))
 			.then($.proxy(function () {
 				// render to DOM
@@ -337,25 +335,37 @@
 		Recurse the tree structure and ensure all nodes have
 		valid initial states.  User defined states will be preserved.
 		For performance we also take this opportunity to
-		index nodes in a flattened structure
+		index nodes in a flattened ordered structure
 	*/
-	Tree.prototype._setInitialStates = function (node, level, ready) {
+	Tree.prototype._setInitialStates = function (node, level) {
+		return $.when.apply(this, this._setInitialState(node, level))
+			.done($.proxy(function () {
+				this._orderedNodes = this._sortNodes();
+				this._triggerEvent('initialized', this._orderedNodes, _default.options);
+				return;
+			}, this));
+	};
 
+	Tree.prototype._setInitialState = function (node, level, done) {
 		if (!node.nodes) return;
 		level += 1;
-		ready = ready || [];
+		done = done || [];
 
 		var parent = node;
-		var _this = this;
-		$.each(node.nodes, function checkStates(index, node) {
+		$.each(node.nodes, $.proxy(function (index, node) {
 			var deferred = new $.Deferred();
-			ready.push(deferred.promise());
+			done.push(deferred.promise());
+
+			// level : hierarchical tree level, starts at 1
+			node.level = level;
 
 			// index : relative to siblings
 			node.index = index;
 
-			// nodeId : unique, incremental identifier
-			node.nodeId = _this._nodes.length;
+			// nodeId : unique, hierarchical identifier
+			node.nodeId = (parent && parent.nodeId) ?
+											parent.nodeId + '.' + node.index :
+											(level - 1) + '.' + node.index;
 
 			// parentId : transversing up the tree
 			node.parentId = parent.nodeId;
@@ -381,7 +391,7 @@
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
 				if (!node.state.disabled &&
-						(level < _this._options.levels) &&
+						(level < this._options.levels) &&
 						(node.nodes && node.nodes.length > 0)) {
 					node.state.expanded = true;
 				}
@@ -390,36 +400,44 @@
 				}
 			}
 
-			// set visible state; based purely on levels
-			if (level > _this._options.levels) {
-				node.state.visible = false;
-			}
-			else {
-				node.state.visible = true;
-			}
-
 			// set selected state; unless set always false
 			if (!node.state.hasOwnProperty('selected')) {
 				node.state.selected = false;
 			}
 
-			// index nodes in a flattened structure for use later
-			_this._nodes.push(node);
+			// set visible state; based parent state plus levels
+			if ((parent && parent.state && parent.state.expanded) ||
+					(level <= this._options.levels)) {
+				node.state.visible = true;
+			}
+			else {
+				node.state.visible = false;
+			}
 
-			// recurse child nodes and transverse the tree
+			// recurse child nodes and transverse the tree, depth-first
 			if (node.nodes) {
 				if (node.nodes.length > 0) {
-					_this._setInitialStates(node, level, ready);
+					this._setInitialState(node, level, done);
 				}
 				else {
 					delete node.nodes;
 				}
 			}
 
-			deferred.resolve();
-		});
+			// add / update indexed collection
+			this._nodes[node.nodeId] = node;
 
-		return ready;
+			// mark task as complete
+			deferred.resolve();
+		}, this));
+
+		return done;
+	};
+
+	Tree.prototype._sortNodes = function () {
+		return $.map(Object.keys(this._nodes).sort(), $.proxy(function (value, index) {
+		  return this._nodes[value];
+		}, this));
 	};
 
 	Tree.prototype._clickHandler = function (event) {
@@ -447,10 +465,8 @@
 	// Looks up the DOM for the closest parent list item to retrieve the
 	// data attribute nodeid, which is used to lookup the node in the flattened structure.
 	Tree.prototype.targetNode = function (target) {
-
-		var nodeId = target.closest('li.list-group-item').attr('data-nodeid');
+		var nodeId = target.closest('li.list-group-item').attr('data-nodeId');
 		var node = this._nodes[nodeId];
-
 		if (!node) {
 			console.log('Error: node does not exist');
 		}
@@ -728,32 +744,28 @@
 			this._initialized = true;
 		}
 
-		if (!this._tree) return;
-
-		$.each(this._tree, $.proxy(function addRootNodes(id, node) {
-			node.level = 1;
-			this._renderNode(node);
+		var previousNode;
+		$.each(this._orderedNodes, $.proxy(function (id, node) {
+			this._renderNode(node, previousNode);
+			previousNode = node;
 		}, this));
 
-		this._triggerEvent('rendered', this._nodes, _default.options);
+		this._triggerEvent('rendered', this._orderedNodes, _default.options);
 	};
 
-	Tree.prototype._renderNode = function (node, pEl) {
+	Tree.prototype._renderNode = function (node, previousNode) {
 		if (!node) return;
 
 		if (!node.$el) {
-
-			// New node, needs a new element
-			node.$el = this._newNodeEl(pEl);
-
-			// One time setup
-			node.$el
-				.addClass('node-' + this._elementId)
-				.attr('data-nodeid', node.nodeId);
+			node.$el = this._newNodeEl(node, previousNode)
+				.addClass('node-' + this._elementId);
 		}
 		else {
 			node.$el.empty();
 		}
+
+		// Set / update nodeid; it can change as a result of addNode etc.
+		node.$el.attr('data-nodeId', node.nodeId);
 
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
@@ -804,42 +816,30 @@
 		this._setDisabled(node, node.state.disabled);
 		this._setVisible(node, node.state.visible);
 
-		// If children exist, recursively add
-		if (node.nodes) {
-			$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
-				childNode.level = node.level + 1;
-				this._renderNode(childNode, node.$el);
-			}, this));
-		}
-
 		// Trigger nodeRendered event
 		this._triggerEvent('nodeRendered', node, _default.options);
 	};
 
 	// Creates a new node element from template and
 	// ensures the template is inserted at the correct position
-	Tree.prototype._newNodeEl = function (pEl) {
+	Tree.prototype._newNodeEl = function (/*$parentEl,*/ node, previousNode) {
 		var $el = $(this._template.node);
-
-		if (pEl) {
+		if (previousNode) {
 			this.$wrapper.children()
-				.eq(pEl.index()).after($el);
-		}
-		else {
+				.eq(previousNode.$el.index())
+				.after($el);
+		} else {
 			this.$wrapper.append($el);
 		}
-
 		return $el;
 	};
 
 	// Expand node, rendering it's immediate children
 	Tree.prototype._expandNode = function (node) {
 		if (!node.nodes) return;
-
-		var $pEl = node.$el;
 		$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
 			childNode.level = node.level + 1;
-			this._renderNode(childNode, $pEl);
+			this._renderNode(childNode, node.$el);
 		}, this));
 	};
 
@@ -908,7 +908,7 @@
 		}
 
 		// Node level style overrides
-		$.each(this._nodes, $.proxy(function (index, node) {
+		$.each(this._orderedNodes, $.proxy(function (index, node) {
 			if (node.color || node.backColor) {
 				var innerStyle = '';
 				if (node.color) {
@@ -917,7 +917,7 @@
 				if (node.backColor) {
 					innerStyle += 'background-color:' + node.backColor + ';';
 				}
-				style += '.node-' + this._elementId + '[data-nodeid="' + node.nodeId + '"]{' + innerStyle + '}';
+				style += '.node-' + this._elementId + '[data-nodeId="' + node.nodeId + '"]{' + innerStyle + '}';
 			}
 		}, this));
 
@@ -1371,7 +1371,7 @@
 	Tree.prototype._findNodes = function (pattern, attribute, modifier) {
 		attribute = attribute || 'text';
 		modifier = modifier || 'g';
-		return $.grep(this._nodes, $.proxy(function (node) {
+		return $.grep(this._orderedNodes, $.proxy(function (node) {
 			var val = this._getNodeValue(node, attribute);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
