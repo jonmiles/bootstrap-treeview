@@ -126,8 +126,10 @@
 			getDisabled: $.proxy(this.getDisabled, this),
 			getEnabled: $.proxy(this.getEnabled, this),
 
-			// Creation methods
+			// Tree manipulation methods
 			addNode: $.proxy(this.addNode, this),
+			addNodeAfter: $.proxy(this.addNodeAfter, this),
+			addNodeBefore: $.proxy(this.addNodeBefore, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -957,9 +959,16 @@
 		@returns {Array} nodes - An array of parent nodes
 	*/
 	Tree.prototype.getParents = function (nodes) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		var parentNodes = [];
 		$.each(nodes, $.proxy(function (index, node) {
-			parentNodes.push(this._nodes[node.parentId]);
+			var parentNode = node.parentId ? this._nodes[node.parentId] : false;
+			if (parentNode) {
+				parentNodes.push(parentNode);
+			}
 		}, this));
 		return parentNodes;
 	};
@@ -1094,6 +1103,42 @@
 			this._setInitialStates({nodes: targetNodes}, 0);
 		}
 		this._render();
+	}
+
+	/**
+	 	Add nodes to the tree after given node.
+		@param {Array} nodes  - An array of nodes to add
+		@param {Object} node  - The node to which nodes will be added after
+		@param {optional Object} options
+	*/
+	Tree.prototype.addNodeAfter = function (nodes, node, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+		if (node instanceof Array) {
+			node = node[0];
+		}
+		options = $.extend({}, _default.options, options);
+
+		this.addNode(nodes, this.getParents(node)[0], (node.index + 1), options);
+	}
+
+	/**
+	 	Add nodes to the tree before given node.
+		@param {Array} nodes  - An array of nodes to add
+		@param {Object} node  - The node to which nodes will be added before
+		@param {optional Object} options
+	*/
+	Tree.prototype.addNodeBefore = function (nodes, node, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+		if (node instanceof Array) {
+			node = node[0];
+		}
+		options = $.extend({}, _default.options, options);
+
+		this.addNode(nodes, this.getParents(node)[0], node.index, options);
 	}
 
 

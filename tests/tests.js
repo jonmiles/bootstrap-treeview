@@ -552,6 +552,125 @@
 
 	module('Methods');
 
+	test('findNodes', function () {
+		var tree = init({ data: data }).treeview(true);
+		var nodeParent1 = tree.findNodes('Parent 1', 'text')[0];
+		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", got "Parent 1"');
+	});
+
+	test('getParents', function () {
+		var tree = init({ data: data }).treeview(true);
+		var nodeChild1 = tree.findNodes('Child 1', 'text');
+		var parentNode = tree.getParents(nodeChild1)[0];
+		equal(parentNode.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
+	});
+
+	test('getSiblings', function () {
+		var tree = init({ data: data }).treeview(true);
+
+		// Test root level, internally uses the this.tree
+		var nodeParent1 = tree.findNodes('Parent 1', 'text');
+		var nodeParent1Siblings = tree.getSiblings(nodeParent1);
+		var isArray = (nodeParent1Siblings instanceof Array);
+		var countOK = nodeParent1Siblings.length === 4;
+		var resultsOK = nodeParent1Siblings[0].text === 'Parent 2';
+		resultsOK = resultsOK && nodeParent1Siblings[1].text === 'Parent 3';
+		resultsOK = resultsOK && nodeParent1Siblings[2].text === 'Parent 4';
+		resultsOK = resultsOK && nodeParent1Siblings[3].text === 'Parent 5';
+		ok(isArray, 'Correct siblings for "Parent 1" [root] : is array');
+		ok(countOK, 'Correct siblings for "Parent 1" [root] : count OK');
+		ok(resultsOK, 'Correct siblings for "Parent 1" [root] : results OK');
+
+		// Test non root level, internally uses getParent.nodes
+		var nodeChild1 = tree.findNodes('Child 1', 'text');
+		var nodeChild1Siblings = tree.getSiblings(nodeChild1);
+		var isArray = (nodeChild1Siblings instanceof Array);
+		var countOK = nodeChild1Siblings.length === 1;
+		var results = nodeChild1Siblings[0].text === 'Child 2'
+		ok(isArray, 'Correct siblings for "Child 1" [non root] : is array');
+		ok(countOK, 'Correct siblings for "Child 1" [non root] : count OK');
+		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
+	});
+
+	test('getSelected', function () {
+		var tree = init({ data: data }).treeview(true);
+		tree.selectNode(tree.findNodes('Parent 1', 'text'));
+
+		var selectedNodes = tree.getSelected();
+		ok((selectedNodes instanceof Array), 'Result is an array');
+		equal(selectedNodes.length, 1, 'Correct number of nodes returned');
+		equal(selectedNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	test('getUnselected', function () {
+		var tree = init({ data: data }).treeview(true);
+		tree.selectNode(tree.findNodes('Parent 1', 'text'));
+
+		var unselectedNodes = tree.getUnselected();
+		ok((unselectedNodes instanceof Array), 'Result is an array');
+		equal(unselectedNodes.length, 8, 'Correct number of nodes returned');
+	});
+
+	// Assumptions:
+	// Default tree + expanded to 2 levels,
+	// means 1 node 'Parent 1' should be expanded and therefore returned
+	test('getExpanded', function () {
+		var tree = init({ data: data }).treeview(true);
+		var expandedNodes = tree.getExpanded();
+		ok((expandedNodes instanceof Array), 'Result is an array');
+		equal(expandedNodes.length, 1, 'Correct number of nodes returned');
+		equal(expandedNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	// Assumptions:
+	// Default tree + expanded to 2 levels, means only 'Parent 1' should be expanded
+	// as all other parent nodes have no children their state will be collapsed
+	// which means 8 of the 9 nodes should be returned
+	test('getCollapsed', function () {
+		var tree = init({ data: data }).treeview(true);
+		var collapsedNodes = tree.getCollapsed();
+		ok((collapsedNodes instanceof Array), 'Result is an array');
+		equal(collapsedNodes.length, 8, 'Correct number of nodes returned');
+	});
+
+	test('getChecked', function () {
+		var tree = init({ data: data }).treeview(true);
+		tree.checkNode(tree.findNodes('Parent 1', 'text'));
+
+		var checkedNodes = tree.getChecked();
+		ok((checkedNodes instanceof Array), 'Result is an array');
+		equal(checkedNodes.length, 1, 'Correct number of nodes returned');
+		equal(checkedNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	test('getUnchecked', function () {
+		var tree = init({ data: data }).treeview(true);
+		tree.checkNode(tree.findNodes('Parent 1', 'text'));
+
+		var uncheckedNodes = tree.getUnchecked();
+		ok((uncheckedNodes instanceof Array), 'Result is an array');
+		equal(uncheckedNodes.length, 8, 'Correct number of nodes returned');
+	});
+
+	test('getDisabled', function () {
+		var tree = init({ data: data }).treeview(true);
+		tree.disableNode(tree.findNodes('Parent 1', 'text'));
+
+		var disabledNodes = tree.getDisabled();
+		ok((disabledNodes instanceof Array), 'Result is an array');
+		equal(disabledNodes.length, 1, 'Correct number of nodes returned');
+		equal(disabledNodes[0].text, 'Parent 1', 'Correct node returned');
+	});
+
+	test('getEnabled', function () {
+		var tree = init({ data: data }).treeview(true);
+		tree.disableNode(tree.findNodes('Parent 1', 'text'));
+
+		var enabledNodes = tree.getEnabled();
+		ok((enabledNodes instanceof Array), 'Result is an array');
+		equal(enabledNodes.length, 8, 'Correct number of nodes returned');
+	});
+
 	asyncTest('addNode', function (assert) {
 		// expect(9);
 		var $tree, tree, parent;
@@ -694,123 +813,78 @@
 		tree.addNode(multiNodes, parent, 0);
 	});
 
-	test('findNodes', function () {
-		var tree = init({ data: data }).treeview(true);
-		var nodeParent1 = tree.findNodes('Parent 1', 'text')[0];
-		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", got "Parent 1"');
+	asyncTest('addNodeAfter', function (assert) {
+		var $tree, tree, parent;
+
+		// Append single node after
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text !== singleNode.text) {
+					return;
+				}
+				equal(node.level, 1, 'Append single node after : correct level');
+				equal(node.nodeId, '0.1', 'Append single node after : correct id');
+			}
+		});
+		tree = $tree.treeview(true)
+		parent = tree.findNodes('Parent 1', 'text');
+		tree.addNodeAfter(singleNode, parent);
+
+		// Append multiple nodes after
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text === multiNodes[0].text) {
+					equal(node.level, 1, 'Append multiple nodes after 1 : correct level');
+					equal(node.nodeId, '0.1', 'Append multiple nodes after 1 : correct id');
+				} else if (node.text === multiNodes[1].text) {
+					equal(node.level, 1, 'Append multiple nodes after 2 : correct level');
+					equal(node.nodeId, '0.2', 'Append multiple nodes after 2 : correct id');
+					start();
+				}
+			}
+		});
+		tree = $tree.treeview(true)
+		parent = tree.findNodes('Parent 1', 'text');
+		tree.addNodeAfter(multiNodes, parent);
 	});
 
-	test('getParents', function () {
-		var tree = init({ data: data }).treeview(true);
-		var nodeChild1 = tree.findNodes('Child 1', 'text');
-		var parentNode = tree.getParents(nodeChild1)[0];
-		equal(parentNode.text, 'Parent 1', 'Correct node returned : requested parent of "Child 1", got "Parent 1"');
-	});
+	asyncTest('addNodeBefore', function (assert) {
+		var $tree, tree, parent;
 
-	test('getSiblings', function () {
-		var tree = init({ data: data }).treeview(true);
+		// Append single node before
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text !== singleNode.text) {
+					return;
+				}
+				equal(node.level, 1, 'Append single node before : correct level');
+				equal(node.nodeId, '0.0', 'Append single node before : correct id');
+			}
+		});
+		tree = $tree.treeview(true)
+		parent = tree.findNodes('Parent 1', 'text');
+		tree.addNodeBefore(singleNode, parent);
 
-		// Test root level, internally uses the this.tree
-		var nodeParent1 = tree.findNodes('Parent 1', 'text');
-		var nodeParent1Siblings = tree.getSiblings(nodeParent1);
-		var isArray = (nodeParent1Siblings instanceof Array);
-		var countOK = nodeParent1Siblings.length === 4;
-		var resultsOK = nodeParent1Siblings[0].text === 'Parent 2';
-		resultsOK = resultsOK && nodeParent1Siblings[1].text === 'Parent 3';
-		resultsOK = resultsOK && nodeParent1Siblings[2].text === 'Parent 4';
-		resultsOK = resultsOK && nodeParent1Siblings[3].text === 'Parent 5';
-		ok(isArray, 'Correct siblings for "Parent 1" [root] : is array');
-		ok(countOK, 'Correct siblings for "Parent 1" [root] : count OK');
-		ok(resultsOK, 'Correct siblings for "Parent 1" [root] : results OK');
-
-		// Test non root level, internally uses getParent.nodes
-		var nodeChild1 = tree.findNodes('Child 1', 'text');
-		var nodeChild1Siblings = tree.getSiblings(nodeChild1);
-		var isArray = (nodeChild1Siblings instanceof Array);
-		var countOK = nodeChild1Siblings.length === 1;
-		var results = nodeChild1Siblings[0].text === 'Child 2'
-		ok(isArray, 'Correct siblings for "Child 1" [non root] : is array');
-		ok(countOK, 'Correct siblings for "Child 1" [non root] : count OK');
-		ok(results, 'Correct siblings for "Child 1" [non root] : results OK');
-	});
-
-	test('getSelected', function () {
-		var tree = init({ data: data }).treeview(true);
-		tree.selectNode(tree.findNodes('Parent 1', 'text'));
-
-		var selectedNodes = tree.getSelected();
-		ok((selectedNodes instanceof Array), 'Result is an array');
-		equal(selectedNodes.length, 1, 'Correct number of nodes returned');
-		equal(selectedNodes[0].text, 'Parent 1', 'Correct node returned');
-	});
-
-	test('getUnselected', function () {
-		var tree = init({ data: data }).treeview(true);
-		tree.selectNode(tree.findNodes('Parent 1', 'text'));
-
-		var unselectedNodes = tree.getUnselected();
-		ok((unselectedNodes instanceof Array), 'Result is an array');
-		equal(unselectedNodes.length, 8, 'Correct number of nodes returned');
-	});
-
-	// Assumptions:
-	// Default tree + expanded to 2 levels,
-	// means 1 node 'Parent 1' should be expanded and therefore returned
-	test('getExpanded', function () {
-		var tree = init({ data: data }).treeview(true);
-		var expandedNodes = tree.getExpanded();
-		ok((expandedNodes instanceof Array), 'Result is an array');
-		equal(expandedNodes.length, 1, 'Correct number of nodes returned');
-		equal(expandedNodes[0].text, 'Parent 1', 'Correct node returned');
-	});
-
-	// Assumptions:
-	// Default tree + expanded to 2 levels, means only 'Parent 1' should be expanded
-	// as all other parent nodes have no children their state will be collapsed
-	// which means 8 of the 9 nodes should be returned
-	test('getCollapsed', function () {
-		var tree = init({ data: data }).treeview(true);
-		var collapsedNodes = tree.getCollapsed();
-		ok((collapsedNodes instanceof Array), 'Result is an array');
-		equal(collapsedNodes.length, 8, 'Correct number of nodes returned');
-	});
-
-	test('getChecked', function () {
-		var tree = init({ data: data }).treeview(true);
-		tree.checkNode(tree.findNodes('Parent 1', 'text'));
-
-		var checkedNodes = tree.getChecked();
-		ok((checkedNodes instanceof Array), 'Result is an array');
-		equal(checkedNodes.length, 1, 'Correct number of nodes returned');
-		equal(checkedNodes[0].text, 'Parent 1', 'Correct node returned');
-	});
-
-	test('getUnchecked', function () {
-		var tree = init({ data: data }).treeview(true);
-		tree.checkNode(tree.findNodes('Parent 1', 'text'));
-
-		var uncheckedNodes = tree.getUnchecked();
-		ok((uncheckedNodes instanceof Array), 'Result is an array');
-		equal(uncheckedNodes.length, 8, 'Correct number of nodes returned');
-	});
-
-	test('getDisabled', function () {
-		var tree = init({ data: data }).treeview(true);
-		tree.disableNode(tree.findNodes('Parent 1', 'text'));
-
-		var disabledNodes = tree.getDisabled();
-		ok((disabledNodes instanceof Array), 'Result is an array');
-		equal(disabledNodes.length, 1, 'Correct number of nodes returned');
-		equal(disabledNodes[0].text, 'Parent 1', 'Correct node returned');
-	});
-
-	test('getEnabled', function () {
-		var tree = init({ data: data }).treeview(true);
-		tree.disableNode(tree.findNodes('Parent 1', 'text'));
-
-		var enabledNodes = tree.getEnabled();
-		ok((enabledNodes instanceof Array), 'Result is an array');
-		equal(enabledNodes.length, 8, 'Correct number of nodes returned');
+		// Append multiple nodes before
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text === multiNodes[0].text) {
+					equal(node.level, 1, 'Append multiple nodes before 1 : correct level');
+					equal(node.nodeId, '0.0', 'Append multiple nodes before 1 : correct id');
+				} else if (node.text === multiNodes[1].text) {
+					equal(node.level, 1, 'Append multiple nodes before 2 : correct level');
+					equal(node.nodeId, '0.1', 'Append multiple nodes before 2 : correct id');
+					start();
+				}
+			}
+		});
+		tree = $tree.treeview(true)
+		parent = tree.findNodes('Parent 1', 'text');
+		tree.addNodeBefore(multiNodes, parent);
 	});
 
 	test('disableAll / enableAll', function () {
