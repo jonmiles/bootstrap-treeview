@@ -113,8 +113,9 @@
 			init: $.proxy(this._init, this),
 			remove: $.proxy(this._remove, this),
 
-			// Get methods
+			// Query methods
 			findNodes: $.proxy(this.findNodes, this),
+			getNodes: $.proxy(this.getNodes, this), // todo document + test
 			getParents: $.proxy(this.getParents, this),
 			getSiblings: $.proxy(this.getSiblings, this),
 			getSelected: $.proxy(this.getSelected, this),
@@ -130,6 +131,8 @@
 			addNode: $.proxy(this.addNode, this),
 			addNodeAfter: $.proxy(this.addNodeAfter, this),
 			addNodeBefore: $.proxy(this.addNodeBefore, this),
+			removeNode: $.proxy(this.removeNode, this),
+			updateNode: $.proxy(this.updateNode, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -166,8 +169,6 @@
 
 	Tree.prototype._init = function (options) {
 		this._tree = [];
-		this._nodes = {};
-		this._orderedNodes = [];
 		this._initialized = false;
 
 		this._options = $.extend({}, _default.settings, options);
@@ -343,6 +344,7 @@
 		index nodes in a flattened ordered structure
 	*/
 	Tree.prototype._setInitialStates = function (node, level) {
+		this._nodes = {};
 		return $.when.apply(this, this._setInitialState(node, level))
 			.done($.proxy(function () {
 				this._orderedNodes = this._sortNodes();
@@ -829,6 +831,7 @@
 	// ensures the template is inserted at the correct position
 	Tree.prototype._newNodeEl = function (node, previousNode) {
 		var $el = $(this._template.node);
+
 		if (previousNode) {
 			// typical usage, as nodes are rendered in
 			// sort order we add after the previous element
@@ -840,12 +843,26 @@
 			// to cater for root inserts i.e. nodeId 0.0
 			this.$wrapper.prepend($el);
 		}
+
 		return $el;
+	};
+
+	// Recursively remove node elements from DOM
+	Tree.prototype._removeNodeEl = function (node) {
+		if (!node) return;
+
+		if (node.nodes) {
+			$.each(node.nodes, $.proxy(function (index, node) {
+				this._removeNodeEl(node);
+			}, this));
+		}
+		node.$el.remove();
 	};
 
 	// Expand node, rendering it's immediate children
 	Tree.prototype._expandNode = function (node) {
 		if (!node.nodes) return;
+
 		$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
 			childNode.level = node.level + 1;
 			this._renderNode(childNode, node.$el);
@@ -951,6 +968,15 @@
 	*/
 	Tree.prototype.findNodes = function (pattern, field) {
 		return this._findNodes(pattern, field);
+	};
+
+
+	/**
+		Returns an ordered aarray of node objects.
+		@return {Array} nodes - An array of all nodes
+	*/
+	Tree.prototype.getNodes = function () {
+		return this._orderedNodes;
 	};
 
 	/**
@@ -1094,15 +1120,13 @@
 		}, this));
 
 		// initialize new state and render changes
-		if (parentNode) {
-			this._setInitialStates(parentNode, parentNode.level);
-			if (!parentNode.state.expanded) {
-				this._setExpanded(parentNode, true, options);
-			}
-		} else {
-			this._setInitialStates({nodes: targetNodes}, 0);
-		}
-		this._render();
+		this._setInitialStates({nodes: this._tree}, 0)
+			.done($.proxy(function () {
+				if (parentNode && !parentNode.state.expanded) {
+					this._setExpanded(parentNode, true, options);
+				}
+				this._render();
+			}, this));
 	}
 
 	/**
@@ -1140,6 +1164,68 @@
 
 		this.addNode(nodes, this.getParents(node)[0], node.index, options);
 	}
+
+	/**
+	 	Removes given nodes from the tree.
+		@param {Array} nodes  - An array of nodes to remove
+		@param {optional Object} options
+	*/
+	Tree.prototype.removeNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+		options = $.extend({}, _default.options, options);
+
+		var targetNodes, parentNode;
+		$.each(nodes, $.proxy(function (index, node) {
+
+			// remove nodes from tree
+			parentNode = this._nodes[node.parentId];
+			if (parentNode) {
+				targetNodes = parentNode.nodes;
+			} else {
+				targetNodes = this._tree;
+			}
+			targetNodes.splice(node.index, 1);
+
+			// remove node from DOM
+			this._removeNodeEl(node);
+		}, this));
+
+		// initialize new state and render changes
+		this._setInitialStates({nodes: this._tree}, 0)
+			.done(this._render.bind(this));
+	};
+
+	/**
+	 	Updates / replaces a given tree node
+		@param {Object} node  - A single node to be replaced
+		@param {Object} newNode  - THe replacement node
+		@param {optional Object} options
+	*/
+	Tree.prototype.updateNode = function (node, newNode, options) {
+		if (node instanceof Array) {
+			node = node[0];
+		}
+		options = $.extend({}, _default.options, options);
+
+		// insert new node
+		var targetNodes;
+		var parentNode = this._nodes[node.parentId];
+		if (parentNode) {
+			targetNodes = parentNode.nodes;
+		} else {
+			targetNodes = this._tree;
+		}
+		targetNodes.splice(node.index, 1, newNode);
+
+		// remove old node from DOM
+		this._removeNodeEl(node);
+
+		// initialize new state and render changes
+		this._setInitialStates({nodes: this._tree}, 0)
+			.done(this._render.bind(this));
+	};
 
 
 	/**

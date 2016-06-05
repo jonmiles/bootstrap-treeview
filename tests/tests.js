@@ -827,7 +827,7 @@
 				equal(node.nodeId, '0.1', 'Append single node after : correct id');
 			}
 		});
-		tree = $tree.treeview(true)
+		tree = $tree.treeview(true);
 		parent = tree.findNodes('Parent 1', 'text');
 		tree.addNodeAfter(singleNode, parent);
 
@@ -845,7 +845,7 @@
 				}
 			}
 		});
-		tree = $tree.treeview(true)
+		tree = $tree.treeview(true);
 		parent = tree.findNodes('Parent 1', 'text');
 		tree.addNodeAfter(multiNodes, parent);
 	});
@@ -864,7 +864,7 @@
 				equal(node.nodeId, '0.0', 'Append single node before : correct id');
 			}
 		});
-		tree = $tree.treeview(true)
+		tree = $tree.treeview(true);
 		parent = tree.findNodes('Parent 1', 'text');
 		tree.addNodeBefore(singleNode, parent);
 
@@ -882,9 +882,51 @@
 				}
 			}
 		});
-		tree = $tree.treeview(true)
+		tree = $tree.treeview(true);
 		parent = tree.findNodes('Parent 1', 'text');
 		tree.addNodeBefore(multiNodes, parent);
+	});
+
+	asyncTest('removeNode', function (assert) {
+		var $tree, tree, node, first = true;
+
+		// Remove single node
+		$tree = init({
+			data: data,
+			onRendered: function (events, nodes) {
+				if (first) {
+					first = false;
+					return;
+				}
+				equal(tree.getNodes().length, 4, 'Remove single node - correct number of nodes remain');
+				start();
+			}
+		});
+		tree = $tree.treeview(true);
+		node = tree.findNodes('Parent 1', 'text');
+		tree.removeNode(node);
+	});
+
+	asyncTest('updateNode', function (assert) {
+		var $tree, tree, parent, first = true;
+
+		// Remove single node
+		$tree = init({
+			data: data,
+			onRendered: function (events, nodes) {
+				if (first) {
+					first = false;
+					return;
+				}
+				equal(tree.getNodes().length, 5, 'Update single node - correct number of nodes');
+				// equal($($tree.selector + ' ul li').length, 5, 'Update single node - correct number of elements');
+				equal(tree.getNodes()[0].text, singleNode.text, 'Update single node - correct text');
+				start();
+			}
+		});
+		tree = $tree.treeview(true);
+		parent = tree.findNodes('Parent 1', 'text');
+		tree.updateNode(parent, singleNode);
 	});
 
 	test('disableAll / enableAll', function () {
