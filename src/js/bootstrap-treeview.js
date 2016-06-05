@@ -126,6 +126,9 @@
 			getDisabled: $.proxy(this.getDisabled, this),
 			getEnabled: $.proxy(this.getEnabled, this),
 
+			// Creation methods
+			addNode: $.proxy(this.addNode, this),
+
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
 			unselectNode: $.proxy(this.unselectNode, this),
@@ -822,14 +825,18 @@
 
 	// Creates a new node element from template and
 	// ensures the template is inserted at the correct position
-	Tree.prototype._newNodeEl = function (/*$parentEl,*/ node, previousNode) {
+	Tree.prototype._newNodeEl = function (node, previousNode) {
 		var $el = $(this._template.node);
 		if (previousNode) {
+			// typical usage, as nodes are rendered in
+			// sort order we add after the previous element
 			this.$wrapper.children()
 				.eq(previousNode.$el.index())
 				.after($el);
 		} else {
-			this.$wrapper.append($el);
+			// we use prepend instead of append,
+			// to cater for root inserts i.e. nodeId 0.0
+			this.$wrapper.prepend($el);
 		}
 		return $el;
 	};
@@ -1041,6 +1048,53 @@
 	Tree.prototype.getEnabled = function () {
 		return this._findNodes('false', 'state.disabled');
 	};
+
+
+	/**
+	 	Add nodes to the tree.
+		@param {Array} nodes  - An array of nodes to add
+		@param {optional Object} parentNode  - The node to which nodes will be added as children
+		@param {optional number} index  - Zero based insert index
+		@param {optional Object} options
+	*/
+	Tree.prototype.addNode = function (nodes, parentNode, index, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		if (parentNode instanceof Array) {
+			parentNode = parentNode[0];
+		}
+
+		options = $.extend({}, _default.options, options);
+
+		// identify target nodes; either the tree's root or a parent's child nodes
+		var targetNodes;
+		if (parentNode && parentNode.nodes) {
+			targetNodes = parentNode.nodes;
+		} else if (parentNode) {
+			targetNodes = parentNode.nodes = [];
+		} else {
+			targetNodes = this._tree;
+		}
+
+		// inserting nodes at specified positions
+		$.each(nodes, $.proxy(function (i, node) {
+			var insertIndex = (typeof(index) === 'number') ? (index + i) : (targetNodes.length + 1);
+			targetNodes.splice(insertIndex, 0, node);
+		}, this));
+
+		// initialize new state and render changes
+		if (parentNode) {
+			this._setInitialStates(parentNode, parentNode.level);
+			if (!parentNode.state.expanded) {
+				this._setExpanded(parentNode, true, options);
+			}
+		} else {
+			this._setInitialStates({nodes: targetNodes}, 0);
+		}
+		this._render();
+	}
 
 
 	/**

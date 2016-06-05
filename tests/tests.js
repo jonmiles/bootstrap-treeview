@@ -46,6 +46,19 @@
 		}
 	];
 
+	var singleNode = {
+		text: 'Single 1'
+	};
+
+	var multiNodes = [
+		{
+			text: 'Multi 1'
+		},
+		{
+			text: 'Multi 2'
+		}
+	];
+
 	var json = '[' +
 		'{' +
 			'"text": "Parent 1",' +
@@ -539,6 +552,148 @@
 
 	module('Methods');
 
+	asyncTest('addNode', function (assert) {
+		// expect(9);
+		var $tree, tree, parent;
+
+		// Append single root node
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text !== singleNode.text) {
+					return;
+				}
+				equal(node.parentId, undefined, 'Append single root node : is root node');
+				equal(node.level, 1, 'Append single root node : correct level');
+				equal(node.nodeId, '0.5', 'Append single root node : correct id');
+			}
+		})
+		.treeview(true)
+		.addNode(singleNode);
+
+		// Append single child node
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text !== singleNode.text) {
+					return;
+				}
+				equal(node.parentId, parent.nodeId, 'Append single child node : is child node');
+				equal(node.level, 2, 'Append single child node : correct level');
+				equal(node.nodeId, '0.0.2', 'Append single child node : correct id');
+			}
+		});
+		tree = $tree.treeview(true);
+		parent = tree.findNodes('Parent 1', 'text')[0];
+		tree.addNode(singleNode, parent);
+
+		// Insert single root node
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text !== singleNode.text) {
+					return;
+				}
+				equal(node.parentId, undefined, 'Insert single root node : is root node');
+				equal(node.level, 1, 'Insert single root node : correct level');
+				equal(node.nodeId, '0.0', 'Insert single root node : correct id');
+			}
+		});
+		tree = $tree.treeview(true);
+		tree.addNode(singleNode, null, 0);
+
+		// Insert single child node
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text !== singleNode.text) {
+					return;
+				}
+				equal(node.parentId, parent.nodeId, 'Insert single child node : is child node');
+				equal(node.level, 2, 'Insert single child node : correct level');
+				equal(node.nodeId, '0.0.0', 'Insert single child node : correct id');
+			}
+		});
+		tree = $tree.treeview(true);
+		parent = tree.findNodes('Parent 1', 'text')[0];
+		tree.addNode(singleNode, parent, 0);
+
+		// Append multiple root nodes
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text === multiNodes[0].text) {
+					equal(node.parentId, undefined, 'Append multiple root node 1 : is root node');
+					equal(node.level, 1, 'Append multiple root node 1 : correct level');
+					equal(node.nodeId, '0.5', 'Append multiple root node 1 : correct id');
+				} else if (node.text === multiNodes[1].text) {
+					equal(node.parentId, undefined, 'Append multiple root node 2 : is root node');
+					equal(node.level, 1, 'Append multiple root node 2 : correct level');
+					equal(node.nodeId, '0.6', 'Append multiple root node 2 : correct id');
+				}
+			}
+		})
+		.treeview(true)
+		.addNode(multiNodes);
+
+		// Append multiple child nodes
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text === multiNodes[0].text) {
+					equal(node.parentId, parent.nodeId, 'Append multiple child node 1 : is child node');
+					equal(node.level, 2, 'Append multiple child node 1 : correct level');
+					equal(node.nodeId, '0.0.2', 'Append multiple child node 1 : correct id');
+				} else if (node.text === multiNodes[1].text) {
+					equal(node.parentId, parent.nodeId, 'Append multiple child node 2 : is child node');
+					equal(node.level, 2, 'Append multiple child node 2 : correct level');
+					equal(node.nodeId, '0.0.3', 'Append multiple child node 2 : correct id');
+				}
+			}
+		})
+		tree = $tree.treeview(true);
+		parent = tree.findNodes('Parent 1', 'text')[0];
+		tree.addNode(multiNodes, parent);
+
+		// Insert multiple root nodes
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text === multiNodes[0].text) {
+					equal(node.parentId, undefined, 'Insert multiple root node 1 : is root node');
+					equal(node.level, 1, 'Insert multiple root node 1 : correct level');
+					equal(node.nodeId, '0.0', 'Insert multiple root node 1 : correct id');
+				} else if (node.text === multiNodes[1].text) {
+					equal(node.parentId, undefined, 'Insert multiple root node 2 : is root node');
+					equal(node.level, 1, 'Insert multiple root node 2 : correct level');
+					equal(node.nodeId, '0.1', 'Insert multiple root node 2 : correct id');
+				}
+			}
+		})
+		.treeview(true)
+		.addNode(multiNodes, null, 0);
+
+		// Insert multiple child nodes
+		$tree = init({
+			data: data,
+			onNodeRendered: function (events, node) {
+				if (node.text === multiNodes[0].text) {
+					equal(node.parentId, parent.nodeId, 'Insert multiple child node 1 : is child node');
+					equal(node.level, 2, 'Insert multiple child node 1 : correct level');
+					equal(node.nodeId, '0.0.0', 'Insert multiple child node 1 : correct id');
+				} else if (node.text === multiNodes[1].text) {
+					equal(node.parentId, parent.nodeId, 'Insert multiple child node 2 : is child node');
+					equal(node.level, 2, 'Insert multiple child node 2 : correct level');
+					equal(node.nodeId, '0.0.1', 'Insert multiple child node 2 : correct id');
+					start();
+				}
+			}
+		})
+		tree = $tree.treeview(true);
+		parent = tree.findNodes('Parent 1', 'text')[0];
+		tree.addNode(multiNodes, parent, 0);
+	});
+
 	test('findNodes', function () {
 		var tree = init({ data: data }).treeview(true);
 		var nodeParent1 = tree.findNodes('Parent 1', 'text')[0];
@@ -896,7 +1051,7 @@
 			},
 			onDestroyed: function(/*event, results*/) {
 				ok(true, 'onLoading triggered');
-				start()
+				start();
 			}
 		})
 		.treeview(true)

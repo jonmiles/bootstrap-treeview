@@ -416,7 +416,7 @@ The following is a list of all available methods.
 
 #### addNode(nodes, parentNode, index, options)
 
-Add / append nodes to the tree.
+Add nodes to the tree.
 
 ```javascript
 $('#tree').treeview('addNode', [ nodes, parentNode, index, { silent: true } ]);
@@ -569,6 +569,8 @@ Returns an array of matching node objects.
 ```javascript
 $('#tree').treeview('findNode', ['Parent', 'text']);
 ```
+
+> Use regular expressions for pattern matching NOT string equals, if you need to match an exact string use start and end string anchors e.g. ^pattern$.
 
 #### getChecked()
 
