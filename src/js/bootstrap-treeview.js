@@ -105,6 +105,7 @@
 
 			// Get methods
 			getNode: $.proxy(this.getNode, this),
+			getNodes: $.proxy(this.getNodes, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
 			getSelected: $.proxy(this.getSelected, this),
@@ -898,6 +899,14 @@
 	*/
 	Tree.prototype.getNode = function (nodeId) {
 		return this._nodes[nodeId];
+	};
+
+	/**
+		Returns an array of all nodes.
+		@return {Array} nodes - All nodes
+	*/
+	Tree.prototype.getNodes = function () {
+		return this._nodes;
 	};
 
 	/**
