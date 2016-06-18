@@ -1005,6 +1005,10 @@
 		@returns {Array} nodes - An array of sibling nodes
 	*/
 	Tree.prototype.getSiblings = function (nodes) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		var siblingNodes = [];
 		$.each(nodes, $.proxy(function (index, node) {
 			var parent = this.getParents([node]);
@@ -1139,9 +1143,11 @@
 		if (!(nodes instanceof Array)) {
 			nodes = [nodes];
 		}
+
 		if (node instanceof Array) {
 			node = node[0];
 		}
+
 		options = $.extend({}, _default.options, options);
 
 		this.addNode(nodes, this.getParents(node)[0], (node.index + 1), options);
@@ -1157,9 +1163,11 @@
 		if (!(nodes instanceof Array)) {
 			nodes = [nodes];
 		}
+
 		if (node instanceof Array) {
 			node = node[0];
 		}
+
 		options = $.extend({}, _default.options, options);
 
 		this.addNode(nodes, this.getParents(node)[0], node.index, options);
@@ -1174,6 +1182,7 @@
 		if (!(nodes instanceof Array)) {
 			nodes = [nodes];
 		}
+
 		options = $.extend({}, _default.options, options);
 
 		var targetNodes, parentNode;
@@ -1207,6 +1216,7 @@
 		if (node instanceof Array) {
 			node = node[0];
 		}
+
 		options = $.extend({}, _default.options, options);
 
 		// insert new node
@@ -1234,7 +1244,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.selectNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setSelected(node, true, options);
 		}, this));
@@ -1246,7 +1261,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.unselectNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setSelected(node, false, options);
 		}, this));
@@ -1258,7 +1278,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeSelected = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._toggleSelected(node, options);
 		}, this));
@@ -1282,6 +1307,7 @@
 	*/
 	Tree.prototype.collapseNode = function (nodes, options) {
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setExpanded(node, false, options);
 		}, this));
@@ -1303,7 +1329,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setExpanded(node, true, options);
 			if (node.nodes) {
@@ -1313,6 +1344,12 @@
 	};
 
 	Tree.prototype._expandLevels = function (nodes, level, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setExpanded(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
@@ -1327,7 +1364,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.revealNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			var parentNode = node;
 			var tmpNode;
@@ -1344,7 +1386,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeExpanded = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._toggleExpanded(node, options);
 		}, this));
@@ -1357,6 +1404,7 @@
 	*/
 	Tree.prototype.checkAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('false', 'state.checked');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, true, options);
@@ -1369,7 +1417,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, true, options);
 		}, this));
@@ -1381,6 +1434,7 @@
 	*/
 	Tree.prototype.uncheckAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('true', 'state.checked');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, false, options);
@@ -1393,7 +1447,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, false, options);
 		}, this));
@@ -1405,7 +1464,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeChecked = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._toggleChecked(node, options);
 		}, this));
@@ -1418,6 +1482,7 @@
 	*/
 	Tree.prototype.disableAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('false', 'state.disabled');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, true, options);
@@ -1430,7 +1495,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.disableNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, true, options);
 		}, this));
@@ -1442,6 +1512,7 @@
 	*/
 	Tree.prototype.enableAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('true', 'state.disabled');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, false, options);
@@ -1454,7 +1525,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.enableNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, false, options);
 		}, this));
@@ -1466,7 +1542,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeDisabled = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, !node.state.disabled, options);
 		}, this));
