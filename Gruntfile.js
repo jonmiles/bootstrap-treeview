@@ -37,11 +37,12 @@ module.exports = function(grunt) {
           // setup tests
           { expand: true, cwd: 'src/css', src: '*', dest: 'tests/lib/' },
           { expand: true, cwd: 'src/js', src: '*', dest: 'tests/lib/' },
-          { expand: true, cwd: 'public/bower_components/jquery', src: 'jquery.js', dest: 'tests/lib/' },
-          { expand: true, cwd: 'public/bower_components/bootstrap-datepicker/js', src: 'bootstrap-datepicker.js', dest: 'tests/lib/' },
+          { expand: true, cwd: 'node_modules/jquery/dist', src: 'jquery.js', dest: 'tests/lib/' },
           // setup public
           { expand: true, cwd: 'src/css', src: '*', dest: 'public/css/' },
           { expand: true, cwd: 'src/js', src: '*', dest: 'public/js/' },
+          { expand: true, cwd: 'node_modules/bootstrap/dist/', src: '**/*', dest: 'public/libs/bootstrap/' },
+          { expand: true, cwd: 'node_modules/jquery/dist/', src: '*', dest: 'public/libs/jquery' }
         ]
       }
     }

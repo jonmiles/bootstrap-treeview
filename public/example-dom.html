@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Bootstrap Tree View</title>
-    <link href="./bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="./libs/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="./css/bootstrap-treeview.css" rel="stylesheet">
   </head>
   <body>
@@ -16,12 +16,12 @@
         </div>
       </div>
     </div>
-    <script src="./bower_components/jquery/dist/jquery.js"></script>
+    <script src="./libs/jquery/jquery.js"></script>
   	<script src="./js/bootstrap-treeview.js"></script>
   	<script type="text/javascript">
 
       function buildDomTree() {
-         
+
         var data = [];
 
         function walk(nodes, data) {
@@ -47,7 +47,7 @@
   		$(function() {
 
         var options = {
-          bootstrap2: false, 
+          bootstrap2: false,
           showTags: true,
           levels: 5,
           data: buildDomTree()

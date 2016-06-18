@@ -21,7 +21,6 @@
   ],
   "main": "src/bootstrap-treeview.js",
   "scripts": {
-    "install": "bower install",
     "start": "node app",
     "test": "grunt test"
   },
@@ -30,17 +29,17 @@
   },
   "dependencies": {
     "bootstrap": "3.3.x",
-    "jquery": "3.0.x"
+    "jquery": "2.1.x"
   },
   "devDependencies": {
     "bower": "1.3.x",
     "express": "3.4.x",
     "grunt": "^1.0.1",
-    "grunt-contrib-copy": "^0.7.0",
-    "grunt-contrib-cssmin": "^0.12.3",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.1",
     "grunt-contrib-qunit": "^1.2.0",
-    "grunt-contrib-uglify": "^0.7.0",
-    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
     "phantomjs": "^2.1.7"
   },
   "keywords": [
