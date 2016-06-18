@@ -612,6 +612,14 @@ Returns an array of expanded nodes e.g. state.expanded = true.
 $('#tree').treeview('getExpanded');
 ```
 
+#### getNodes()
+
+Returns an array of all initialized nodes.
+
+```javascript
+$('#tree').treeview('getNodes', nodes);
+```
+
 #### getParents(nodes)
 
 Returns parent nodes for given nodes, if valid otherwise returns undefined.

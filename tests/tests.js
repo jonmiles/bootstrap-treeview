@@ -558,6 +558,13 @@
 		equal(nodeParent1.text, 'Parent 1', 'Correct node returned : requested "Parent 1", got "Parent 1"');
 	});
 
+	test('getNodes', function () {
+		var tree = init({ data: data }).treeview(true);
+		var nodes = tree.getNodes();
+		ok((nodes instanceof Array), 'Result is an array');
+		equal(nodes.length, 9, 'Correct number of nodes returned');
+	});
+
 	test('getParents', function () {
 		var tree = init({ data: data }).treeview(true);
 		var nodeChild1 = tree.findNodes('Child 1', 'text');

@@ -113,8 +113,9 @@
 			init: $.proxy(this._init, this),
 			remove: $.proxy(this._remove, this),
 
-			// Get methods
+			// Query methods
 			findNodes: $.proxy(this.findNodes, this),
+			getNodes: $.proxy(this.getNodes, this), // todo document + test
 			getParents: $.proxy(this.getParents, this),
 			getSiblings: $.proxy(this.getSiblings, this),
 			getSelected: $.proxy(this.getSelected, this),
@@ -125,6 +126,13 @@
 			getUnchecked: $.proxy(this.getUnchecked, this),
 			getDisabled: $.proxy(this.getDisabled, this),
 			getEnabled: $.proxy(this.getEnabled, this),
+
+			// Tree manipulation methods
+			addNode: $.proxy(this.addNode, this),
+			addNodeAfter: $.proxy(this.addNodeAfter, this),
+			addNodeBefore: $.proxy(this.addNodeBefore, this),
+			removeNode: $.proxy(this.removeNode, this),
+			updateNode: $.proxy(this.updateNode, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -139,7 +147,7 @@
 			toggleNodeExpanded: $.proxy(this.toggleNodeExpanded, this),
 			revealNode: $.proxy(this.revealNode, this),
 
-			// Expand / collapse methods
+			// Check / uncheck methods
 			checkAll: $.proxy(this.checkAll, this),
 			checkNode: $.proxy(this.checkNode, this),
 			uncheckAll: $.proxy(this.uncheckAll, this),
@@ -161,7 +169,6 @@
 
 	Tree.prototype._init = function (options) {
 		this._tree = [];
-		this._nodes = [];
 		this._initialized = false;
 
 		this._options = $.extend({}, _default.settings, options);
@@ -180,10 +187,7 @@
 			}, this))
 			.then($.proxy(function (treeData) {
 				// initialize data
-				return $.when.apply(this, this._setInitialStates({ nodes: treeData }, 0))
-					.done($.proxy(function () {
-						this._triggerEvent('initialized', this._nodes, _default.options);
-					}, this));
+				return this._setInitialStates({ nodes: treeData }, 0);
 			}, this))
 			.then($.proxy(function () {
 				// render to DOM
@@ -337,25 +341,38 @@
 		Recurse the tree structure and ensure all nodes have
 		valid initial states.  User defined states will be preserved.
 		For performance we also take this opportunity to
-		index nodes in a flattened structure
+		index nodes in a flattened ordered structure
 	*/
-	Tree.prototype._setInitialStates = function (node, level, ready) {
+	Tree.prototype._setInitialStates = function (node, level) {
+		this._nodes = {};
+		return $.when.apply(this, this._setInitialState(node, level))
+			.done($.proxy(function () {
+				this._orderedNodes = this._sortNodes();
+				this._triggerEvent('initialized', this._orderedNodes, _default.options);
+				return;
+			}, this));
+	};
 
+	Tree.prototype._setInitialState = function (node, level, done) {
 		if (!node.nodes) return;
 		level += 1;
-		ready = ready || [];
+		done = done || [];
 
 		var parent = node;
-		var _this = this;
-		$.each(node.nodes, function checkStates(index, node) {
+		$.each(node.nodes, $.proxy(function (index, node) {
 			var deferred = new $.Deferred();
-			ready.push(deferred.promise());
+			done.push(deferred.promise());
+
+			// level : hierarchical tree level, starts at 1
+			node.level = level;
 
 			// index : relative to siblings
 			node.index = index;
 
-			// nodeId : unique, incremental identifier
-			node.nodeId = _this._nodes.length;
+			// nodeId : unique, hierarchical identifier
+			node.nodeId = (parent && parent.nodeId) ?
+											parent.nodeId + '.' + node.index :
+											(level - 1) + '.' + node.index;
 
 			// parentId : transversing up the tree
 			node.parentId = parent.nodeId;
@@ -381,7 +398,7 @@
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
 				if (!node.state.disabled &&
-						(level < _this._options.levels) &&
+						(level < this._options.levels) &&
 						(node.nodes && node.nodes.length > 0)) {
 					node.state.expanded = true;
 				}
@@ -390,36 +407,44 @@
 				}
 			}
 
-			// set visible state; based purely on levels
-			if (level > _this._options.levels) {
-				node.state.visible = false;
-			}
-			else {
-				node.state.visible = true;
-			}
-
 			// set selected state; unless set always false
 			if (!node.state.hasOwnProperty('selected')) {
 				node.state.selected = false;
 			}
 
-			// index nodes in a flattened structure for use later
-			_this._nodes.push(node);
+			// set visible state; based parent state plus levels
+			if ((parent && parent.state && parent.state.expanded) ||
+					(level <= this._options.levels)) {
+				node.state.visible = true;
+			}
+			else {
+				node.state.visible = false;
+			}
 
-			// recurse child nodes and transverse the tree
+			// recurse child nodes and transverse the tree, depth-first
 			if (node.nodes) {
 				if (node.nodes.length > 0) {
-					_this._setInitialStates(node, level, ready);
+					this._setInitialState(node, level, done);
 				}
 				else {
 					delete node.nodes;
 				}
 			}
 
-			deferred.resolve();
-		});
+			// add / update indexed collection
+			this._nodes[node.nodeId] = node;
 
-		return ready;
+			// mark task as complete
+			deferred.resolve();
+		}, this));
+
+		return done;
+	};
+
+	Tree.prototype._sortNodes = function () {
+		return $.map(Object.keys(this._nodes).sort(), $.proxy(function (value, index) {
+		  return this._nodes[value];
+		}, this));
 	};
 
 	Tree.prototype._clickHandler = function (event) {
@@ -447,10 +472,8 @@
 	// Looks up the DOM for the closest parent list item to retrieve the
 	// data attribute nodeid, which is used to lookup the node in the flattened structure.
 	Tree.prototype.targetNode = function (target) {
-
-		var nodeId = target.closest('li.list-group-item').attr('data-nodeid');
+		var nodeId = target.closest('li.list-group-item').attr('data-nodeId');
 		var node = this._nodes[nodeId];
-
 		if (!node) {
 			console.log('Error: node does not exist');
 		}
@@ -728,32 +751,28 @@
 			this._initialized = true;
 		}
 
-		if (!this._tree) return;
-
-		$.each(this._tree, $.proxy(function addRootNodes(id, node) {
-			node.level = 1;
-			this._renderNode(node);
+		var previousNode;
+		$.each(this._orderedNodes, $.proxy(function (id, node) {
+			this._renderNode(node, previousNode);
+			previousNode = node;
 		}, this));
 
-		this._triggerEvent('rendered', this._nodes, _default.options);
+		this._triggerEvent('rendered', this._orderedNodes, _default.options);
 	};
 
-	Tree.prototype._renderNode = function (node, pEl) {
+	Tree.prototype._renderNode = function (node, previousNode) {
 		if (!node) return;
 
 		if (!node.$el) {
-
-			// New node, needs a new element
-			node.$el = this._newNodeEl(pEl);
-
-			// One time setup
-			node.$el
-				.addClass('node-' + this._elementId)
-				.attr('data-nodeid', node.nodeId);
+			node.$el = this._newNodeEl(node, previousNode)
+				.addClass('node-' + this._elementId);
 		}
 		else {
 			node.$el.empty();
 		}
+
+		// Set / update nodeid; it can change as a result of addNode etc.
+		node.$el.attr('data-nodeId', node.nodeId);
 
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
@@ -804,42 +823,49 @@
 		this._setDisabled(node, node.state.disabled);
 		this._setVisible(node, node.state.visible);
 
-		// If children exist, recursively add
-		if (node.nodes) {
-			$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
-				childNode.level = node.level + 1;
-				this._renderNode(childNode, node.$el);
-			}, this));
-		}
-
 		// Trigger nodeRendered event
 		this._triggerEvent('nodeRendered', node, _default.options);
 	};
 
 	// Creates a new node element from template and
 	// ensures the template is inserted at the correct position
-	Tree.prototype._newNodeEl = function (pEl) {
+	Tree.prototype._newNodeEl = function (node, previousNode) {
 		var $el = $(this._template.node);
 
-		if (pEl) {
+		if (previousNode) {
+			// typical usage, as nodes are rendered in
+			// sort order we add after the previous element
 			this.$wrapper.children()
-				.eq(pEl.index()).after($el);
-		}
-		else {
-			this.$wrapper.append($el);
+				.eq(previousNode.$el.index())
+				.after($el);
+		} else {
+			// we use prepend instead of append,
+			// to cater for root inserts i.e. nodeId 0.0
+			this.$wrapper.prepend($el);
 		}
 
 		return $el;
+	};
+
+	// Recursively remove node elements from DOM
+	Tree.prototype._removeNodeEl = function (node) {
+		if (!node) return;
+
+		if (node.nodes) {
+			$.each(node.nodes, $.proxy(function (index, node) {
+				this._removeNodeEl(node);
+			}, this));
+		}
+		node.$el.remove();
 	};
 
 	// Expand node, rendering it's immediate children
 	Tree.prototype._expandNode = function (node) {
 		if (!node.nodes) return;
 
-		var $pEl = node.$el;
 		$.each(node.nodes.slice(0).reverse(), $.proxy(function (index, childNode) {
 			childNode.level = node.level + 1;
-			this._renderNode(childNode, $pEl);
+			this._renderNode(childNode, node.$el);
 		}, this));
 	};
 
@@ -908,7 +934,7 @@
 		}
 
 		// Node level style overrides
-		$.each(this._nodes, $.proxy(function (index, node) {
+		$.each(this._orderedNodes, $.proxy(function (index, node) {
 			if (node.color || node.backColor) {
 				var innerStyle = '';
 				if (node.color) {
@@ -917,7 +943,7 @@
 				if (node.backColor) {
 					innerStyle += 'background-color:' + node.backColor + ';';
 				}
-				style += '.node-' + this._elementId + '[data-nodeid="' + node.nodeId + '"]{' + innerStyle + '}';
+				style += '.node-' + this._elementId + '[data-nodeId="' + node.nodeId + '"]{' + innerStyle + '}';
 			}
 		}, this));
 
@@ -944,15 +970,31 @@
 		return this._findNodes(pattern, field);
 	};
 
+
+	/**
+		Returns an ordered aarray of node objects.
+		@return {Array} nodes - An array of all nodes
+	*/
+	Tree.prototype.getNodes = function () {
+		return this._orderedNodes;
+	};
+
 	/**
 		Returns parent nodes for given nodes, if valid otherwise returns undefined.
 		@param {Array} nodes - An array of nodes
 		@returns {Array} nodes - An array of parent nodes
 	*/
 	Tree.prototype.getParents = function (nodes) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		var parentNodes = [];
 		$.each(nodes, $.proxy(function (index, node) {
-			parentNodes.push(this._nodes[node.parentId]);
+			var parentNode = node.parentId ? this._nodes[node.parentId] : false;
+			if (parentNode) {
+				parentNodes.push(parentNode);
+			}
 		}, this));
 		return parentNodes;
 	};
@@ -963,6 +1005,10 @@
 		@returns {Array} nodes - An array of sibling nodes
 	*/
 	Tree.prototype.getSiblings = function (nodes) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		var siblingNodes = [];
 		$.each(nodes, $.proxy(function (index, node) {
 			var parent = this.getParents([node]);
@@ -1044,12 +1090,166 @@
 
 
 	/**
+	 	Add nodes to the tree.
+		@param {Array} nodes  - An array of nodes to add
+		@param {optional Object} parentNode  - The node to which nodes will be added as children
+		@param {optional number} index  - Zero based insert index
+		@param {optional Object} options
+	*/
+	Tree.prototype.addNode = function (nodes, parentNode, index, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		if (parentNode instanceof Array) {
+			parentNode = parentNode[0];
+		}
+
+		options = $.extend({}, _default.options, options);
+
+		// identify target nodes; either the tree's root or a parent's child nodes
+		var targetNodes;
+		if (parentNode && parentNode.nodes) {
+			targetNodes = parentNode.nodes;
+		} else if (parentNode) {
+			targetNodes = parentNode.nodes = [];
+		} else {
+			targetNodes = this._tree;
+		}
+
+		// inserting nodes at specified positions
+		$.each(nodes, $.proxy(function (i, node) {
+			var insertIndex = (typeof(index) === 'number') ? (index + i) : (targetNodes.length + 1);
+			targetNodes.splice(insertIndex, 0, node);
+		}, this));
+
+		// initialize new state and render changes
+		this._setInitialStates({nodes: this._tree}, 0)
+			.done($.proxy(function () {
+				if (parentNode && !parentNode.state.expanded) {
+					this._setExpanded(parentNode, true, options);
+				}
+				this._render();
+			}, this));
+	}
+
+	/**
+	 	Add nodes to the tree after given node.
+		@param {Array} nodes  - An array of nodes to add
+		@param {Object} node  - The node to which nodes will be added after
+		@param {optional Object} options
+	*/
+	Tree.prototype.addNodeAfter = function (nodes, node, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		if (node instanceof Array) {
+			node = node[0];
+		}
+
+		options = $.extend({}, _default.options, options);
+
+		this.addNode(nodes, this.getParents(node)[0], (node.index + 1), options);
+	}
+
+	/**
+	 	Add nodes to the tree before given node.
+		@param {Array} nodes  - An array of nodes to add
+		@param {Object} node  - The node to which nodes will be added before
+		@param {optional Object} options
+	*/
+	Tree.prototype.addNodeBefore = function (nodes, node, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		if (node instanceof Array) {
+			node = node[0];
+		}
+
+		options = $.extend({}, _default.options, options);
+
+		this.addNode(nodes, this.getParents(node)[0], node.index, options);
+	}
+
+	/**
+	 	Removes given nodes from the tree.
+		@param {Array} nodes  - An array of nodes to remove
+		@param {optional Object} options
+	*/
+	Tree.prototype.removeNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		options = $.extend({}, _default.options, options);
+
+		var targetNodes, parentNode;
+		$.each(nodes, $.proxy(function (index, node) {
+
+			// remove nodes from tree
+			parentNode = this._nodes[node.parentId];
+			if (parentNode) {
+				targetNodes = parentNode.nodes;
+			} else {
+				targetNodes = this._tree;
+			}
+			targetNodes.splice(node.index, 1);
+
+			// remove node from DOM
+			this._removeNodeEl(node);
+		}, this));
+
+		// initialize new state and render changes
+		this._setInitialStates({nodes: this._tree}, 0)
+			.done(this._render.bind(this));
+	};
+
+	/**
+	 	Updates / replaces a given tree node
+		@param {Object} node  - A single node to be replaced
+		@param {Object} newNode  - THe replacement node
+		@param {optional Object} options
+	*/
+	Tree.prototype.updateNode = function (node, newNode, options) {
+		if (node instanceof Array) {
+			node = node[0];
+		}
+
+		options = $.extend({}, _default.options, options);
+
+		// insert new node
+		var targetNodes;
+		var parentNode = this._nodes[node.parentId];
+		if (parentNode) {
+			targetNodes = parentNode.nodes;
+		} else {
+			targetNodes = this._tree;
+		}
+		targetNodes.splice(node.index, 1, newNode);
+
+		// remove old node from DOM
+		this._removeNodeEl(node);
+
+		// initialize new state and render changes
+		this._setInitialStates({nodes: this._tree}, 0)
+			.done(this._render.bind(this));
+	};
+
+
+	/**
 		Selects given tree nodes
 		@param {Array} nodes - An array of nodes
 		@param {optional Object} options
 	*/
 	Tree.prototype.selectNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setSelected(node, true, options);
 		}, this));
@@ -1061,7 +1261,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.unselectNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setSelected(node, false, options);
 		}, this));
@@ -1073,7 +1278,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeSelected = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._toggleSelected(node, options);
 		}, this));
@@ -1097,6 +1307,7 @@
 	*/
 	Tree.prototype.collapseNode = function (nodes, options) {
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setExpanded(node, false, options);
 		}, this));
@@ -1118,7 +1329,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.expandNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setExpanded(node, true, options);
 			if (node.nodes) {
@@ -1128,6 +1344,12 @@
 	};
 
 	Tree.prototype._expandLevels = function (nodes, level, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
+		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setExpanded(node, (level > 0) ? true : false, options);
 			if (node.nodes) {
@@ -1142,7 +1364,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.revealNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			var parentNode = node;
 			var tmpNode;
@@ -1159,7 +1386,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeExpanded = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._toggleExpanded(node, options);
 		}, this));
@@ -1172,6 +1404,7 @@
 	*/
 	Tree.prototype.checkAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('false', 'state.checked');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, true, options);
@@ -1184,7 +1417,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.checkNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, true, options);
 		}, this));
@@ -1196,6 +1434,7 @@
 	*/
 	Tree.prototype.uncheckAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('true', 'state.checked');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, false, options);
@@ -1208,7 +1447,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.uncheckNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, false, options);
 		}, this));
@@ -1220,7 +1464,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeChecked = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._toggleChecked(node, options);
 		}, this));
@@ -1233,6 +1482,7 @@
 	*/
 	Tree.prototype.disableAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('false', 'state.disabled');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, true, options);
@@ -1245,7 +1495,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.disableNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, true, options);
 		}, this));
@@ -1257,6 +1512,7 @@
 	*/
 	Tree.prototype.enableAll = function (options) {
 		options = $.extend({}, _default.options, options);
+
 		var nodes = this._findNodes('true', 'state.disabled');
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, false, options);
@@ -1269,7 +1525,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.enableNode = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, false, options);
 		}, this));
@@ -1281,7 +1542,12 @@
 		@param {optional Object} options
 	*/
 	Tree.prototype.toggleNodeDisabled = function (nodes, options) {
+		if (!(nodes instanceof Array)) {
+			nodes = [nodes];
+		}
+
 		options = $.extend({}, _default.options, options);
+
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setDisabled(node, !node.state.disabled, options);
 		}, this));
@@ -1371,7 +1637,7 @@
 	Tree.prototype._findNodes = function (pattern, attribute, modifier) {
 		attribute = attribute || 'text';
 		modifier = modifier || 'g';
-		return $.grep(this._nodes, $.proxy(function (node) {
+		return $.grep(this._orderedNodes, $.proxy(function (node) {
 			var val = this._getNodeValue(node, attribute);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
