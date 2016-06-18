@@ -873,7 +873,7 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 `searchCleared (event, results)`  - After search results are cleared
 
-> All events that emit multiple nodes, do so as an object collection not an array.  This is due to limitations of jQuery in cloning plain JavaScript objects.  If you need to an Array of nodes you'll need to reduce the object back into an array.
+> All events that emit multiple nodes, do so as an object collection not an array.  This is due to limitations of jQuery in cloning plain JavaScript objects.  If you need an Array of nodes you'll need to reduce the object's values back into an array.
 
 
 ## Copyright and Licensing
