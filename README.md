@@ -377,6 +377,7 @@ String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by 
 Sets the icon to be as an unchecked checkbox, used in conjunction with showCheckbox.
 
 
+
 ## Methods
 
 Methods provide a way of interacting with the plugin programmatically.  For example, expanding a node is possible via the expandNode method.
@@ -408,9 +409,58 @@ $('#tree').data('treeview')
 ```
 > A better approach, if you plan a lot of interaction.
 
+If you intend to make multiple API calls, store a reference to the treeview instance.
+
+```javascript
+var tree = $('#tree').treeview(true);
+tree.method1(args);
+tree.method2(args);
+```
+
+
 ### List of Methods
 
 The following is a list of all available methods.
+
+> All methods that all declare argument `nodes` will accept either a single node, or an Array of nodes.
+
+#### addNode(nodes, parentNode, index, options)
+
+Add nodes to the tree.
+
+```javascript
+$('#tree').treeview('addNode', [ nodes, parentNode, index, { silent: true } ]);
+```
+
+> If parentNode evaluates to false, node will be added to root
+
+> If index evaluates to false, node will be appended to the nodes
+
+Triggers `nodeRendered` event; pass silent to suppress events.
+
+#### addNodeAfter(nodes, node, options)
+
+Add nodes to the tree after given node.
+
+```javascript
+$('#tree').treeview('addNodeAfter', [ nodes, node, { silent: true } ]);
+```
+
+> If node evaluates to false, node will be prepended to the tree's root
+
+Triggers `nodeRendered` event; pass silent to suppress events.
+
+#### addNodeBefore(nodes, node, options)
+
+Add nodes to the tree before given node.
+
+```javascript
+$('#tree').treeview('addNodeAfter', [ nodes, node, { silent: true } ]);
+```
+
+> If node evaluates to false, node will be appended to the tree's root
+
+Triggers `nodeRendered` event; pass silent to suppress events.
 
 #### checkAll(options)
 
@@ -530,6 +580,8 @@ Returns an array of matching node objects.
 $('#tree').treeview('findNode', ['Parent', 'text']);
 ```
 
+> Use regular expressions for pattern matching NOT string equals, if you need to match an exact string use start and end string anchors e.g. ^pattern$.
+
 #### getChecked()
 
 Returns an array of checked nodes e.g. state.checked = true.
@@ -568,6 +620,14 @@ Returns an array of expanded nodes e.g. state.expanded = true.
 
 ```javascript
 $('#tree').treeview('getExpanded');
+```
+
+#### getNodes()
+
+Returns an array of all initialized nodes.
+
+```javascript
+$('#tree').treeview('getNodes', nodes);
 ```
 
 #### getParents(nodes)
@@ -616,6 +676,14 @@ Removes the tree view component. Removing attached events, internal attached obj
 
 ```javascript
 $('#tree').treeview('remove');
+```
+
+#### removeNode()
+
+Removes given nodes from the tree.
+
+```javascript
+$('#tree').treeview('removeNode', [ nodes, { silent: true } ]);
 ```
 
 #### revealNode(nodes, options)
@@ -714,6 +782,16 @@ $('#tree').treeview('uncheckNode', [ nodes, { silent: true } ]);
 
 Triggers `nodeUnchecked` event; pass silent to suppress events.
 
+#### updateNode(node, newNode, option)
+
+Updates / replaces a given tree node.
+
+```javascript
+$('#tree').treeview('updateNode', [ node, newNode, { silent: true } ]);
+```
+
+Triggers `nodeRendered` event; pass silent to suppress events.
+
 #### unselectNode(nodes, options)
 
 Unselects given tree nodes.
@@ -723,6 +801,8 @@ $('#tree').treeview('unselectNode', [ nodes, { silent: true } ]);
 ```
 
 Triggers `nodeUnselected` event; pass silent to suppress events.
+
+
 
 ## Events
 
@@ -793,6 +873,7 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 `searchCleared (event, results)`  - After search results are cleared
 
+> All events that emit multiple nodes, do so as an object collection not an array.  This is due to limitations of jQuery in cloning plain JavaScript objects.  If you need to an Array of nodes you'll need to reduce the object back into an array.
 
 
 ## Copyright and Licensing

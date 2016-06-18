@@ -462,7 +462,6 @@
         });
 
         $('#treeview4').treeview({
-
           color: "#428bca",
           data: defaultData
         });
@@ -747,7 +746,7 @@
         var lifecycleTreeOptions = {
           data: defaultData,
           levels: 3,
-          onLoading: function(event, nodes) {
+          onLoading: function(event) {
             $('#lifecycle-output').prepend('<p>Loaded data</p>');
           },
           onInitialized: function(event, nodes) {
@@ -775,10 +774,10 @@
               node.$el.append($('<span class="badge" style="width:24px;background-color:darkviolet;">E</span>'));
             }
           },
-          onRendered: function(event, node) {
+          onRendered: function(event, nodes) {
             $('#lifecycle-output').prepend('<p>Finished rendering</p>');
           },
-          onDestroyed: function (event, node) {
+          onDestroyed: function (event) {
             $('#lifecycle-output').prepend('<p>Tree destroyed</p>');
           }
         };
