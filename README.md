@@ -409,10 +409,20 @@ $('#tree').data('treeview')
 ```
 > A better approach, if you plan a lot of interaction.
 
+If you intend to make multiple API calls, store a reference to the treeview instance.
+
+```javascript
+var tree = $('#tree').treeview(true);
+tree.method1(args);
+tree.method2(args);
+```
+
 
 ### List of Methods
 
 The following is a list of all available methods.
+
+> All methods that all declare argument `nodes` will accept either a single node, or an Array of nodes.
 
 #### addNode(nodes, parentNode, index, options)
 
@@ -863,6 +873,7 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 `searchCleared (event, results)`  - After search results are cleared
 
+> All events that emit multiple nodes, do so as an object collection not an array.  This is due to limitations of jQuery in cloning plain JavaScript objects.  If you need to an Array of nodes you'll need to reduce the object back into an array.
 
 
 ## Copyright and Licensing
