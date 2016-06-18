@@ -3,10 +3,7 @@
   "description": "Tree View for Twitter Bootstrap",
   "version": "1.2.0",
   "homepage": "https://github.com/jonmiles/bootstrap-treeview",
-  "main": [
-    "dist/bootstrap-treeview.min.js",
-    "dist/bootstrap-treeview.min.css"
-  ],
+  "main": "dist/bootstrap-treeview.min.js",
   "keywords": [
     "twitter",
     "bootstrap",

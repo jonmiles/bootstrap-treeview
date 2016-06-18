@@ -1,11 +1,11 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'), // the package file to use
- 
+
     uglify: {
       files: {
-        expand: true, 
-        flatten: true, 
+        expand: true,
+        flatten: true,
         src: 'src/js/*.js',
         dest: 'dist',
         ext: '.min.js'
@@ -32,18 +32,16 @@ module.exports = function(grunt) {
     },
 
     copy: {
-      main: { 
+      main: {
         files: [
-          // copy dist to tests
-          // { expand: true, cwd: 'dist', src: '*', dest: 'tests/lib/' },
+          // setup tests
           { expand: true, cwd: 'src/css', src: '*', dest: 'tests/lib/' },
           { expand: true, cwd: 'src/js', src: '*', dest: 'tests/lib/' },
-          // copy latest libs to tests
           { expand: true, cwd: 'public/bower_components/jquery', src: 'jquery.js', dest: 'tests/lib/' },
           { expand: true, cwd: 'public/bower_components/bootstrap-datepicker/js', src: 'bootstrap-datepicker.js', dest: 'tests/lib/' },
-          // copy src to example
+          // setup public
           { expand: true, cwd: 'src/css', src: '*', dest: 'public/css/' },
-          { expand: true, cwd: 'src/js', src: '*', dest: 'public/js/' }
+          { expand: true, cwd: 'src/js', src: '*', dest: 'public/js/' },
         ]
       }
     }
@@ -57,6 +55,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   // register one or more task lists (you should ALWAYS have a "default" task list)
-  grunt.registerTask('default', ['uglify','cssmin', 'copy', 'qunit', 'watch']);
+  grunt.registerTask('default', ['uglify', 'cssmin', 'copy', 'qunit', 'watch']);
   grunt.registerTask('test', 'qunit');
 };
