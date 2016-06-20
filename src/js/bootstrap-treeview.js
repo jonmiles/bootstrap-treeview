@@ -487,9 +487,20 @@
 
 	Tree.prototype._setExpanded = function (node, state, options) {
 
-		// We never pass options when rendering, so the only time
+        //check to see if there is a specific expandedIcon from the node definiation and use it. this is not the same as the expandIcon used for all nodes
+	    if (node.expandedIcon) {
+	        node.$el.children('span.node-icon')
+                .removeClass(node.icon || this._options.nodeIcon || node.selectedIcon)
+                .addClass(node.expandedIcon);
+	    }
+
+
+	    // We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
 		if (options && state === node.state.expanded) return;
+
+
+
 
 		if (state && node.nodes) {
 
@@ -594,7 +605,7 @@
 
 				if (node.selectedIcon || this._options.selectedIcon) {
 					node.$el.children('span.node-icon')
-						.removeClass(node.icon || this._options.nodeIcon)
+						.removeClass(node.icon || this._options.nodeIcon || node.expandedIcon)
 						.addClass(node.selectedIcon || this._options.selectedIcon);
 				}
 			}
