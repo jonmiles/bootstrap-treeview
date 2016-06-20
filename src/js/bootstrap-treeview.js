@@ -487,18 +487,20 @@
 
 	Tree.prototype._setExpanded = function (node, state, options) {
 
-        //check to see if there is a specific expandedIcon from the node definiation and use it. this is not the same as the expandIcon used for all nodes
-	    if (node.expandedIcon) {
-	        node.$el.children('span.node-icon')
-                .removeClass(node.icon || this._options.nodeIcon || node.selectedIcon)
-                .addClass(node.expandedIcon);
-	    }
+	   
+	    
+	   
+	   
 
 
 	    // We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
 		if (options && state === node.state.expanded) return;
-
+		if (node.expandedIcon || state == false) {
+		    node.$el.children('span.node-icon')
+                .removeClass(node.expandedIcon)
+                .addClass(node.icon || this._options.nodeIcon);
+		}
 
 
 
@@ -520,7 +522,13 @@
 					this._setVisible(node, true, options);
 				}, this));
 			}
-
+			if (node.expandedIcon ) {
+			    
+			    node.$el.children('span.node-icon')
+                    .removeClass(node.icon || this._options.nodeIcon || node.selectedIcon)
+                    .addClass(node.expandedIcon);
+			    
+			}
 			// Optionally trigger event
 			this._triggerEvent('nodeExpanded', node, options);
 		}
@@ -583,6 +591,7 @@
 
 	Tree.prototype._setSelected = function (node, state, options) {
 
+	   
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
 		if (options && (state === node.state.selected)) return;
@@ -798,11 +807,14 @@
 
 		// Add node icon
 		if (this._options.showIcon) {
-			node.$el
-				.append($(this._template.icon)
-					.addClass('node-icon')
-					.addClass(node.icon || this._options.nodeIcon)
-				);
+
+
+		    node.$el
+                .append($(this._template.icon)
+                    .addClass('node-icon')
+                    .addClass(node.icon || this._options.nodeIcon)
+                );
+
 		}
 
 		// Add checkable icon
