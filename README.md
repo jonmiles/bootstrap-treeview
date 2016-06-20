@@ -126,6 +126,7 @@ If you want to do more, here's the full node specification
   text: "Node 1",
   icon: "glyphicon glyphicon-stop",
   selectedIcon: "glyphicon glyphicon-stop",
+  expandedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
   backColor: "#FFFFFF",
   selectable: true,
