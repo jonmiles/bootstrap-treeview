@@ -49,6 +49,7 @@
 		selectedBackColor: '#428bca',
 		searchResultColor: '#D9534F',
 		searchResultBackColor: undefined, //'#FFFFFF',
+		additionalClasses: undefined,
 
 		enableLinks: false,
 		highlightSelected: true,
@@ -158,6 +159,12 @@
 			this.tree = $.extend(true, [], options.data);
 			delete options.data;
 		}
+
+		if (options.template) {
+			$.extend(Tree.prototype.template, options.template);
+			delete options.template;
+		}
+
 		this.options = $.extend({}, _default.settings, options);
 
 		this.destroy();
@@ -517,6 +524,7 @@
 				.addClass(node.state.disabled ? 'node-disabled': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
+				.addClass(node.additionalClasses ? node.additionalClasses : '')
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
