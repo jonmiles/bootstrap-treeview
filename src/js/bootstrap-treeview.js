@@ -160,12 +160,10 @@
 			delete options.data;
 		}
 
-        if (options.template) {
-            $.each(options.template, function (key, value) {
-                Tree.prototype.template[key] = value;
-            });
-            delete options.template;
-        }
+		if (options.template) {
+			$.extend(Tree.prototype.template, options.template);
+			delete options.template;
+		}
 
 		this.options = $.extend({}, _default.settings, options);
 
