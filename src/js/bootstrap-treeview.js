@@ -159,6 +159,14 @@
 			this.tree = $.extend(true, [], options.data);
 			delete options.data;
 		}
+
+        if (options.template) {
+            $.each(options.template, function (key, value) {
+                Tree.prototype.template[key] = value;
+            });
+            delete options.template;
+        }
+
 		this.options = $.extend({}, _default.settings, options);
 
 		this.destroy();
