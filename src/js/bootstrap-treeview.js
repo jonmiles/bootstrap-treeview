@@ -783,12 +783,24 @@
 	Tree.prototype._renderNode = function (node, previousNode) {
 		if (!node) return;
 
+	    var isNew = false;
+	    var text;
+
 		if (!node.$el) {
 			node.$el = this._newNodeEl(node, previousNode)
 				.addClass('node-' + this._elementId);
+		    isNew = true;
+			text = $("<span class='node-text'></span>");
+		    text.append(node.text);
 		}
 		else {
-			node.$el.empty();
+		    node.$el.find(".node-icon").remove();
+		    node.$el.find(".indent").remove()
+		    node.$el.find(".badge").remove()
+		    text = node.$el.find(".node-text");
+		    // return;
+		    //	node.$el.empty();
+
 		}
 
 		// Set / update nodeid; it can change as a result of addNode etc.
@@ -825,14 +837,16 @@
 				);
 		}
 
-		// Add text
-		node.$el.append(node.text);
+	    // Add text
+	    //if (isNew == true) {
+	        node.$el.append(text);
+	    //}
 
-		// Add tags as badges
+	    // Add tags as badges
 		if (this._options.showTags && node.tags) {
 			$.each(node.tags, $.proxy(function addTag(id, tag) {
-				node.$el
-					.append($(this._template.badge)
+			    text
+					.after($(this._template.badge)
 						.append(tag)
 					);
 			}, this));
