@@ -441,10 +441,38 @@
 		return done;
 	};
 
-	Tree.prototype._sortNodes = function () {
-		return $.map(Object.keys(this._nodes).sort(), $.proxy(function (value, index) {
-		  return this._nodes[value];
-		}, this));
+	Tree.prototype._sortNodes = function() {
+	    var keys = Object.keys(this._nodes)
+	        .sort(function(a, b) {
+	            var anum = parseFloat(a.replace(/\./g, ""));
+	            var bnum = parseFloat(b.replace(/\./g, ""));
+	            if (anum > bnum) {
+	                return 1;
+	            }
+	            if (bnum > anum) {
+	                return -1;
+	            }
+	            if (anum == bnum) {
+	                var ap = a.split(".").length;
+	                var bp = b.split(".").length;
+	                if (ap > bp) {
+	                    return 1;
+	                }
+	                if (bp > ap) {
+	                    return -1;
+	                }
+	                if (bp == ap) {
+	                    return 0;
+	                }
+
+	            }
+
+	        });
+	    return $.map(keys,
+	        $.proxy(function(value, index) {
+	                return this._nodes[value];
+	            },
+	            this));
 	};
 
 	Tree.prototype._clickHandler = function (event) {
