@@ -63,6 +63,7 @@
 		onNodeChecked: undefined,
 		onNodeCollapsed: undefined,
 		onNodeDisabled: undefined,
+		onNodeHidden: undefined,
 		onNodeEnabled: undefined,
 		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
@@ -111,6 +112,7 @@
 			getChecked: $.proxy(this.getChecked, this),
 			getUnchecked: $.proxy(this.getUnchecked, this),
 			getDisabled: $.proxy(this.getDisabled, this),
+			getHidden: $.proxy(this.getHidden, this),
 			getEnabled: $.proxy(this.getEnabled, this),
 
 			// Select methods
@@ -139,6 +141,13 @@
 			enableAll: $.proxy(this.enableAll, this),
 			enableNode: $.proxy(this.enableNode, this),
 			toggleNodeDisabled: $.proxy(this.toggleNodeDisabled, this),
+
+			// Hide / show methods
+			hideAll: $.proxy(this.hideAll, this),
+			hideNode: $.proxy(this.hideNode, this),
+			showAll: $.proxy(this.showAll, this),
+			showNode: $.proxy(this.showNode, this),
+			toggleNodeHidden: $.proxy(this.toggleNodeHidden, this),
 
 			// Search methods
 			search: $.proxy(this.search, this),
@@ -193,6 +202,8 @@
 		this.$element.off('nodeCollapsed');
 		this.$element.off('nodeDisabled');
 		this.$element.off('nodeEnabled');
+		this.$element.off('nodeHidden');
+		this.$element.off('nodeShown');
 		this.$element.off('nodeExpanded');
 		this.$element.off('nodeSelected');
 		this.$element.off('nodeUnchecked');
@@ -221,6 +232,14 @@
 
 		if (typeof (this.options.onNodeEnabled) === 'function') {
 			this.$element.on('nodeEnabled', this.options.onNodeEnabled);
+		}
+
+		if (typeof (this.options.onNodeHidden) === 'function') {
+			this.$element.on('nodeHidden', this.options.onNodeHidden);
+		}
+
+		if (typeof (this.options.onNodeShown) === 'function') {
+			this.$element.on('nodeShown', this.options.onNodeShown);
 		}
 
 		if (typeof (this.options.onNodeExpanded) === 'function') {
@@ -285,6 +304,11 @@
 			// set enabled state; unless set always false
 			if (!node.state.hasOwnProperty('disabled')) {
 				node.state.disabled = false;
+			}
+
+			// set shown state; unless set always false
+			if (!node.state.hasOwnProperty('hidden')) {
+				node.state.hidden = false;
 			}
 
 			// set expanded state; if not provided based on levels
@@ -482,6 +506,29 @@
 		}
 	};
 
+	Tree.prototype.setHiddenState = function (node, state, options) {
+
+		if (state === node.state.hidden) return;
+
+		if (state) {
+
+			// Hide node
+			node.state.hidden = true;
+
+			if (!options.silent) {
+				this.$element.trigger('nodeHidden', $.extend(true, {}, node));
+			}
+		}
+		else {
+
+			// Show node
+			node.state.hidden = false;
+			if (!options.silent) {
+				this.$element.trigger('nodeShown', $.extend(true, {}, node));
+			}
+		}
+	};
+
 	Tree.prototype.render = function () {
 
 		if (!this.initialized) {
@@ -515,6 +562,7 @@
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
+				.addClass(node.state.hidden ? 'node-hidden': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
@@ -695,7 +743,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}.treeview .node-hidden{display:none;}'
 
 
 	/**
@@ -793,6 +841,22 @@
 	*/
 	Tree.prototype.getEnabled = function () {
 		return this.findNodes('false', 'g', 'state.disabled');
+	};
+
+	/**
+		Returns an array of hidden nodes.
+		@returns {Array} nodes - Hidden nodes
+	*/
+	Tree.prototype.getHidden = function () {
+		return this.findNodes('true', 'g', 'state.hidden');
+	};
+
+	/**
+		Returns an array of shown nodes.
+		@returns {Array} nodes - Shown nodes
+	*/
+	Tree.prototype.getShown = function () {
+		return this.findNodes('false', 'g', 'state.hidden');
 	};
 
 
@@ -1066,6 +1130,72 @@
 	Tree.prototype.toggleNodeDisabled = function (identifiers, options) {
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.setDisabledState(node, !node.state.disabled, options);
+		}, this));
+
+		this.render();
+	};
+
+
+	/**
+		Hide all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.hideAll = function (options) {
+		var identifiers = this.findNodes('false', 'g', 'state.hidden');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, true, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Hide a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.hideNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, true, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Show all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.showAll = function (options) {
+		var identifiers = this.findNodes('true', 'g', 'state.hidden');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, false, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Show a given tree node
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.showNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, false, options);
+		}, this));
+
+		this.render();
+	};
+
+	/**
+		Toggles a nodes hidden state; hiding if shown, showing if hidden.
+		@param {Object|Number} identifiers - A valid node, node id or array of node identifiers
+		@param {optional Object} options
+	*/
+	Tree.prototype.toggleNodeHidden = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, !node.state.hidden, options);
 		}, this));
 
 		this.render();
