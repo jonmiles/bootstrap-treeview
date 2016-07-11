@@ -112,8 +112,9 @@
 			getChecked: $.proxy(this.getChecked, this),
 			getUnchecked: $.proxy(this.getUnchecked, this),
 			getDisabled: $.proxy(this.getDisabled, this),
-			getHidden: $.proxy(this.getHidden, this),
 			getEnabled: $.proxy(this.getEnabled, this),
+			getHidden: $.proxy(this.getHidden, this),
+			getShown: $.proxy(this.getShown, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
