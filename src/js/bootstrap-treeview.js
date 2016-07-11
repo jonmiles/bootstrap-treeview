@@ -600,7 +600,7 @@
 			// Add labels as labels
 			if (_this.options.showLabels && node.labels) {
 				$.each(node.labels, function addLabel(id, label) {
-          treeItem.append($(_this.template.label).addClass("label-" + label.class).append(label.text));
+					treeItem.append($(_this.template.label).addClass("label-" + label.class).append(label.text));
 				});
 			}
 
@@ -701,7 +701,7 @@
 		icon: '<span class="icon"></span>',
 		link: '<a href="#" style="color:inherit;"></a>',
 		badge: '<span class="badge"></span>',
-    label: '<span class="label"></span>',
+		label: '<span class="label"></span>',
 	};
 
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
