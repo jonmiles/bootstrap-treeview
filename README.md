@@ -136,6 +136,11 @@ If you want to do more, here's the full node specification
     selected: true
   },
   tags: ['available'],
+  dataAttr: {
+    target: '#tree'
+  }
+  id: 'something',
+  class: 'special extraordinary'
   nodes: [
     {},
     ...
@@ -209,6 +214,22 @@ Whether or not a node is selected.
 `Array of Strings`  `Optional`
 
 Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges)
+
+#### dataAttr
+`Array of Objects`  `Optional`
+
+List of per-node HTML `data-` attributes to append.
+
+#### class
+`String`  `Optional`
+
+List of custom CSS classes to append, separated by space.
+
+#### id
+`String`  `Optional`
+
+Custom HTML id attribute.
+
 
 ### Extendible
 
