@@ -795,7 +795,7 @@
 		}
 
 		// Add checkable icon
-		if (this._options.showCheckbox) {
+		if (this._options.showCheckbox && (node.hideCheckbox === undefined || node.hideCheckbox === false)) {
 			node.$el
 				.append($(this._template.icon)
 					.addClass('check-icon')
