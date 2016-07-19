@@ -55,6 +55,7 @@
 		showBorder: true,
 		showIcon: true,
 		showCheckbox: false,
+		checkboxFirst: false,
 		showTags: false,
 		multiSelect: false,
 		preventUnselect: false,
@@ -785,21 +786,13 @@
 				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
 			);
 
-		// Add node icon
-		if (this._options.showIcon) {
-			node.$el
-				.append($(this._template.icon)
-					.addClass('node-icon')
-					.addClass(node.icon || this._options.nodeIcon)
-				);
-		}
-
-		// Add checkable icon
-		if (this._options.showCheckbox) {
-			node.$el
-				.append($(this._template.icon)
-					.addClass('check-icon')
-				);
+		// Add checkbox and node icons
+		if (this._options.checkboxFirst) {
+			this._addCheckbox(node);
+			this._addIcon(node);
+		} else {
+			this._addIcon(node);
+			this._addCheckbox(node);
 		}
 
 		// Add text
@@ -826,6 +819,27 @@
 		// Trigger nodeRendered event
 		this._triggerEvent('nodeRendered', node, _default.options);
 	};
+
+	// Add checkable icon
+	Tree.prototype._addCheckbox = function (node) {
+		if (this._options.showCheckbox) {
+			node.$el
+				.append($(this._template.icon)
+					.addClass('check-icon')
+				);
+		}
+	}
+
+	// Add node icon
+	Tree.prototype._addIcon = function (node) {
+		if (this._options.showIcon) {
+			node.$el
+				.append($(this._template.icon)
+					.addClass('node-icon')
+					.addClass(node.icon || this._options.nodeIcon)
+				);
+		}
+	}
 
 	// Creates a new node element from template and
 	// ensures the template is inserted at the correct position
