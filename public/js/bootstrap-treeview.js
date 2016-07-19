@@ -771,6 +771,21 @@
 			node.$el.empty();
 		}
 
+		// Append .classes to the node
+		node.$el.addClass(node.class);
+
+		// Set the #id of the node if specified
+		if (node.id) {
+			node.$el.attr('id', node.id);
+		}
+
+		// Append custom data- attributes to the node
+		if (node.dataAttr) {
+			$.each(node.dataAttr, function (key, value) {
+				node.$el.attr('data-' + key, value);
+			});
+		}
+
 		// Set / update nodeid; it can change as a result of addNode etc.
 		node.$el.attr('data-nodeId', node.nodeId);
 
