@@ -266,6 +266,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the border color for the component; set showBorder to false if you don't want a visible border.
 
+#### checkboxFirst
+Boolean. Default: false
+
+Swaps the node icon with the checkbox, used in conjunction with showCheckbox.
+
 #### checkedIcon
 String, class names(s).  Default: "glyphicon glyphicon-check" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
