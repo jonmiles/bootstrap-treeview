@@ -125,6 +125,7 @@ If you want to do more, here's the full node specification
 {
   text: "Node 1",
   icon: "glyphicon glyphicon-stop",
+  image: "something.png",
   selectedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
   backColor: "#FFFFFF",
@@ -156,6 +157,11 @@ The text value displayed for a given tree node, typically to the right of the no
 `String` `Optional`
 
 The icon displayed on a given node, typically to the left of the text.
+
+#### image
+`String` `Optional`
+
+The image displayed on a given node, overrides the icon.
 
 For simplicity we directly leverage [Bootstraps Glyphicons support](http://getbootstrap.com/components/#glyphicons) and as such you should provide both the base class and individual icon class separated by a space.  
 
@@ -365,6 +371,12 @@ Whether or not to display checkboxes on nodes.
 Boolean.  Default: true
 
 Whether or not to display a nodes icon.
+
+#### showImage
+Boolean.  Default: false
+
+Whether or not to display a nodes image instead of the icon.
+
 
 #### showTags
 Boolean.  Default: false

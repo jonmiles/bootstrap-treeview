@@ -39,3 +39,14 @@
 .treeview .node-hidden {
 	display: none;
 }
+
+.treeview span.image {
+  display: inline-block;
+  width: 12px;
+  height: 1.19em;
+  vertical-align: middle;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-right: 5px;
+  line-height: 1em;
+}
