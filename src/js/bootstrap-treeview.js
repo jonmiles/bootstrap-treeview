@@ -39,6 +39,7 @@
 		nodeIcon: '',
 		selectedIcon: '',
 		checkedIcon: 'glyphicon glyphicon-check',
+		partiallyCheckedIcon: 'glyphicon glyphicon-expand',
 		uncheckedIcon: 'glyphicon glyphicon-unchecked',
 
 		color: undefined,
@@ -58,6 +59,8 @@
 		showTags: false,
 		multiSelect: false,
 		preventUnselect: false,
+		hierarchicalCheck: false,
+		propagateCheckEvent: false,
 
 		// Event handlers
 		onLoading: undefined,
@@ -390,6 +393,10 @@
 				node.state.checked = false;
 			}
 
+			if (this._options.hierarchicalCheck && node.state.checked === 'undefined') {
+				node.state.checked = undefined;
+			}
+
 			// set enabled state; unless set always false
 			if (!node.state.hasOwnProperty('disabled')) {
 				node.state.disabled = false;
@@ -634,6 +641,47 @@
 
 	Tree.prototype._toggleChecked = function (node, options) {
 		if (!node) return;
+
+		if (this._options.hierarchicalCheck) {
+			// Event propagation to the parent/child nodes
+			var childOptions = $.extend({}, options, {silent: options.silent || !this._options.propagateCheckEvent});
+
+			var state, currentNode = node;
+			// Temporarily swap the tree state
+			node.state.checked = !node.state.checked;
+
+			// Iterate through each parent node
+			while (currentNode = this._nodes[currentNode.parentId]) {
+
+				// Calculate the state
+				state = currentNode.nodes.reduce(function (acc, curr) {
+					return (acc === curr.state.checked) ? acc : undefined;
+				}, currentNode.nodes[0].state.checked);
+
+				// Set the state
+				this._setChecked(currentNode, state, childOptions);
+			}
+
+			if (node.nodes && node.nodes.length > 0) {
+				// Copy the content of the array
+				var child, children = node.nodes.slice();
+				// Iterate through each child node
+				while (children && children.length > 0) {
+					child = children.pop();
+
+					// Set the state
+					this._setChecked(child, node.state.checked, childOptions);
+
+					// Append children to the end of the list
+					if (child.nodes && child.nodes.length > 0) {
+						children = children.concat(child.nodes.slice());
+					}
+				}
+			}
+			// Swap back the tree state
+			node.state.checked = !node.state.checked;
+		}
+
 		this._setChecked(node, !node.state.checked, options);
 	};
 
@@ -650,25 +698,43 @@
 
 			// Set element
 			if (node.$el) {
-				node.$el.addClass('node-checked');
+				node.$el.addClass('node-checked').removeClass('node-checked-partial');
 				node.$el.children('span.check-icon')
 					.removeClass(this._options.uncheckedIcon)
+					.removeClass(this._options.partiallyCheckedIcon)
 					.addClass(this._options.checkedIcon);
 			}
 
 			// Optionally trigger event
 			this._triggerEvent('nodeChecked', node, options);
 		}
-		else {
+		else if (state === undefined && this._options.hierarchicalCheck) {
+
+			// Set node state to partially checked
+			node.state.checked = undefined;
+
+			// Set element
+			if (node.$el) {
+				node.$el.addClass('node-checked-partial').removeClass('node-checked');
+				node.$el.children('span.check-icon')
+					.removeClass(this._options.uncheckedIcon)
+					.removeClass(this._options.checkedIcon)
+					.addClass(this._options.partiallyCheckedIcon);
+			}
+
+			// Optionally trigger event, partially checked is technically unchecked
+			this._triggerEvent('nodeUnchecked', node, options);
+		} else {
 
 			// Set node state to unchecked
 			node.state.checked = false;
 
 			// Set element
 			if (node.$el) {
-				node.$el.removeClass('node-checked');
+				node.$el.removeClass('node-checked node-checked-partial');
 				node.$el.children('span.check-icon')
 					.removeClass(this._options.checkedIcon)
+					.removeClass(this._options.partiallyCheckedIcon)
 					.addClass(this._options.uncheckedIcon);
 			}
 
@@ -1405,7 +1471,9 @@
 	Tree.prototype.checkAll = function (options) {
 		options = $.extend({}, _default.options, options);
 
-		var nodes = this._findNodes('false', 'state.checked');
+		var nodes = $.grep(this._orderedNodes, function (node) {
+			return !node.state.checked;
+		});
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, true, options);
 		}, this));
@@ -1435,7 +1503,9 @@
 	Tree.prototype.uncheckAll = function (options) {
 		options = $.extend({}, _default.options, options);
 
-		var nodes = this._findNodes('true', 'state.checked');
+		var nodes = $.grep(this._orderedNodes, function (node) {
+			return node.state.checked || node.state.checked === undefined;
+		});
 		$.each(nodes, $.proxy(function (index, node) {
 			this._setChecked(node, false, options);
 		}, this));
@@ -1660,7 +1730,7 @@
 			return this._getNodeValue(_obj, _attr);
 		}
 		else {
-			if (obj.hasOwnProperty(attr)) {
+			if (obj.hasOwnProperty(attr) && obj[attr] !== undefined) {
 				return obj[attr].toString();
 			}
 			else {

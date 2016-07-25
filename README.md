@@ -291,6 +291,16 @@ String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Boots
 
 Sets the icon to be used on an expandable tree node.
 
+#### hierarchicalCheck
+Boolean.  Default: false
+
+Whether or not to enable hierarchical checking/unchecking of checkboxes.
+
+#### propagateCheckEvent
+Boolean.  Default: false
+
+Whether or not to propagate nodeChecked and nodeUnchecked events to the parent/child nodes, used in conjunction with hierarchicalCheck.
+
 #### highlightSearchResults
 Boolean.  Default: true
 
@@ -320,6 +330,11 @@ Sets the default icon to be used on all nodes, except when overridden on a per n
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
 
 Sets the default background color activated when the users cursor hovers over a node.
+
+#### partiallyCheckedIcon
+String, class names(s).  Default: "glyphicon glyphicon-expand" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be as a partially checked checkbox, used in conjunction with showCheckbox and hierarchicalCheck.
 
 #### preventUnselect
 Boolean.  Default: false
