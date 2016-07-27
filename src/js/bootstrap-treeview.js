@@ -35,6 +35,7 @@
 
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
+		loadingIcon: 'glyphicon glyphicon-hourglass',
 		emptyIcon: 'glyphicon',
 		nodeIcon: '',
 		selectedIcon: '',
@@ -482,7 +483,28 @@
 
 	Tree.prototype._toggleExpanded = function (node, options) {
 		if (!node) return;
-		this._setExpanded(node, !node.state.expanded, options);
+
+		// Lazy-load the child nodes if possible
+		if (typeof(this._options.lazyLoad) === 'function' && node.lazyLoad) {
+			this._lazyLoad(node);
+		} else {
+			this._setExpanded(node, !node.state.expanded, options);
+		}
+	};
+
+	Tree.prototype._lazyLoad = function (node) {
+		// Show a different icon while loading the child nodes
+		node.$el.children('span.expand-icon')
+			.removeClass(this._options.expandIcon)
+			.addClass(this._options.loadingIcon);
+
+		var _this = this;
+		this._options.lazyLoad(node, function (nodes) {
+			// Adding the node will expand its parent automatically
+			_this.addNode(nodes, node);
+		});
+		// Only the first expand should do a lazy-load
+		delete node.lazyLoad;
 	};
 
 	Tree.prototype._setExpanded = function (node, state, options) {
@@ -500,6 +522,7 @@
 			if (node.$el) {
 				node.$el.children('span.expand-icon')
 					.removeClass(this._options.expandIcon)
+					.removeClass(this._options.loadingIcon)
 					.addClass(this._options.collapseIcon);
 			}
 
@@ -782,7 +805,7 @@
 		// Add expand / collapse or empty spacer icons
 		node.$el
 			.append($(this._template.icon)
-				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
+				.addClass(node.nodes || node.lazyLoad ? 'expand-icon' : this._options.emptyIcon)
 			);
 
 		// Add node icon
@@ -1336,6 +1359,10 @@
 		options = $.extend({}, _default.options, options);
 
 		$.each(nodes, $.proxy(function (index, node) {
+			if (typeof(this._options.lazyLoad) === 'function' && node.lazyLoad) {
+				this._lazyLoad(node);
+			}
+
 			this._setExpanded(node, true, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, options.levels-1, options);
