@@ -217,7 +217,7 @@
 
 	Tree.prototype._loadLocalData = function (options, done) {
 		done.resolve((typeof options.data === 'string') ?
-								$.parseJSON(options.data) :
+								JSON.parse(options.data) :
 								$.extend(true, [], options.data));
 	};
 
