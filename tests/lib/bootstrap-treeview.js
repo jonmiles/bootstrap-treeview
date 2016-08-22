@@ -382,6 +382,11 @@
 				node.selectable = true;
 			}
 
+			// if not provided set checkable default value
+			if (!node.hasOwnProperty('checkable')) {
+				node.checkable = true;
+			}
+
 			// where provided we should preserve states
 			node.state = node.state || {};
 
@@ -458,7 +463,9 @@
 			this._toggleExpanded(node, $.extend({}, _default.options));
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			this._toggleChecked(node, $.extend({}, _default.options));
+			if (node.checkable) {
+				this._toggleChecked(node, $.extend({}, _default.options));
+			}
 		}
 		else {
 			if (node.selectable) {
