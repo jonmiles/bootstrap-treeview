@@ -129,6 +129,7 @@ If you want to do more, here's the full node specification
   color: "#000000",
   backColor: "#FFFFFF",
   selectable: true,
+  checkable: true,
   state: {
     checked: true,
     disabled: true,
@@ -180,6 +181,11 @@ The background color used on a given node, overrides global color option.
 `Boolean` `Default: true`
 
 Whether or not a node is selectable in the tree. False indicates the node should act as an expansion heading and will not fire selection events.
+
+#### checkable
+`Boolean` `Default: true`
+
+Whether or not a node is checkable in the tree, used in conjunction with `showCheckbox`.
 
 #### state
 `Object` `Optional`
