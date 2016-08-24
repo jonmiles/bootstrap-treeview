@@ -376,6 +376,10 @@ String, class names(s).  Default: "glyphicon glyphicon-unchecked" as defined by 
 
 Sets the icon to be as an unchecked checkbox, used in conjunction with showCheckbox.
 
+#### wrapNodeText
+Boolean.  Default: false
+
+Whether or not to surround the text of the node with a `<span class='text'>` tag.
 
 
 ## Methods
