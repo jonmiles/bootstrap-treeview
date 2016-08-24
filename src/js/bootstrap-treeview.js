@@ -58,6 +58,7 @@
 		showTags: false,
 		multiSelect: false,
 		preventUnselect: false,
+		wrapNodeText: false,
 
 		// Event handlers
 		onLoading: undefined,
@@ -803,7 +804,13 @@
 		}
 
 		// Add text
-		node.$el.append(node.text);
+		if (this._options.wrapNodeText) {
+			var wrapper = $((this._template.text));
+			node.$el.append(wrapper);
+			wrapper.append(node.text);
+		} else {
+			node.$el.append(node.text);
+		}
 
 		// Add tags as badges
 		if (this._options.showTags && node.tags) {
@@ -955,7 +962,8 @@
 		node: '<li class="list-group-item"></li>',
 		indent: '<span class="indent"></span>',
 		icon: '<span class="icon"></span>',
-		badge: '<span class="badge"></span>'
+		badge: '<span class="badge"></span>',
+		text: '<span class="text"></span>'
 	};
 
 	Tree.prototype._css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
