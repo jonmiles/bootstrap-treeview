@@ -774,6 +774,11 @@
 		// Set / update nodeid; it can change as a result of addNode etc.
 		node.$el.attr('data-nodeId', node.nodeId);
 
+		// Set the tooltip attribute if present
+		if (node.tooltip) {
+			node.$el.attr('title', node.tooltip);
+		}
+
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
 			node.$el.append(this._template.indent);
