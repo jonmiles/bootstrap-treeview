@@ -152,6 +152,11 @@ The following properties are defined to allow node level overrides, such as node
 
 The text value displayed for a given tree node, typically to the right of the nodes icon.
 
+#### tooltip
+`String` `Option`
+
+The tooltip value displayed for a given tree node on mouse hover.
+
 #### icon
 `String` `Optional`
 
