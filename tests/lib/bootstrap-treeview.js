@@ -969,16 +969,16 @@
 		Returns an array of checked nodes.
 		@returns {Array} nodes - Checked nodes
 	*/
-	Tree.prototype.getChecked = function (parentNodeNotAllowed) {
-		return this._findNodes('true', 'g', 'state.checked', parentNodeNotAllowed);
+	Tree.prototype.getChecked = function () {
+		return this._findNodes('true', 'g', 'state.checked');
 	};
 
 	/**
 		Returns an array of unchecked nodes.
 		@returns {Array} nodes - Unchecked nodes
 	*/
-	Tree.prototype.getUnchecked = function (parentNodeNotAllowed) {
-		return this._findNodes('false', 'g', 'state.checked', parentNodeNotAllowed);
+	Tree.prototype.getUnchecked = function () {
+		return this._findNodes('false', 'g', 'state.checked');
 	};
 
 	/**
@@ -1343,17 +1343,12 @@
 		@param {optional String} attribute - Attribute to compare pattern against
 		@return {Array} nodes - Nodes that match your criteria
 	*/
-	Tree.prototype._findNodes = function (pattern, modifier, attribute, parentNodeNotAllowed) {
+	Tree.prototype._findNodes = function (pattern, modifier, attribute) {
 
 		modifier = modifier || 'g';
 		attribute = attribute || 'text';
 
 		return $.grep(this._nodes, $.proxy(function (node) {
-			if (parentNodeNotAllowed) {
-				if (node.nodes) {
-					return false;
-				}
-			}
 			var val = this._getNodeValue(node, attribute);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
