@@ -35,3 +35,7 @@
 	color: silver;
 	cursor: not-allowed;
 }
+
+.treeview .node-hidden {
+	display: none;
+}
