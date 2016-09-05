@@ -1336,6 +1336,8 @@
 		options = $.extend({}, _default.options, options);
 
 		$.each(nodes, $.proxy(function (index, node) {
+			// Do not re-expand already expanded nodes
+			if (node.state.expanded) return;
 			this._setExpanded(node, true, options);
 			if (node.nodes) {
 				this._expandLevels(node.nodes, options.levels-1, options);
