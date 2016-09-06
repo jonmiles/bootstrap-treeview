@@ -176,6 +176,11 @@ The foreground color used on a given node, overrides global color option.
 
 The background color used on a given node, overrides global color option.
 
+#### lazyLoad
+`Boolean` `Default: false`
+
+Adds an expand icon to the node even if it has no children, it calls the lazyLoad() function (described below) upon the first expand.
+
 #### selectable
 `Boolean` `Default: true`
 
@@ -291,6 +296,11 @@ String, class name(s).  Default: "glyphicon glyphicon-plus" as defined by [Boots
 
 Sets the icon to be used on an expandable tree node.
 
+#### loadingIcon
+String, class name(s).  Default: "glyphicon glyphicon-hourglass" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
+
+Sets the icon to be used on an a lazyLoad node before its content gets loaded.
+
 #### highlightSearchResults
 Boolean.  Default: true
 
@@ -300,6 +310,11 @@ Whether or not to highlight search results.
 Boolean.  Default: true
 
 Whether or not to highlight the selected node.
+
+#### lazyLoad
+Function.  Default: undefined
+
+This function is called when a lazyly-loadable node is being expanded for the first time. The node is available as the first argument, while the second argument is a function responsible for passing the loaded data to the renderer. The data needs to be in the same JSON format as specified above.
 
 #### levels
 Integer. Default: 2
