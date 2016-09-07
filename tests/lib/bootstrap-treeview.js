@@ -442,7 +442,20 @@
 	};
 
 	Tree.prototype._sortNodes = function () {
-		return $.map(Object.keys(this._nodes).sort(), $.proxy(function (value, index) {
+		return $.map(Object.keys(this._nodes).sort(function (a, b) {
+			if (a === b) return 0;
+			var a = a.split('.').map(function (level) { return parseInt(level); });
+			var b = b.split('.').map(function (level) { return parseInt(level); });
+
+			var c = Math.max(a.length, b.length);
+			for (var i=0; i<c; i++) {
+				if (a[i] === undefined) return -1;
+				if (b[i] === undefined) return +1;
+				if (a[i] - b[i] > 0) return +1;
+				if (a[i] - b[i] < 0) return -1;
+			};
+
+		}), $.proxy(function (value, index) {
 		  return this._nodes[value];
 		}, this));
 	};
