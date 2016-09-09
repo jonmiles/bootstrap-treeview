@@ -173,6 +173,9 @@
 
 		this._options = $.extend({}, _default.settings, options);
 
+		// Cache empty icon DOM template
+		this._template.icon.empty.addClass(this._options.emptyIcon);
+
 		this._destroy();
 		this._subscribeEvents();
 
@@ -741,7 +744,7 @@
 		if (!this._initialized) {
 
 			// Setup first time only components
-			this.$wrapper = $(this._template.tree);
+			this.$wrapper = this._template.tree.clone();
 			this.$element.empty()
 				.addClass(pluginName)
 				.append(this.$wrapper);
@@ -776,20 +779,19 @@
 
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
-			node.$el.append(this._template.indent);
+			node.$el.append(this._template.indent.clone());
 		}
 
 		// Add expand / collapse or empty spacer icons
 		node.$el
-			.append($(this._template.icon)
-				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
+			.append(
+				node.nodes ? this._template.icon.expand.clone() : this._template.icon.empty.clone()
 			);
 
 		// Add node icon
 		if (this._options.showIcon) {
 			node.$el
-				.append($(this._template.icon)
-					.addClass('node-icon')
+				.append(this._template.icon.node.clone()
 					.addClass(node.icon || this._options.nodeIcon)
 				);
 		}
@@ -797,9 +799,7 @@
 		// Add checkable icon
 		if (this._options.showCheckbox) {
 			node.$el
-				.append($(this._template.icon)
-					.addClass('check-icon')
-				);
+				.append(this._template.icon.check.clone());
 		}
 
 		// Add text
@@ -809,7 +809,7 @@
 		if (this._options.showTags && node.tags) {
 			$.each(node.tags, $.proxy(function addTag(id, tag) {
 				node.$el
-					.append($(this._template.badge)
+					.append(this._template.badge.clone()
 						.append(tag)
 					);
 			}, this));
@@ -830,14 +830,12 @@
 	// Creates a new node element from template and
 	// ensures the template is inserted at the correct position
 	Tree.prototype._newNodeEl = function (node, previousNode) {
-		var $el = $(this._template.node);
+		var $el = this._template.node.clone();
 
 		if (previousNode) {
 			// typical usage, as nodes are rendered in
 			// sort order we add after the previous element
-			this.$wrapper.children()
-				.eq(previousNode.$el.index())
-				.after($el);
+			previousNode.$el.after($el);
 		} else {
 			// we use prepend instead of append,
 			// to cater for root inserts i.e. nodeId 0.0
@@ -951,11 +949,16 @@
 	};
 
 	Tree.prototype._template = {
-		tree: '<ul class="list-group"></ul>',
-		node: '<li class="list-group-item"></li>',
-		indent: '<span class="indent"></span>',
-		icon: '<span class="icon"></span>',
-		badge: '<span class="badge"></span>'
+		tree: $('<ul class="list-group"></ul>'),
+		node: $('<li class="list-group-item"></li>'),
+		indent: $('<span class="indent"></span>'),
+		icon: {
+			node: $('<span class="icon node-icon"></span>'),
+			expand: $('<span class="icon expand-icon"></span>'),
+			check: $('<span class="icon check-icon"></span>'),
+			empty: $('<span class="icon"></span>')
+		},
+		badge: $('<span class="badge"></span>')
 	};
 
 	Tree.prototype._css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
