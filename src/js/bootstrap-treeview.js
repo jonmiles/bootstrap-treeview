@@ -835,9 +835,7 @@
 		if (previousNode) {
 			// typical usage, as nodes are rendered in
 			// sort order we add after the previous element
-			this.$wrapper.children()
-				.eq(previousNode.$el.index())
-				.after($el);
+			previousNode.$el.after($el);
 		} else {
 			// we use prepend instead of append,
 			// to cater for root inserts i.e. nodeId 0.0
