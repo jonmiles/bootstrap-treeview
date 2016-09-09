@@ -173,6 +173,9 @@
 
 		this._options = $.extend({}, _default.settings, options);
 
+		// Cache empty icon DOM template
+		this._template.icon.empty.addClass(this._options.emptyIcon);
+
 		this._destroy();
 		this._subscribeEvents();
 
@@ -781,15 +784,14 @@
 
 		// Add expand / collapse or empty spacer icons
 		node.$el
-			.append(this._template.icon.clone()
-				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
+			.append(
+				node.nodes ? this._template.icon.expand.clone() : this._template.icon.empty.clone()
 			);
 
 		// Add node icon
 		if (this._options.showIcon) {
 			node.$el
-				.append(this._template.icon.clone()
-					.addClass('node-icon')
+				.append(this._template.icon.node.clone()
 					.addClass(node.icon || this._options.nodeIcon)
 				);
 		}
@@ -797,9 +799,7 @@
 		// Add checkable icon
 		if (this._options.showCheckbox) {
 			node.$el
-				.append(this._template.icon.clone()
-					.addClass('check-icon')
-				);
+				.append(this._template.icon.check.clone());
 		}
 
 		// Add text
@@ -952,7 +952,12 @@
 		tree: $('<ul class="list-group"></ul>'),
 		node: $('<li class="list-group-item"></li>'),
 		indent: $('<span class="indent"></span>'),
-		icon: $('<span class="icon"></span>'),
+		icon: {
+			node: $('<span class="icon node-icon"></span>'),
+			expand: $('<span class="icon expand-icon"></span>'),
+			check: $('<span class="icon check-icon"></span>'),
+			empty: $('<span class="icon"></span>')
+		},
 		badge: $('<span class="badge"></span>')
 	};
 
