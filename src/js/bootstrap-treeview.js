@@ -442,7 +442,32 @@
 	};
 
 	Tree.prototype._sortNodes = function () {
-		return $.map(Object.keys(this._nodes).sort(), $.proxy(function (value, index) {
+	    var baseKeys = [];
+	    var keys = [];
+	    $.each(Object.keys(this._nodes), function (i, v) {
+	        if (v.split('.').length == 2) {
+	            baseKeys.push(v);
+	        }
+
+	    })
+
+	    var baseNodes = $.map(baseKeys.sort(), $.proxy(function (value, index) {
+	        return this._nodes[value];
+	    }, this));
+
+	    var addKeys = function (nodes) {
+	        $.each(nodes, function (i, v) {
+	            keys.push(v.nodeId);
+	            if (v.nodes != undefined && v.nodes.length > 0) {
+	                addKeys(v.nodes);
+	            }
+	        })
+	    }
+
+	    addKeys(baseNodes);
+
+
+		return $.map(keys, $.proxy(function (value, index) {
 		  return this._nodes[value];
 		}, this));
 	};
@@ -487,9 +512,22 @@
 
 	Tree.prototype._setExpanded = function (node, state, options) {
 
-		// We never pass options when rendering, so the only time
+	   
+	    
+	   
+	   
+
+
+	    // We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
 		if (options && state === node.state.expanded) return;
+		if (node.expandedIcon || state == false) {
+		    node.$el.children('span.node-icon')
+                .removeClass(node.expandedIcon)
+                .addClass(node.icon || this._options.nodeIcon);
+		}
+
+
 
 		if (state && node.nodes) {
 
@@ -509,7 +547,13 @@
 					this._setVisible(node, true, options);
 				}, this));
 			}
-
+			if (node.expandedIcon ) {
+			    
+			    node.$el.children('span.node-icon')
+                    .removeClass(node.icon || this._options.nodeIcon || node.selectedIcon)
+                    .addClass(node.expandedIcon);
+			    
+			}
 			// Optionally trigger event
 			this._triggerEvent('nodeExpanded', node, options);
 		}
@@ -572,6 +616,7 @@
 
 	Tree.prototype._setSelected = function (node, state, options) {
 
+	   
 		// We never pass options when rendering, so the only time
 		// we need to validate state is from user interaction
 		if (options && (state === node.state.selected)) return;
@@ -594,7 +639,7 @@
 
 				if (node.selectedIcon || this._options.selectedIcon) {
 					node.$el.children('span.node-icon')
-						.removeClass(node.icon || this._options.nodeIcon)
+						.removeClass(node.icon || this._options.nodeIcon || node.expandedIcon)
 						.addClass(node.selectedIcon || this._options.selectedIcon);
 				}
 			}
@@ -763,12 +808,26 @@
 	Tree.prototype._renderNode = function (node, previousNode) {
 		if (!node) return;
 
+	    var isNew = false;
+	    var text;
+
 		if (!node.$el) {
 			node.$el = this._newNodeEl(node, previousNode)
 				.addClass('node-' + this._elementId);
+		    isNew = true;
+			text = $("<span class='node-text'></span>");
+		    text.append(node.text);
 		}
 		else {
-			node.$el.empty();
+		    node.$el.find(".node-icon").remove();
+		    node.$el.find(".expand-icon").remove();
+            node.$el.find(".check-icon").remove();
+		    node.$el.find(".indent").remove()
+		    node.$el.find(".badge").remove()
+		    text = node.$el.find(".node-text");
+		    // return;
+		    //	node.$el.empty();
+
 		}
 
 		// Set / update nodeid; it can change as a result of addNode etc.
@@ -784,32 +843,37 @@
 			.append($(this._template.icon)
 				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
 			);
-
-		// Add node icon
-		if (this._options.showIcon) {
-			node.$el
-				.append($(this._template.icon)
-					.addClass('node-icon')
-					.addClass(node.icon || this._options.nodeIcon)
-				);
-		}
-
-		// Add checkable icon
+// Add checkable icon
 		if (this._options.showCheckbox) {
 			node.$el
 				.append($(this._template.icon)
 					.addClass('check-icon')
 				);
 		}
+		// Add node icon
+		if (this._options.showIcon) {
 
-		// Add text
-		node.$el.append(node.text);
 
-		// Add tags as badges
+		    node.$el
+                .append($(this._template.icon)
+                    .addClass('node-icon')
+                    .addClass(node.icon || this._options.nodeIcon)
+                );
+
+		}
+
+		
+
+	    // Add text
+	    //if (isNew == true) {
+	        node.$el.append(text);
+	    //}
+
+	    // Add tags as badges
 		if (this._options.showTags && node.tags) {
 			$.each(node.tags, $.proxy(function addTag(id, tag) {
-				node.$el
-					.append($(this._template.badge)
+			    text
+					.after($(this._template.badge)
 						.append(tag)
 					);
 			}, this));

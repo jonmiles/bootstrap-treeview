@@ -126,6 +126,7 @@ If you want to do more, here's the full node specification
   text: "Node 1",
   icon: "glyphicon glyphicon-stop",
   selectedIcon: "glyphicon glyphicon-stop",
+  expandedIcon: "glyphicon glyphicon-stop",
   color: "#000000",
   backColor: "#FFFFFF",
   selectable: true,
@@ -165,6 +166,11 @@ By providing the base class you retain full control over the icons used.  If you
 `String` `Optional`
 
 The icon displayed on a given node when selected, typically to the left of the text.
+
+#### expandedIcon
+`String` `Optional`
+
+The icon displayed on a given node when expanded, typically to the left of the text.This is diffrent from the expandIcon on the options that will dispaly in addition to this icon. this will change the orginal nodes icon when expanded.
 
 #### color
 `String` `Optional`
