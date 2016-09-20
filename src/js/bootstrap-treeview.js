@@ -843,7 +843,13 @@
 			.append($(this._template.icon)
 				.addClass(node.nodes ? 'expand-icon' : this._options.emptyIcon)
 			);
-
+// Add checkable icon
+		if (this._options.showCheckbox) {
+			node.$el
+				.append($(this._template.icon)
+					.addClass('check-icon')
+				);
+		}
 		// Add node icon
 		if (this._options.showIcon) {
 
@@ -856,13 +862,7 @@
 
 		}
 
-		// Add checkable icon
-		if (this._options.showCheckbox) {
-			node.$el
-				.append($(this._template.icon)
-					.addClass('check-icon')
-				);
-		}
+		
 
 	    // Add text
 	    //if (isNew == true) {
