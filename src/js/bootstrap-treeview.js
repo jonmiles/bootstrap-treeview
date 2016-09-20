@@ -821,7 +821,7 @@
 		else {
 		    node.$el.find(".node-icon").remove();
 		    node.$el.find(".expand-icon").remove();
-            
+            node.$el.find(".check-icon").remove();
 		    node.$el.find(".indent").remove()
 		    node.$el.find(".badge").remove()
 		    text = node.$el.find(".node-text");
