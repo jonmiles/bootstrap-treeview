@@ -517,20 +517,20 @@ Triggers `nodeCollapsed` event; pass silent to suppress events.
 Disable all tree nodes
 
 ```javascript
-$('#tree').treeview('disableAll', { silent: true });
+$('#tree').treeview('disableAll', { silent: true, keepState: true });
 ```
 
-Triggers `nodeDisabled` event; pass silent to suppress events.
+Triggers `nodeDisabled` event; pass silent to suppress events and keepState to keep the expanded/checked/selected state.
 
 #### disableNode(nodes, options)
 
 Disable given tree nodes.
 
 ```javascript
-$('#tree').treeview('disableNode', [ nodes, { silent: true } ]);
+$('#tree').treeview('disableNode', [ nodes, { silent: true, keepState: true } ]);
 ```
 
-Triggers `nodeDisabled` event; pass silent to suppress events.
+Triggers `nodeDisabled` event; pass silent to suppress events and keepState to keep the expanded/checked/selected state.
 
 #### enableAll(options)
 
