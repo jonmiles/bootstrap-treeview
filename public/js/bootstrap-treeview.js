@@ -689,9 +689,11 @@
 			node.state.disabled = true;
 
 			// Disable all other states
-			this._setSelected(node, false, options);
-			this._setChecked(node, false, options);
-			this._setExpanded(node, false, options);
+			if (options && !options.keepState) {
+				this._setSelected(node, false, options);
+				this._setChecked(node, false, options);
+				this._setExpanded(node, false, options);
+			}
 
 			// Set element
 			if (node.$el) {
