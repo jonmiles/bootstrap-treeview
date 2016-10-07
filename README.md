@@ -326,6 +326,11 @@ Boolean.  Default: false
 
 Whether or not a node can be unselected without another node first being selected.
 
+#### allowReselect
+Boolean.  Default: false
+
+Whether or not a node can be reselected when its already selected, used in conjunction with preventUnselect.
+
 #### selectedIcon
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
