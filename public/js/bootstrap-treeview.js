@@ -58,6 +58,7 @@
 		showTags: false,
 		multiSelect: false,
 		preventUnselect: false,
+		allowReselect: false,
 
 		// Event handlers
 		onLoading: undefined,
@@ -608,6 +609,10 @@
 			if (this._options.preventUnselect &&
 					(options && !options.unselecting) &&
 					(this._findNodes('true', 'state.selected').length === 1)) {
+				// Fire the nodeSelected event if reselection is allowed
+				if (this._options.allowReselect) {
+					this._triggerEvent('nodeSelected', node, options);
+				}
 				return this;
 			}
 
