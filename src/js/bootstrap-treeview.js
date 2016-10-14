@@ -112,6 +112,7 @@
 			getUnchecked: $.proxy(this.getUnchecked, this),
 			getDisabled: $.proxy(this.getDisabled, this),
 			getEnabled: $.proxy(this.getEnabled, this),
+			getAllNodes: $.proxy(this.getAllNodes, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -794,7 +795,17 @@
 	Tree.prototype.getEnabled = function () {
 		return this.findNodes('false', 'g', 'state.disabled');
 	};
-
+	
+	/**
+		Returns an array of all nodes.
+		This can be used to deep-clone a tree.
+		@returns {Array} nodes - All nodes of this tree
+	*/
+    Tree.prototype.getAllNodes = function () {
+		return this.nodes.filter(function (e) {
+		    return (e.nodes !== undefined) && (e.parentId === undefined);
+		});
+	};
 
 	/**
 		Set a node state to selected
