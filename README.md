@@ -176,6 +176,16 @@ The foreground color used on a given node, overrides global color option.
 
 The background color used on a given node, overrides global color option.
 
+#### selectedColor
+`String` `Optional`
+
+The foreground color used on a given selected node, overrides global selectedColor option.
+
+#### selectedBackColor
+`String` `Optional`
+
+The background color used on a given selected node, overrides global selectedBackColor option.
+
 #### selectable
 `Boolean` `Default: true`
 
