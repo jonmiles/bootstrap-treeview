@@ -945,6 +945,18 @@
 				}
 				style += '.node-' + this._elementId + '[data-nodeId="' + node.nodeId + '"]{' + innerStyle + '}';
 			}
+			
+			if (node.selectedColor || node.selectedBackColor) {
+				var innerStyle = '';
+				if (node.selectedColor) {
+					innerStyle += 'color:' + node.selectedColor + ';';
+				}
+				if (node.selectedBackColor) {
+					innerStyle += 'background-color:' + node.selectedBackColor + ';';
+				}
+				style += '.node-' + this._elementId + '.node-selected[data-nodeId="' + node.nodeId + '"]{' + innerStyle + '}';
+				style += '.node-' + this._elementId + '.node-selected:hover[data-nodeId="' + node.nodeId + '"]{' + innerStyle + '}';
+			}
 		}, this));
 
 		return this._css + style;
