@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jonmiles/bootstrap-treeview.git"
+    "url": "git://github.com/csgsolutions/bootstrap-treeview.git"
   },
   "bugs": {
-    "url": "https://github.com/jonmiles/bootstrap-treeview/issues"
+    "url": "https://github.com/csgsolutions/bootstrap-treeview/issues"
   },
   "licenses": [
     {
       "type": "Apache",
-      "url": "https://github.com/jonmiles/bootstrap-treeview/blob/master/LICENSE"
+      "url": "https://github.com/csgsolutions/bootstrap-treeview/blob/master/LICENSE"
     }
   ],
   "main": [
