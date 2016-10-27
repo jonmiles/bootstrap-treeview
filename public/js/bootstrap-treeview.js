@@ -328,6 +328,15 @@
 		var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
 		
+		var clickEvent = jQuery.Event("nodeClicked", {
+			target: event.target,			
+		});
+		this.$element.trigger(clickEvent, $.extend(true, {}, node));
+		
+		if (clickEvent.isDefaultPrevented()){
+			return;
+		}
+		
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
