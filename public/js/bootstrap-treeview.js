@@ -1,5 +1,5 @@
 /* =========================================================
- * bootstrap-treeview.js v1.2.1
+ * bootstrap-treeview.js v1.2.2
  * =========================================================
  * 
  * Fork of bootstrap-treeview by Jonathan Miles by CSG
