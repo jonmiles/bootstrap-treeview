@@ -1,5 +1,5 @@
 /* =========================================================
- * bootstrap-treeview.js v1.2.2
+ * bootstrap-treeview.js v1.2.3
  * =========================================================
  * 
  * Fork of bootstrap-treeview by Jonathan Miles by CSG
@@ -195,6 +195,7 @@
 	Tree.prototype.unsubscribeEvents = function () {
 
 		this.$element.off('click');
+		this.$element.off('nodeClicked');
 		this.$element.off('nodeChecked');
 		this.$element.off('nodeCollapsed');
 		this.$element.off('nodeDisabled');
