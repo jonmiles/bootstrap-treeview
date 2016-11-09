@@ -547,7 +547,7 @@
 
 
 			// Add node icon
-			if (_this.options.showIcon) {
+			if (_this.options.showIcon && !node.nodes) {
 				
 				var classList = ['node-icon'];
 
