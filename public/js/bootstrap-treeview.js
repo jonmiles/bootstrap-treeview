@@ -630,7 +630,9 @@
 			if (this.options.selectedColor) {
 				color = this.options.selectedColor;
 			}
-			if (this.options.selectedBackColor) {
+			if (node.selectedBackColor) {
+				backColor = node.selectedBackColor;
+			} else if (this.options.selectedBackColor) {
 				backColor = this.options.selectedBackColor;
 			}
 		}
