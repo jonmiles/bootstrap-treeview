@@ -627,10 +627,14 @@
 		var backColor = node.backColor;
 
 		if (this.options.highlightSelected && node.state.selected) {
-			if (this.options.selectedColor) {
+			if (node.selectedColor) {
+				color = node.selectedColor;
+			}else if (this.options.selectedColor) {
 				color = this.options.selectedColor;
 			}
-			if (this.options.selectedBackColor) {
+			if (node.selectedBackColor) {
+				backColor = node.selectedBackColor;
+			} else if (this.options.selectedBackColor) {
 				backColor = this.options.selectedBackColor;
 			}
 		}
