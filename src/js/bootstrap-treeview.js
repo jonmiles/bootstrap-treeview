@@ -519,6 +519,13 @@
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
+			
+			//Add data attributes
+			if (node.dataAttributes) {
+			    $.each(node.dataAttributes, function addDataAttibutes(key, value) {
+			        treeItem.attr("data-" + key, value);
+			    });
+			}
 
 			// Add indent/spacer to mimic tree structure
 			for (var i = 0; i < (level - 1); i++) {
