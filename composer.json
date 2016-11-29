@@ -8,19 +8,5 @@
         {
             "name": "Jonathan Miles"
         }
-    ],
-    "require": {
-        "components/bootstrap": ">=3.0.0",
-        "components/jquery": ">=1.9.0"
-    },
-    "extra": {
-        "component": {
-            "scripts": [
-                "dist/bootstrap-treeview.min.js"
-            ],
-            "files": [
-                "dist/bootstrap-treeview.min.css"
-            ]
-        }
-    }
+    ]
 }
