@@ -1680,6 +1680,9 @@
 	$.fn[pluginName] = function (options, args) {
 
 		var result;
+		if (this.length == 0) {
+			throw "No element has been found!";
+		}
 
 		this.each(function () {
 			var _this = $.data(this, pluginName);
