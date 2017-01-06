@@ -317,6 +317,11 @@ String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal
 
 Sets the default background color activated when the users cursor hovers over a node.
 
+#### readOnly
+Boolean. Default: false.
+
+Sets the entire tree to readOnly. This mode is visually similar to disabled, with grey font and "not allowed" cursor styling by default, while still allowing for the tree to be expanded, show search matches, and/or have a node selected upon loading. The tree may continue to be interacted with programatically; however, click events will be ignored.
+
 #### selectedIcon
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
 
