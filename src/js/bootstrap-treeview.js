@@ -552,7 +552,7 @@
 			// Add node icon
 			if (_this.options.showIcon) {
 				
-				var classList = ['node-icon'];
+				classList = ['node-icon'];
 
 				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
@@ -570,7 +570,7 @@
 			// Add check / unchecked icon
 			if (_this.options.showCheckbox) {
 
-				var classList = ['check-icon'];
+				classList = ['check-icon'];
 				if (node.state.checked) {
 					classList.push(_this.options.checkedIcon); 
 				}
@@ -698,7 +698,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}.treeview .node-readonly{color:silver;cursor:not-allowed}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}.treeview .node-readonly{color:silver;cursor:not-allowed}';
 
 
 	/**
@@ -923,7 +923,7 @@
 			while (parentNode) {
 				this.setExpandedState(parentNode, true, options);
 				parentNode = this.getParent(parentNode);
-			};
+			}
 		}, this));
 
 		this.render();
@@ -1130,7 +1130,7 @@
 			// and when identifying result to be cleared
 			$.each(results, function (index, node) {
 				node.searchResult = true;
-			})
+			});
 		}
 
 		// If revealResults, then render is triggered from revealNode
