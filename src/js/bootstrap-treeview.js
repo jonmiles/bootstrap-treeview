@@ -32,6 +32,8 @@
 		injectStyle: true,
 
 		levels: 2,
+		
+		readOnly: false,
 
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
@@ -320,7 +322,7 @@
 
 		var target = $(event.target);
 		var node = this.findNode(target);
-		if (!node || node.state.disabled) return;
+		if (!node || node.state.disabled || this.options.readOnly) return;
 		
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
@@ -515,6 +517,7 @@
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
+        			.addClass(_this.options.readOnly ? 'node-readonly' : '')
 				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
@@ -582,7 +585,7 @@
 			}
 
 			// Add text
-			if (_this.options.enableLinks) {
+			if (_this.options.enableLinks && !_this.options.readOnly) {
 				// Add hyperlink
 				treeItem
 					.append($(_this.template.link)
@@ -695,7 +698,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}.treeview .node-readonly{color:silver;cursor:not-allowed}'
 
 
 	/**
