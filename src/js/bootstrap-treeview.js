@@ -1115,7 +1115,8 @@
 		if (pattern && pattern.length > 0) {
 
 			if (options.exactMatch) {
-				pattern = '^' + pattern + '$';
+				// need to escape special characters potentially in the node value  
+        			pattern = '^' + pattern.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$';
 			}
 
 			var modifier = 'g';
