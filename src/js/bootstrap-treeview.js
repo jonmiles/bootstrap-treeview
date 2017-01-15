@@ -55,6 +55,7 @@
 		highlightSearchResults: true,
 		showBorder: true,
 		showIcon: true,
+                showLeafIconOnly: true,
 		showCheckbox: false,
 		showTags: false,
 		multiSelect: false,
@@ -528,28 +529,37 @@
 
 			// Add expand, collapse or empty spacer icons
 			var classList = [];
-			if (node.nodes) {
+			if (node.nodes && node.nodes.length > 0) {
 				classList.push('expand-icon');
 				if (node.state.expanded) {
-					classList.push(_this.options.collapseIcon);
+					classList.push(node.collapseIcon || _this.options.collapseIcon);
 				}
 				else {
-					classList.push(_this.options.expandIcon);
+					classList.push(node.expandIcon || _this.options.expandIcon);
 				}
 			}
 			else {
 				classList.push(_this.options.emptyIcon);
 			}
 
-			treeItem
-				.append($(_this.template.icon)
-					.addClass(classList.join(' '))
-				);
-
+			// only add the 'icon' template if it's not a leaf node
+			if (node.nodes && node.nodes.length > 0) {
+				treeItem
+					.append($(_this.template.icon)
+						.addClass(classList.join(' '))
+					);
+			}
 
 			// Add node icon
-			if (_this.options.showIcon && !node.nodes) {
-				
+			var displayIcon = false;
+			if (_this.options.showLeafIconOnly) {
+				if (!node.nodes || node.nodes.length == 0) {
+					displayIcon = true;
+				}
+			} else if (_this.options.showIcon) {
+				displayIcon = true;
+			}
+			if (displayIcon) {
 				var classList = ['node-icon'];
 
 				classList.push(node.icon || _this.options.nodeIcon);
