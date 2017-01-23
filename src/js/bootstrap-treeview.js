@@ -1184,7 +1184,7 @@
 	    this.nodes.forEach(function(node) {
               if (node.customId == customId) {
                 return node.nodeId;
-              {
+              }
             });
             return undefined;
         };
