@@ -736,6 +736,8 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
+`findNodeIdByCustomIdComplete(event, {nodeId: <id>, customId: <custom id>})` - a node was found
+
 `nodeChecked (event, node)`  - A node is checked.
 
 `nodeCollapsed (event, node)`  - A node is collapsed.

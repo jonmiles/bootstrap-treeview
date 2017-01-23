@@ -1181,12 +1181,18 @@
           @return {number} the node id
         */
 	Tree.prototype.findNodeIdByCustomId = function(customId) {
-	    this.nodes.forEach(function(node) {
-              if (node.customId == customId) {
-                return node.nodeId;
-              }
-            });
-            return undefined;
+		var nodeId = undefined;
+		for (var i = 0; i < this.nodes.length; i++) {
+			if (this.nodes[i].customId == customId) {
+				nodeId = this.nodes[i].nodeId;
+				break;	
+			}
+		}
+
+		this.$element.trigger('findNodeIdByCustomIdComplete', {nodeId: nodeId, customId: customId}); 
+
+
+		return nodeId;
         };
 
 	/**
