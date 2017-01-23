@@ -513,6 +513,15 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### findNodeIdByCustomId(customId)
+
+Find the `nodeId` of a node in the tree whose `customId` matches the given customId. If no match can be
+found then `undefined` is returned.
+
+```javascript
+$('#tree').treeview('findNodeIdByCustomId', 3)
+```
+
 #### getCollapsed()
 
 Returns an array of collapsed nodes e.g. state.expanded = false.

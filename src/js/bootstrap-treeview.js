@@ -143,7 +143,9 @@
 
 			// Search methods
 			search: $.proxy(this.search, this),
-			clearSearch: $.proxy(this.clearSearch, this)
+			clearSearch: $.proxy(this.clearSearch, this),
+                       
+                        findNodeIdByCustomId: $.proxy(this.findNodeIdByCustomId, this)
 		};
 	};
 
@@ -1172,6 +1174,20 @@
 		
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
+
+        /**
+          Find the node that matches the given custom id.
+          @param {Number} customId - the customId property to find
+          @return {number} the node id
+        */
+	Tree.prototype.findNodeIdByCustomId = function(customId) {
+	    this.nodes.forEach(function(node) {
+              if (node.customId == customId) {
+                return node.nodeId;
+              {
+            });
+            return undefined;
+        };
 
 	/**
 		Find nodes that match a given criteria
