@@ -41,6 +41,8 @@
 		checkedIcon: 'glyphicon glyphicon-check',
 		uncheckedIcon: 'glyphicon glyphicon-unchecked',
 
+		template: {},
+
 		color: undefined, // '#000000',
 		backColor: undefined, // '#FFFFFF',
 		borderColor: undefined, // '#dddddd',
@@ -159,6 +161,7 @@
 			delete options.data;
 		}
 		this.options = $.extend({}, _default.settings, options);
+		this.template = $.extend(this.template, this.options.template);
 
 		this.destroy();
 		this.subscribeEvents();
@@ -582,7 +585,7 @@
 			}
 
 			// Add text
-			if (_this.options.enableLinks) {
+			if (_this.options.enableLinks && node.href) {
 				// Add hyperlink
 				treeItem
 					.append($(_this.template.link)
