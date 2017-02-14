@@ -136,6 +136,7 @@ If you want to do more, here's the full node specification
     selected: true
   },
   tags: ['available'],
+  hideCheckbox: true,
   nodes: [
     {},
     ...
@@ -209,6 +210,11 @@ Whether or not a node is selected.
 `Array of Strings`  `Optional`
 
 Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges)
+
+#### hideCheckbox
+`Boolean` `Default: false`
+
+Used to hide the checkbox of the given node when [showCheckbox](#showcheckbox) is set to `true`.
 
 ### Extendible
 
