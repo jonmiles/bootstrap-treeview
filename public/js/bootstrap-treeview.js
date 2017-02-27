@@ -1,6 +1,11 @@
 /* =========================================================
- * bootstrap-treeview.js v1.2.0
+ * bootstrap-treeview.js v1.2.3
  * =========================================================
+ * 
+ * Fork of bootstrap-treeview by Jonathan Miles by CSG
+ * Copyright 2016 CSG
+ * Project URL: https://github.com/csgsolutions/bootstrap-treeview
+ * 
  * Copyright 2013 Jonathan Miles
  * Project URL : http://www.jondmiles.com/bootstrap-treeview
  *
@@ -112,6 +117,7 @@
 			getUnchecked: $.proxy(this.getUnchecked, this),
 			getDisabled: $.proxy(this.getDisabled, this),
 			getEnabled: $.proxy(this.getEnabled, this),
+			findNode: $.proxy(this.findNode, this),
 
 			// Select methods
 			selectNode: $.proxy(this.selectNode, this),
@@ -189,6 +195,7 @@
 	Tree.prototype.unsubscribeEvents = function () {
 
 		this.$element.off('click');
+		this.$element.off('nodeClicked');
 		this.$element.off('nodeChecked');
 		this.$element.off('nodeCollapsed');
 		this.$element.off('nodeDisabled');
@@ -321,6 +328,15 @@
 		var target = $(event.target);
 		var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
+		
+		var clickEvent = jQuery.Event("nodeClicked", {
+			target: event.target,			
+		});
+		this.$element.trigger(clickEvent, $.extend(true, {}, node));
+		
+		if (clickEvent.isDefaultPrevented()){
+			return;
+		}
 		
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {

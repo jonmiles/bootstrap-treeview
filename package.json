@@ -1,22 +1,22 @@
 {
   "name": "bootstrap-treeview",
   "description": "Tree View for Twitter Bootstrap",
-  "version": "1.2.0",
+  "version": "1.2.3",
   "homepage": "https://github.com/jonmiles/bootstrap-treeview",
   "author": {
     "name": "Jonathan Miles"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jonmiles/bootstrap-treeview.git"
+    "url": "git://github.com/csgsolutions/bootstrap-treeview.git"
   },
   "bugs": {
-    "url": "https://github.com/jonmiles/bootstrap-treeview/issues"
+    "url": "https://github.com/csgsolutions/bootstrap-treeview/issues"
   },
   "licenses": [
     {
       "type": "Apache",
-      "url": "https://github.com/jonmiles/bootstrap-treeview/blob/master/LICENSE"
+      "url": "https://github.com/csgsolutions/bootstrap-treeview/blob/master/LICENSE"
     }
   ],
   "main": [
