@@ -214,6 +214,12 @@ Whether or not a node is selected.
 #### tags
 `Array of Strings`  `Optional`
 
+#### hideCheckbox
+
+`Boolean` `Default: true`
+
+Used to hide the checkbox of specific node in the tree.
+
 Used in conjunction with global showTags option to add additional information to the right of each node; using [Bootstrap Badges](http://getbootstrap.com/components/#badges)
 
 ### Extendible

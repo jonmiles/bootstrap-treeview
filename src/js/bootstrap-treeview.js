@@ -568,11 +568,12 @@
 			if (_this.options.showCheckbox) {
 
 				var classList = ['check-icon'];
-				if (node.state.checked) {
-					classList.push(_this.options.checkedIcon); 
-				}
-				else {
-					classList.push(_this.options.uncheckedIcon);
+				if(!node.hideCheckbox){
+					if (node.state.checked) {
+						classList.push(_this.options.checkedIcon); 
+					}else {
+						classList.push(_this.options.uncheckedIcon);
+					}
 				}
 
 				treeItem
