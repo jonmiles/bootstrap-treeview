@@ -70,7 +70,8 @@
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
-		onSearchCleared: undefined
+		onSearchCleared: undefined,
+                onFindNodeIdByCustomIdComplete: undefined
 	};
 
 	_default.options = {
@@ -249,6 +250,10 @@
 		if (typeof (this.options.onSearchCleared) === 'function') {
 			this.$element.on('searchCleared', this.options.onSearchCleared);
 		}
+
+                if (typeof (this.options.onFindNodeIdByCustomIdComplete) === 'function') {
+                        this.$element.on('findNodeIdByCustomIdComplete', this.options.onFindNodeIdByCustomIdComplete);
+                }
 	};
 
 	/*
