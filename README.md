@@ -522,6 +522,22 @@ found then `undefined` is returned.
 $('#tree').treeview('findNodeIdByCustomId', 3)
 ```
 
+Triggers `findNodeIdByCustomIdComplete` event.
+
+#### findNodesByCustomIds(customIds)
+
+Find nodes in the tree whose `customId` matches those given in `customIds`. The return value is
+an object with two properties:
+  * `customIds` - the customIds given to the function
+  * `nodesMap` - an object that maps the customId to an array of matching tree nodes (an array is
+     used because its possible one custom id is represented multiple times in the tree).
+
+```javascript
+$('#tree').treeview('findNodesByCustomIds', [3, 4, 5])
+```
+
+Triggers `findNodesByCustomIdsComplete` event.
+
 #### getCollapsed()
 
 Returns an array of collapsed nodes e.g. state.expanded = false.

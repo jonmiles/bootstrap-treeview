@@ -71,7 +71,8 @@
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
 		onSearchCleared: undefined,
-                onFindNodeIdByCustomIdComplete: undefined
+		onFindNodeIdByCustomIdComplete: undefined,
+		onFindNodesByCustomIdsComplete: undefined
 	};
 
 	_default.options = {
@@ -145,8 +146,9 @@
 			// Search methods
 			search: $.proxy(this.search, this),
 			clearSearch: $.proxy(this.clearSearch, this),
-                       
-                        findNodeIdByCustomId: $.proxy(this.findNodeIdByCustomId, this)
+
+			findNodeIdByCustomId: $.proxy(this.findNodeIdByCustomId, this),
+			findNodesByCustomIds: $.proxy(this.findNodesByCustomIds, this),
 		};
 	};
 
@@ -251,9 +253,13 @@
 			this.$element.on('searchCleared', this.options.onSearchCleared);
 		}
 
-                if (typeof (this.options.onFindNodeIdByCustomIdComplete) === 'function') {
-                        this.$element.on('findNodeIdByCustomIdComplete', this.options.onFindNodeIdByCustomIdComplete);
-                }
+    if (typeof (this.options.onFindNodeIdByCustomIdComplete) === 'function') {
+            this.$element.on('findNodeIdByCustomIdComplete', this.options.onFindNodeIdByCustomIdComplete);
+    }
+
+		if (typeof (this.options.onFindNodesByCustomIdsComplete) === 'function') {
+						this.$element.on('findNodesByCustomIdsComplete', this.options.onFindNodesByCustomIdsComplete);
+		}
 	};
 
 	/*
@@ -329,7 +335,7 @@
 		var target = $(event.target);
 		var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
-		
+
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
@@ -337,12 +343,12 @@
 			this.render();
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			
+
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
 		else {
-			
+
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
 			} else {
@@ -524,7 +530,7 @@
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
-				.addClass(node.searchResult ? 'search-result' : '') 
+				.addClass(node.searchResult ? 'search-result' : '')
 				.attr('data-nodeid', node.nodeId)
 				.attr('data-custom-id', node.customId || '')
 				.attr('style', _this.buildStyleOverride(node));
@@ -572,7 +578,7 @@
 				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
 					classList.pop();
-					classList.push(node.selectedIcon || _this.options.selectedIcon || 
+					classList.push(node.selectedIcon || _this.options.selectedIcon ||
 									node.icon || _this.options.nodeIcon);
 				}
 
@@ -587,7 +593,7 @@
 
 				var classList = ['check-icon'];
 				if (node.state.checked) {
-					classList.push(_this.options.checkedIcon); 
+					classList.push(_this.options.checkedIcon);
 				}
 				else {
 					classList.push(_this.options.uncheckedIcon);
@@ -953,7 +959,7 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleExpandedState(node, options);
 		}, this));
-		
+
 		this.render();
 	};
 
@@ -1103,7 +1109,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this.identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
@@ -1174,31 +1180,71 @@
 		});
 
 		if (options.render) {
-			this.render();	
+			this.render();
 		}
-		
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
-        /**
-          Find the node that matches the given custom id.
-          @param {Number} customId - the customId property to find
-          @return {number} the node id
-        */
+  /**
+   * Find the node that matches the given custom id.
+   * @param {Number} customId - the customId property to find
+   * @return {Number} the node id
+   */
 	Tree.prototype.findNodeIdByCustomId = function(customId) {
 		var nodeId = undefined;
 		for (var i = 0; i < this.nodes.length; i++) {
 			if (this.nodes[i].customId == customId) {
 				nodeId = this.nodes[i].nodeId;
-				break;	
+				break;
 			}
 		}
 
-		this.$element.trigger('findNodeIdByCustomIdComplete', {nodeId: nodeId, customId: customId}); 
-
+		this.$element.trigger('findNodeIdByCustomIdComplete', {nodeId: nodeId, customId: customId});
 
 		return nodeId;
-        };
+	};
+
+	/**
+   * Find the nodes that match the given custom ids.
+	 *
+	 * Will fire the 'findNodesByCustomIdsComplete' event when complete. The
+	 * event handler will receive two parameters, the event and the results. The
+	 * results will be an object with two properties: customIds (the ids given
+	 * when performing the find operation) and nodesMap (an object that maps the
+	 * custom id to an array of matching tree node objects).
+	 *
+   * @param {Number[]} customIds - the custom ids to search for
+   * @return {Object} - containing two parameters, 'customIds' and 'nodesMap'.
+   */
+	Tree.prototype.findNodesByCustomIds = function(customIds) {
+		var nodesMap = {};
+		var result = {customIds: customIds, nodesMap: nodesMap;
+
+		if (customIds == undefined || customIds.length == 0) {
+			this.$element.trigger('findNodesByCustomIdsComplete', result);
+			return result;
+		}
+
+		var customId = undefined;
+		var node = undefined;
+		for (var i = 0; i < customIds.length; i++ ) {
+			customId = customIds[i];
+			for (var j = 0; j < this.nodes.length; j++) {
+				node = this.nodes[j];
+
+				if (node.customId == customId) {
+					var matchingNodes = nodesMap[customId] || [];
+					matchingNodes.push(node);
+					nodesMap[customId] = matchingNodes;
+					break;
+				}
+			}
+		}
+
+		this.$element.trigger('findNodesByCustomIdsComplete', result);
+		return result;
+	};
 
 	/**
 		Find nodes that match a given criteria
