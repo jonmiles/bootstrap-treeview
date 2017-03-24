@@ -533,7 +533,9 @@ an object with two properties:
      used because its possible one custom id is represented multiple times in the tree).
 
 ```javascript
-$('#tree').treeview('findNodesByCustomIds', [3, 4, 5])
+// we have to wrap the ids in an array because jQuery treats the arguments as an array
+// of individual arguments and the goal is to pass an entire array
+$('#tree').treeview('findNodesByCustomIds', [[3, 4, 5]]);
 ```
 
 Triggers `findNodesByCustomIdsComplete` event.
