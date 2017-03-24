@@ -527,8 +527,9 @@ Triggers `findNodeIdByCustomIdComplete` event.
 #### findNodesByCustomIds(customIds)
 
 Find nodes in the tree whose `customId` matches those given in `customIds`. The return value is
-an object with two properties:
+an object with three properties:
   * `customIds` - the customIds given to the function
+  * `nodeIds` - the tree node ids of the nodes that matched
   * `nodesMap` - an object that maps the customId to an array of matching tree nodes (an array is
      used because its possible one custom id is represented multiple times in the tree).
 

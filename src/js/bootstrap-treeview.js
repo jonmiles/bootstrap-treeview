@@ -1210,16 +1210,17 @@
 	 *
 	 * Will fire the 'findNodesByCustomIdsComplete' event when complete. The
 	 * event handler will receive two parameters, the event and the results. The
-	 * results will be an object with two properties: customIds (the ids given
-	 * when performing the find operation) and nodesMap (an object that maps the
-	 * custom id to an array of matching tree node objects).
+	 * results will be an object with three properties: customIds (the ids given
+	 * when performing the find operation), nodeIds (an array of matching tree node ids),
+	 * and nodesMap (an object that maps the custom id to an array of matching tree node objects).
 	 *
    * @param {Number[]} customIds - the custom ids to search for
-   * @return {Object} - containing two parameters, 'customIds' and 'nodesMap'.
+   * @return {Object} - containing three parameters, 'customIds', 'nodeIds' and 'nodesMap'.
    */
 	Tree.prototype.findNodesByCustomIds = function(customIds) {
 		var nodesMap = {};
-		var result = {customIds: customIds, nodesMap: nodesMap;
+		var matchingNodeIds = [];
+		var result = {customIds: customIds, nodeIds: matchingNodeIds, nodesMap: nodesMap};
 
 		if (customIds == undefined || customIds.length == 0) {
 			this.$element.trigger('findNodesByCustomIdsComplete', result);
@@ -1237,6 +1238,7 @@
 					var matchingNodes = nodesMap[customId] || [];
 					matchingNodes.push(node);
 					nodesMap[customId] = matchingNodes;
+					matchingNodeIds.push(node.nodeId);
 					break;
 				}
 			}
