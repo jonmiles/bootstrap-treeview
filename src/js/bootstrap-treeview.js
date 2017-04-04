@@ -774,6 +774,13 @@
 		// Set / update nodeid; it can change as a result of addNode etc.
 		node.$el.attr('data-nodeId', node.nodeId);
 
+        // Add data attributes
+		if (node.dataAttributes) {
+            $.each(node.dataAttributes, function (key, value) {
+                node.$el.attr("data-" + key, value);
+            });
+        }
+
 		// Add indent/spacer to mimic tree structure
 		for (var i = 0; i < (node.level - 1); i++) {
 			node.$el.append(this._template.indent);
