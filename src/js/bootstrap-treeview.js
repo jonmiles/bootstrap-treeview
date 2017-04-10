@@ -1230,7 +1230,9 @@
 		targetNodes.splice(node.index, 1, newNode);
 
 		// remove old node from DOM
-		this._removeNodeEl(node);
+		if (node.$el !== newNode.$el) {
+			this._removeNodeEl(node);
+		}
 
 		// initialize new state and render changes
 		this._setInitialStates({nodes: this._tree}, 0)
