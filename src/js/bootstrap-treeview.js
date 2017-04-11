@@ -33,6 +33,8 @@
 
 		levels: 2,
 
+    		readOnly: false,
+
 		expandIcon: 'glyphicon glyphicon-plus',
 		collapseIcon: 'glyphicon glyphicon-minus',
 		emptyIcon: 'glyphicon',
@@ -114,7 +116,7 @@
 			getEnabled: $.proxy(this.getEnabled, this),
 
 			// Select methods
-			selectNode: $.proxy(this.selectNode, this),
+			selectNode: $.proxy(this.selectNode, this, options),
 			unselectNode: $.proxy(this.unselectNode, this),
 			toggleNodeSelected: $.proxy(this.toggleNodeSelected, this),
 
@@ -320,7 +322,7 @@
 
 		var target = $(event.target);
 		var node = this.findNode(target);
-		if (!node || node.state.disabled) return;
+		if (!node || node.state.disabled || this.options.readOnly) return;
 		
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
@@ -515,6 +517,7 @@
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
+				.addClass(_this.options.readOnly ? 'node-readonly' : '')
 				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
@@ -549,7 +552,7 @@
 			// Add node icon
 			if (_this.options.showIcon) {
 				
-				var classList = ['node-icon'];
+				classList = ['node-icon'];
 
 				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
@@ -567,7 +570,7 @@
 			// Add check / unchecked icon
 			if (_this.options.showCheckbox) {
 
-				var classList = ['check-icon'];
+				classList = ['check-icon'];
 				if (node.state.checked) {
 					classList.push(_this.options.checkedIcon); 
 				}
@@ -582,7 +585,7 @@
 			}
 
 			// Add text
-			if (_this.options.enableLinks) {
+			if (_this.options.enableLinks && !_this.options.readOnly) {
 				// Add hyperlink
 				treeItem
 					.append($(_this.template.link)
@@ -695,7 +698,7 @@
 		badge: '<span class="badge"></span>'
 	};
 
-	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'
+	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}.treeview .node-readonly{color:silver;cursor:not-allowed}';
 
 
 	/**
@@ -920,7 +923,7 @@
 			while (parentNode) {
 				this.setExpandedState(parentNode, true, options);
 				parentNode = this.getParent(parentNode);
-			};
+			}
 		}, this));
 
 		this.render();
@@ -1112,7 +1115,8 @@
 		if (pattern && pattern.length > 0) {
 
 			if (options.exactMatch) {
-				pattern = '^' + pattern + '$';
+				// need to escape special characters potentially in the node value  
+        			pattern = '^' + pattern.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$';
 			}
 
 			var modifier = 'g';
@@ -1127,7 +1131,7 @@
 			// and when identifying result to be cleared
 			$.each(results, function (index, node) {
 				node.searchResult = true;
-			})
+			});
 		}
 
 		// If revealResults, then render is triggered from revealNode
