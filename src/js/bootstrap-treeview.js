@@ -330,6 +330,8 @@
     var classList = target.attr('class') ? target.attr('class').split(' ') : [];
     if ((classList.indexOf('expand-icon') !== -1)) {    	
     	if (this.options.lazyLoad) {
+    		var bareBonesLazyLoadFunction = function(parentNode, callback){callback(parentNode, []);};
+    		this.options.lazyLoadFunction = (typeof this.options.lazyLoadFunction === 'function') ? this.options.lazyLoadFunction : bareBonesLazyLoadFunction;
     		this.forEachIdentifier(node, {}, $.proxy(function (node, options) {
 				// we haven't loaded this node's children before, and it didn't have child nodes from the initial population
     			if (!node.loaded && !(node.nodes && node.nodes.length)){        			
