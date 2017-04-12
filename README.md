@@ -278,7 +278,7 @@ String, class name(s).  Default: "glyphicon" as defined by [Bootstrap Glyphicons
 Sets the icon to be used on a tree node with no child nodes.
 
 #### enableLinks
-Boolean.  Default: false
+Boolean. Default: false
 
 Whether or not to present node text as a hyperlink.  The href value of which must be provided in the data structure on a per node basis.
 
@@ -293,9 +293,19 @@ Boolean.  Default: true
 Whether or not to highlight search results.
 
 #### highlightSelected
-Boolean.  Default: true
+Boolean. Default: true
 
 Whether or not to highlight the selected node.
+
+#### lazyLoad
+Boolean. Default: false
+
+Whether or not to lazily load child nodes (must be used in conjunction with lazyLoadFunction).
+
+#### lazyLoadFunction
+Function. Default: bareBonesLazyLoadFunction (just enough to satisfy the callback loop, will show zero child nodes and remove the ability to attempt to expand that node again)
+
+The function to be called for retrieving child nodes for the node currently being expanded. This function should accept a node, and a callback function.
 
 #### levels
 Integer. Default: 2
