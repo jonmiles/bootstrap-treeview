@@ -1195,10 +1195,10 @@
 			} else {
 				targetNodes = this._tree;
 			}
-			targetNodes.splice(node.index, 1);
+            var removedNodes = targetNodes.splice(node.index, 1);
 
 			// remove node from DOM
-			this._removeNodeEl(node);
+			this._removeNodeEl(removedNodes[0]);
 		}, this));
 
 		// initialize new state and render changes
