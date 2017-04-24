@@ -315,8 +315,13 @@
 	};
 
 	Tree.prototype.clickHandler = function (event) {
-
-		if (!this.options.enableLinks) event.preventDefault();
+        if (!this.options.enableLinks) {
+            if (event.target.nodeName == "A") {
+                return; // Handle link inside node
+            }
+            //Normal collapse behavior
+            event.preventDefault();
+        }
 
 		var target = $(event.target);
 		var node = this.findNode(target);
