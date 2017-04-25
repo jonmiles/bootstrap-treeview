@@ -316,11 +316,24 @@
 
 	Tree.prototype.clickHandler = function (event) {
         if (!this.options.enableLinks) {
-            if (event.target.nodeName == "A") {
-                return; // Handle link inside node
+            //walk to parents till we find our list item
+            var bFoundLink = false;
+            var currentTarget = event.target;
+
+            console.log(event);
+            return;
+
+            while (!bFoundLink //Found link
+                && currentTarget //No target
+                && !currentTarget.classList.contains('list-group-item') //tree item root
+            ) {
+                bFoundLink = currentTarget.nodeName == "A";
+                currentTarget = currentTarget.parentElement;
             }
-            //Normal collapse behavior
-            event.preventDefault();
+            if (bFoundLink) {
+                return; // Handle link
+            }
+            event.preventDefault(); //Normal collapse behavior
         }
 
 		var target = $(event.target);
