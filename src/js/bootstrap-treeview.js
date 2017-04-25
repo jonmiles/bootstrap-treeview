@@ -320,9 +320,6 @@
             var bFoundLink = false;
             var currentTarget = event.target;
 
-            console.log(event);
-            return;
-
             while (!bFoundLink //Found link
                 && currentTarget //No target
                 && !currentTarget.classList.contains('list-group-item') //tree item root
