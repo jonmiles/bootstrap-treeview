@@ -15,6 +15,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Additional changes made in a fork located at:
+ * https://github.com/mindscratch/bootstrap-treeview
  * ========================================================= */
 
 ;(function ($, window, document, undefined) {
@@ -351,6 +354,12 @@
 
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
+
+				// if a node is selected and it's not expanded, then expand it
+				// this allows clicking on a node label to expand it
+				if (!node.state.expanded) {
+					this.toggleExpandedState(node, _default.options);
+				}
 			} else {
 				this.toggleExpandedState(node, _default.options);
 			}
