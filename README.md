@@ -513,6 +513,34 @@ $('#tree').treeview('expandNode', [ nodeId, { levels: 2, silent: true } ]);
 
 Triggers `nodeExpanded` event; pass silent to suppress events.
 
+#### findNodeIdByCustomId(customId)
+
+Find the `nodeId` of a node in the tree whose `customId` matches the given customId. If no match can be
+found then `undefined` is returned.
+
+```javascript
+$('#tree').treeview('findNodeIdByCustomId', 3)
+```
+
+Triggers `findNodeIdByCustomIdComplete` event.
+
+#### findNodesByCustomIds(customIds)
+
+Find nodes in the tree whose `customId` matches those given in `customIds`. The return value is
+an object with three properties:
+  * `customIds` - the customIds given to the function
+  * `nodeIds` - the tree node ids of the nodes that matched
+  * `nodesMap` - an object that maps the customId to an array of matching tree nodes (an array is
+     used because its possible one custom id is represented multiple times in the tree).
+
+```javascript
+// we have to wrap the ids in an array because jQuery treats the arguments as an array
+// of individual arguments and the goal is to pass an entire array
+$('#tree').treeview('findNodesByCustomIds', [[3, 4, 5]]);
+```
+
+Triggers `findNodesByCustomIdsComplete` event.
+
 #### getCollapsed()
 
 Returns an array of collapsed nodes e.g. state.expanded = false.
@@ -726,6 +754,8 @@ $('#tree').on('nodeSelected', function(event, data) {
 ```
 
 ### List of Events
+
+`findNodeIdByCustomIdComplete(event, {nodeId: <id>, customId: <custom id>})` - a node was found
 
 `nodeChecked (event, node)`  - A node is checked.
 

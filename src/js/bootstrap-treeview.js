@@ -15,6 +15,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Additional changes made in a fork located at:
+ * https://github.com/mindscratch/bootstrap-treeview
  * ========================================================= */
 
 ;(function ($, window, document, undefined) {
@@ -55,6 +58,7 @@
 		highlightSearchResults: true,
 		showBorder: true,
 		showIcon: true,
+                showLeafIconOnly: true,
 		showCheckbox: false,
 		showTags: false,
 		multiSelect: false,
@@ -69,7 +73,9 @@
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
-		onSearchCleared: undefined
+		onSearchCleared: undefined,
+		onFindNodeIdByCustomIdComplete: undefined,
+		onFindNodesByCustomIdsComplete: undefined
 	};
 
 	_default.options = {
@@ -142,7 +148,10 @@
 
 			// Search methods
 			search: $.proxy(this.search, this),
-			clearSearch: $.proxy(this.clearSearch, this)
+			clearSearch: $.proxy(this.clearSearch, this),
+
+			findNodeIdByCustomId: $.proxy(this.findNodeIdByCustomId, this),
+			findNodesByCustomIds: $.proxy(this.findNodesByCustomIds, this),
 		};
 	};
 
@@ -246,6 +255,14 @@
 		if (typeof (this.options.onSearchCleared) === 'function') {
 			this.$element.on('searchCleared', this.options.onSearchCleared);
 		}
+
+    if (typeof (this.options.onFindNodeIdByCustomIdComplete) === 'function') {
+            this.$element.on('findNodeIdByCustomIdComplete', this.options.onFindNodeIdByCustomIdComplete);
+    }
+
+		if (typeof (this.options.onFindNodesByCustomIdsComplete) === 'function') {
+						this.$element.on('findNodesByCustomIdsComplete', this.options.onFindNodesByCustomIdsComplete);
+		}
 	};
 
 	/*
@@ -321,7 +338,7 @@
 		var target = $(event.target);
 		var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
-		
+
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
@@ -329,14 +346,20 @@
 			this.render();
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			
+
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
 		else {
-			
+
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
+
+				// if a node is selected and it's not expanded, then expand it
+				// this allows clicking on a node label to expand it
+				if (!node.state.expanded) {
+					this.toggleExpandedState(node, _default.options);
+				}
 			} else {
 				this.toggleExpandedState(node, _default.options);
 			}
@@ -516,8 +539,9 @@
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
-				.addClass(node.searchResult ? 'search-result' : '') 
+				.addClass(node.searchResult ? 'search-result' : '')
 				.attr('data-nodeid', node.nodeId)
+				.attr('data-custom-id', node.customId || '')
 				.attr('style', _this.buildStyleOverride(node));
 
 			// Add indent/spacer to mimic tree structure
@@ -527,34 +551,43 @@
 
 			// Add expand, collapse or empty spacer icons
 			var classList = [];
-			if (node.nodes) {
+			if (node.nodes && node.nodes.length > 0) {
 				classList.push('expand-icon');
 				if (node.state.expanded) {
-					classList.push(_this.options.collapseIcon);
+					classList.push(node.collapseIcon || _this.options.collapseIcon);
 				}
 				else {
-					classList.push(_this.options.expandIcon);
+					classList.push(node.expandIcon || _this.options.expandIcon);
 				}
 			}
 			else {
 				classList.push(_this.options.emptyIcon);
 			}
 
-			treeItem
-				.append($(_this.template.icon)
-					.addClass(classList.join(' '))
-				);
-
+			// only add the 'icon' template if it's not a leaf node
+			if (node.nodes && node.nodes.length > 0) {
+				treeItem
+					.append($(_this.template.icon)
+						.addClass(classList.join(' '))
+					);
+			}
 
 			// Add node icon
-			if (_this.options.showIcon) {
-				
+			var displayIcon = false;
+			if (_this.options.showLeafIconOnly) {
+				if (!node.nodes || node.nodes.length == 0) {
+					displayIcon = true;
+				}
+			} else if (_this.options.showIcon) {
+				displayIcon = true;
+			}
+			if (displayIcon) {
 				var classList = ['node-icon'];
 
 				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
 					classList.pop();
-					classList.push(node.selectedIcon || _this.options.selectedIcon || 
+					classList.push(node.selectedIcon || _this.options.selectedIcon ||
 									node.icon || _this.options.nodeIcon);
 				}
 
@@ -569,7 +602,7 @@
 
 				var classList = ['check-icon'];
 				if (node.state.checked) {
-					classList.push(_this.options.checkedIcon); 
+					classList.push(_this.options.checkedIcon);
 				}
 				else {
 					classList.push(_this.options.uncheckedIcon);
@@ -935,7 +968,7 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleExpandedState(node, options);
 		}, this));
-		
+
 		this.render();
 	};
 
@@ -1085,7 +1118,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this.identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
@@ -1156,10 +1189,72 @@
 		});
 
 		if (options.render) {
-			this.render();	
+			this.render();
 		}
-		
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
+	};
+
+  /**
+   * Find the node that matches the given custom id.
+   * @param {Number} customId - the customId property to find
+   * @return {Number} the node id
+   */
+	Tree.prototype.findNodeIdByCustomId = function(customId) {
+		var nodeId = undefined;
+		for (var i = 0; i < this.nodes.length; i++) {
+			if (this.nodes[i].customId == customId) {
+				nodeId = this.nodes[i].nodeId;
+				break;
+			}
+		}
+
+		this.$element.trigger('findNodeIdByCustomIdComplete', {nodeId: nodeId, customId: customId});
+
+		return nodeId;
+	};
+
+	/**
+   * Find the nodes that match the given custom ids.
+	 *
+	 * Will fire the 'findNodesByCustomIdsComplete' event when complete. The
+	 * event handler will receive two parameters, the event and the results. The
+	 * results will be an object with three properties: customIds (the ids given
+	 * when performing the find operation), nodeIds (an array of matching tree node ids),
+	 * and nodesMap (an object that maps the custom id to an array of matching tree node objects).
+	 *
+   * @param {Number[]} customIds - the custom ids to search for
+   * @return {Object} - containing three parameters, 'customIds', 'nodeIds' and 'nodesMap'.
+   */
+	Tree.prototype.findNodesByCustomIds = function(customIds) {
+		var nodesMap = {};
+		var matchingNodeIds = [];
+		var result = {customIds: customIds, nodeIds: matchingNodeIds, nodesMap: nodesMap};
+
+		if (customIds == undefined || customIds.length == 0) {
+			this.$element.trigger('findNodesByCustomIdsComplete', result);
+			return result;
+		}
+
+		var customId = undefined;
+		var node = undefined;
+		for (var i = 0; i < customIds.length; i++ ) {
+			customId = customIds[i];
+			for (var j = 0; j < this.nodes.length; j++) {
+				node = this.nodes[j];
+
+				if (node.customId == customId) {
+					var matchingNodes = nodesMap[customId] || [];
+					matchingNodes.push(node);
+					nodesMap[customId] = matchingNodes;
+					matchingNodeIds.push(node.nodeId);
+					break;
+				}
+			}
+		}
+
+		this.$element.trigger('findNodesByCustomIdsComplete', result);
+		return result;
 	};
 
 	/**
