@@ -117,7 +117,8 @@
 			selectNode: $.proxy(this.selectNode, this),
 			unselectNode: $.proxy(this.unselectNode, this),
 			toggleNodeSelected: $.proxy(this.toggleNodeSelected, this),
-
+			unselectAll: $.proxy(this.unselectAll, this),
+			
 			// Expand / collapse methods
 			collapseAll: $.proxy(this.collapseAll, this),
 			collapseNode: $.proxy(this.collapseNode, this),
@@ -835,6 +836,18 @@
 		this.render();
 	};
 
+	/**
+		Unselect all tree nodes
+		@param {optional Object} options
+	*/
+	Tree.prototype.unselectAll = function (options) {
+		var identifiers = this.findNodes('true', 'g', 'state.selected');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setSelectedState(node, false, options);
+		}, this));
+
+		this.render();
+	};
 
 	/**
 		Collapse all tree nodes
