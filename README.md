@@ -762,10 +762,23 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 `searchCleared (event, results)`  - After search results are cleared
 
+## Keyboard Actions
 
+This fork of the original project now offers keyboard-based accessbility functionality based upon the recommended keyboard interactions defined at http://www.w3.org/TR/2015/WD-wai-aria-practices-1.1-20150514/#TreeView (and as implemented in the reference implementation shown at http://www.oaa-accessibility.org/examplep/treeview1/). 
+
+__NOTE:__ not all recommended keyboard interactions have been implemented within this component. Only those listed below have been implemented:
+
+-	__Up arrow:__ Select the previous visible tree item.
+- __Down arrow:__ Select next visible tree item.
+- __Left arrow:__ Collapse the currently selected parent node if it is expanded. Move to the previous parent node (if possible) when the current parent node is collapsed.
+- __Right arrow:__ Expand the currently selected parent node and move to the first child list item.
+- __Space/Enter:__ Toggle the expanded or collapsed state of the selected parent node.
+- __Home:__ Select the root parent node of the tree.
+- __End:__ Select the last visible node of the tree.
+- __Tab/Shift-Tab:__ Navigate away from tree.
 
 ## Copyright and Licensing
-Copyright 2013 Jonathan Miles
+Copyright 2013 Jonathan Miles, 2017 Rich Rein
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
