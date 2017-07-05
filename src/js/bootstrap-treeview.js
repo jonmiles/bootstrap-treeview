@@ -3,7 +3,6 @@
  * =========================================================
  * Copyright 2017 Rich Rein
  * Project URL: https://github.com/reinrl/bootstrap-treeview
- * forked from: http://www.jondmiles.com/bootstrap-treeview
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +88,21 @@
   };
 
   var Tree = function (element, options) {
+	  this.keys = {
+	            tab:      9,
+	            enter:    13,
+	            space:    32,
+	            pageup:   33,
+	            pagedown: 34,
+	            end:      35,
+	            home:     36,
+	            left:     37,
+	            up:       38,
+	            right:    39,
+	            down:     40
+	   };
+	
+	this.$visibleItems = null; // holds a jQuery array of the currently visible items in the tree
 
     this.$element = $(element);
     this.elementId = element.id;
@@ -194,6 +208,7 @@
   Tree.prototype.unsubscribeEvents = function () {
 
     this.$element.off('click');
+    this.$element.off('keydown');
     this.$element.off('nodeChecked');
     this.$element.off('nodeCollapsed');
     this.$element.off('nodeDisabled');
@@ -207,10 +222,15 @@
   };
 
   Tree.prototype.subscribeEvents = function () {
+	  var thisObj = this;
 
     this.unsubscribeEvents();
 
     this.$element.on('click', $.proxy(this.clickHandler, this));
+    
+    this.$element.on('keydown', function(e) {
+        return thisObj.handleKeyDown($(this), e);
+    });
 
     if (typeof (this.options.onNodeChecked) === 'function') {
       this.$element.on('nodeChecked', this.options.onNodeChecked);
@@ -318,64 +338,170 @@
       }
     });
   };
+  
+  Tree.prototype.handleKeyDown = function(targetDiv, e) {
+	  var $item = $(e.target);
+	  
+	  var selectionOptions = this.options;
+	  selectionOptions.setSelectedFocus = true;
 
-  Tree.prototype.clickHandler = function (event) {
+	  if ((e.altKey || e.ctrlKey) || (e.shiftKey && e.keyCode != this.keys.tab)) {
+		  // do nothing
+		  return true;
+	  }
+	  
+	  var curNdx = this.$visibleItems.index($item);
 
-    if (!this.options.enableLinks) event.preventDefault();
+	  switch (e.keyCode) {
+	  	//TODO: not working yet... (shift-tab fails to go back to search box??)   
+	  	case this.keys.tab: {
+	         return true;
+	      }
+	      case this.keys.home: { // jump to first item in tree
+	    	  var firstItem = this.$visibleItems.first();
+	    	  var firstNode = this.findNode(firstItem);	    		
+	    	  this.selectNode(firstNode, selectionOptions);
+	
+		      e.stopPropagation();
+		      return false;
+	      }
+		case this.keys.end: { // jump to last visible item
+			var lastItem = this.$visibleItems.last();
+    		var lastNode = this.findNode(lastItem);	    		
+    		this.selectNode(lastNode, selectionOptions);
+			
+			e.stopPropagation();
+			return false;
+		}
+	    case this.keys.enter:
+	    case this.keys.space: {
+	      if (!$item.is('.tree-parent')) {
+	        // do nothing
+	      } else {
+	    	  var nodeToToggle = this.findNode($item);
+	    	  this.toggleNode($item.children("." + this.options.emptyIcon), nodeToToggle, {setSelectedFocus: true});
+	      }
 
-    var target = $(event.target);
-    var node = this.findNode(target);
-    if (!node || node.state.disabled || this.options.readOnly) return;
+	      e.stopPropagation();
+	      return false;
+	    }
+	    case this.keys.left: {	      
+    		var currentNode = this.findNode($item);
+	    	if ($item.is('.tree-parent') && $item.attr('aria-expanded') == 'true') {
+	    		// collapse the group and return  
+	    		this.toggleNode($item.children("." + this.options.emptyIcon), currentNode, {setSelectedFocus: true});
+	    	} else {
+	    		var parentNode = this.getParent(currentNode.nodeId);
+	    		this.selectNode(parentNode, selectionOptions);
+	        }
+	
+	    	e.stopPropagation();
+		    return false;
+	    }
+	    case this.keys.right: {	   
+    		var node = this.findNode($item);   
+	    	if (!$item.is('.tree-parent')) {
+	    		// do nothing
+	    	} else if ($item.attr('aria-expanded') == 'false') {
+	    		this.toggleNode($item.children("." + this.options.emptyIcon), node, {setSelectedFocus: true});
+	    	} else {
+	    		var childNodes = this.findNodes(node.nodeId.toString(), "g", "parentId");
+	    		this.selectNode(childNodes[0], selectionOptions);
+	        }
 
-    var classList = target.attr('class') ? target.attr('class').split(' ') : [];
-    if ((classList.indexOf('expand-icon') !== -1)) {    	
-    	if (this.options.lazyLoad) {
-    		var bareBonesLazyLoadFunction = function(parentNode, callback){callback(parentNode, []);};
-    		this.options.lazyLoadFunction = (typeof this.options.lazyLoadFunction === 'function') ? this.options.lazyLoadFunction : bareBonesLazyLoadFunction;
-    		this.forEachIdentifier(node, {}, $.proxy(function (node, options) {
-				// we haven't loaded this node's children before, and it didn't have child nodes from the initial population
-    			if (!node.loaded && !(node.nodes && node.nodes.length)){        			
-					var lazyLoadTreeviewCallback = $.proxy(function(parentNode, childNodes) {
-						if (childNodes && childNodes.length) {
-		    				for (var n=0; n < childNodes.length; n++) {
-		    					parentNode.nodes[n] = childNodes[n];
-		    				}
-		    			} else {
-		    				// there are no children, so let's no longer make this expandable...
-			    			delete parentNode.nodes;
-		    			}
-	    				node.loaded = true;
-		        		this.setInitialStates({ nodes: this.tree }, 0);
-		        		this.toggleExpandedState(node, _default.options);
-		        		this.render();
-					}, this);
+	    	e.stopPropagation();
+	    	return false;
+	    }
+	    case this.keys.up: {
+	    	if (curNdx > 0) {
+	    		var $prev = this.$visibleItems.eq(curNdx - 1);
+	    		var prevNode = this.findNode($prev);	    		
+	    		this.selectNode(prevNode, selectionOptions);
+	    	}
+
+	    	e.stopPropagation();
+	    	return false;
+	    }
+	    case this.keys.down: {
+	    	if (curNdx < this.$visibleItems.length - 1) {
+	    		var $next = this.$visibleItems.eq(curNdx + 1);
+	    		var nextNode = this.findNode($next);	    		
+	    		this.selectNode(nextNode, selectionOptions);
+	    	}
+	    	e.stopPropagation();
+	    	return false;
+	    }
+	  }
+
+	  return true;
+  };
+
+  Tree.prototype.clickHandler = function(event) {
+	  if (!this.options.enableLinks) event.preventDefault();
+
+	  var target = $(event.target);
+	  var node = this.findNode(target);
+	  if (!node || node.state.disabled || this.options.readOnly) {
+		  return;
+	  }
+	  
+	  this.toggleNode(target, node);
+  };
+  
+  Tree.prototype.toggleNode = function(target, node, options) {
+	  options = options || {};
+	  var selectedNode = node;
+	  var classList = target.attr('class') ? target.attr('class').split(' ') : [];
+	  if ((classList.indexOf('expand-icon') !== -1)) {    	
+		  if (this.options.lazyLoad) {
+			  var bareBonesLazyLoadFunction = function(parentNode, callback, options){callback(parentNode, [], options);};
+			  this.options.lazyLoadFunction = (typeof this.options.lazyLoadFunction === 'function') ? this.options.lazyLoadFunction : bareBonesLazyLoadFunction;
+			  this.forEachIdentifier(node, options, $.proxy(function (node, options) {
+				  // we haven't loaded this node's children before, and it didn't have child nodes from the initial population
+				  if (!node.loaded && !(node.nodes && node.nodes.length)){        			
+					  var lazyLoadTreeviewCallback = $.proxy(function(parentNode, childNodes) {
+						  if (childNodes && childNodes.length) {
+							  for (var n=0; n < childNodes.length; n++) {
+								  parentNode.nodes[n] = childNodes[n];
+							  }
+						  } else {
+							  // there are no children, so let's no longer make this expandable...
+							  delete parentNode.nodes;
+						  }
+						  node.loaded = true;
+						  this.setInitialStates({ nodes: this.tree }, 0);
+						  if (node === selectedNode) {
+							  this.setSelectedState(node, true, _default.options);
+						  }	  
+						  this.toggleExpandedState(node, _default.options);
+						  this.render(options);
+					  }, this);
 					
-    				this.options.lazyLoadFunction(node, lazyLoadTreeviewCallback);
-    			} else {
-	        		this.toggleExpandedState(node, _default.options);
-	        		this.render();
-    			}
-    		}, this));
-    	} else {
-    		this.toggleExpandedState(node, _default.options);
-    		this.render();
-    	}
-    }
-    else if ((classList.indexOf('check-icon') !== -1)) {
+					  this.options.lazyLoadFunction(node, lazyLoadTreeviewCallback, options);
+				  } else {
+					  if (node === selectedNode) {
+						  this.setSelectedState(node, true, _default.options);
+					  }	
+					  this.toggleExpandedState(node, _default.options);
+					  this.render(options);
+				  }
+			  }, this));
+		  } else {
+			  this.toggleExpandedState(node, _default.options);
+			  this.render(options);
+		  }
+	  } else if ((classList.indexOf('check-icon') !== -1)) {
+		  this.toggleCheckedState(node, _default.options);
+		  this.render(options);
+	  } else {
+		  if (node.selectable) {
+			  this.toggleSelectedState(node, _default.options);
+		  } else {
+			  this.toggleExpandedState(node, _default.options);
+		  }
 
-      this.toggleCheckedState(node, _default.options);
-      this.render();
-    }
-    else {
-
-      if (node.selectable) {
-        this.toggleSelectedState(node, _default.options);
-      } else {
-        this.toggleExpandedState(node, _default.options);
-      }
-
-      this.render();
-    }
+		  this.render(options);
+	  }
   };
 
   // Looks up the DOM for the closest parent list item to retrieve the
@@ -515,7 +641,8 @@
     }
   };
 
-  Tree.prototype.render = function () {
+  Tree.prototype.render = function (options) {
+	  options = options || {};
 
     if (!this.initialized) {
 
@@ -532,6 +659,12 @@
 
     // Build tree
     this.buildTree(this.tree, 0);
+    // keep track of currently visible items
+    this.$visibleItems = this.$element.find('li:visible');
+    // set focus on selected item if specified
+    if (options.hasOwnProperty("setSelectedFocus") && options.setSelectedFocus) {
+    	this.$element.find('li.node-selected').focus();
+    }
   };
 
   // Starting from the root node, and recursing down the
@@ -545,6 +678,7 @@
     $.each(nodes, function addNodes(id, node) {
 
       var treeItem = $(_this.template.item)
+        .addClass(node.nodes ? 'tree-parent' : '')
         .addClass('node-' + _this.elementId)
         .addClass(node.state.checked ? 'node-checked' : '')
         .addClass(node.state.disabled ? 'node-disabled': '')
@@ -552,7 +686,9 @@
         .addClass(node.state.selected ? 'node-selected' : '')
         .addClass(node.searchResult ? 'search-result' : '')
         .attr('data-nodeid', node.nodeId)
-        .attr('style', _this.buildStyleOverride(node));
+        .attr('style', _this.buildStyleOverride(node))
+        .attr('aria-expanded', node.state.expanded)
+        .attr('tabindex', (node.state.selected ? 0 : -1));
 
       // Add indent/spacer to mimic tree structure
       for (var i = 0; i < (level - 1); i++) {
@@ -721,8 +857,8 @@
   };
 
   Tree.prototype.template = {
-    list: '<ul class="list-group"></ul>',
-    item: '<li class="list-group-item"></li>',
+    list: '<ul class="list-group" role="tree"></ul>',
+    item: '<li class="list-group-item" role="treeitem" tabindex="-1"></li>',
     indent: '<span class="indent"></span>',
     icon: '<span class="icon"></span>',
     link: '<a href="#" style="color:inherit;"></a>',
@@ -840,7 +976,7 @@
       this.setSelectedState(node, true, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -853,7 +989,7 @@
       this.setSelectedState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -866,7 +1002,7 @@
       this.toggleSelectedState(node, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
 
@@ -880,7 +1016,7 @@
       this.setExpandedState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -893,7 +1029,7 @@
       this.setExpandedState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -913,7 +1049,7 @@
       }, this));
     }
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -929,7 +1065,7 @@
       }
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   Tree.prototype.expandLevels = function (nodes, level, options) {
@@ -957,7 +1093,7 @@
       }
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -970,7 +1106,7 @@
       this.toggleExpandedState(node, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
 
@@ -984,7 +1120,7 @@
       this.setCheckedState(node, true, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -997,7 +1133,7 @@
       this.setCheckedState(node, true, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1010,7 +1146,7 @@
       this.setCheckedState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1023,7 +1159,7 @@
       this.setCheckedState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1036,7 +1172,7 @@
       this.toggleCheckedState(node, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
 
@@ -1050,7 +1186,7 @@
       this.setDisabledState(node, true, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1063,7 +1199,7 @@
       this.setDisabledState(node, true, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1076,7 +1212,7 @@
       this.setDisabledState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1089,7 +1225,7 @@
       this.setDisabledState(node, false, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
   /**
@@ -1102,7 +1238,7 @@
       this.setDisabledState(node, !node.state.disabled, options);
     }, this));
 
-    this.render();
+    this.render(options);
   };
 
 
@@ -1171,7 +1307,7 @@
       this.revealNode(results);
     }
     else {
-      this.render();
+      this.render(options);
     }
 
     this.$element.trigger('searchComplete', $.extend(true, {}, results));
@@ -1191,7 +1327,7 @@
     });
 
     if (options.render) {
-      this.render();
+      this.render(options);
     }
 
     this.$element.trigger('searchCleared', $.extend(true, {}, results));
@@ -1233,7 +1369,7 @@
       return this.getNodeValue(_obj, _attr);
     }
     else {
-      if (obj.hasOwnProperty(attr)) {
+      if (obj.hasOwnProperty(attr) && obj[attr] !== undefined) {
         return obj[attr].toString();
       }
       else {
