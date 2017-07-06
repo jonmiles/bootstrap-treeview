@@ -24,9 +24,6 @@
     "dist/bootstrap-treeview.min.css"
   ],
   "scripts": {
-    "install": "bower install",
-    "start": "node app",
-    "test": "grunt test"
   },
   "engines": {
     "node": ">= 0.10.0"
