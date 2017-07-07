@@ -764,7 +764,7 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ## Keyboard Actions
 
-This fork of the original project now offers keyboard-based accessbility functionality based upon the recommended keyboard interactions defined at http://www.w3.org/TR/2015/WD-wai-aria-practices-1.1-20150514/#TreeView (and as implemented in the reference implementation shown at http://www.oaa-accessibility.org/examplep/treeview1/). 
+This fork of the original project now offers keyboard-based accessibility functionality based upon the recommended keyboard interactions defined at http://www.w3.org/TR/2015/WD-wai-aria-practices-1.1-20150514/#TreeView (and as implemented in the reference implementation shown at http://www.oaa-accessibility.org/examplep/treeview1/). 
 
 __NOTE:__ not all recommended keyboard interactions have been implemented within this component. Only those listed below have been implemented:
 
