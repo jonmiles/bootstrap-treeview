@@ -247,6 +247,21 @@ Array of Objects.  No default, expects data
 
 This is the core data to be displayed by the tree view.
 
+#### dataUrl
+jQuery Ajax settings object, [as documented here](http://api.jquery.com/jquery.ajax/#jQuery-ajax-settings).
+
+Accepts a set of key/value pairs that configure an Ajax request.  All settings are optional, any provided will be merge with the following default configuration.
+
+```javascript
+{
+  method: 'GET',
+  dataType: 'json',
+  cache: false
+}
+```
+
+> JSON is the only format accepted.
+
 #### backColor
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: inherits from Bootstrap.css.
 
@@ -727,6 +742,18 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 ### List of Events
 
+#### Lifecycle Events
+
+> Use callback handlers for lifecycle events otherwise you'll miss the events fired during creation.
+
+`loading (event)`  - The tree has initiated data loading.
+
+`loadingFailed (event, error)`  - The tree failed to load data (ajax error)
+
+`initialized (event, nodes)`  - The tree has initialized itself and data ready for rendering.
+
+#### State Events
+
 `nodeChecked (event, node)`  - A node is checked.
 
 `nodeCollapsed (event, node)`  - A node is collapsed.
@@ -746,7 +773,6 @@ $('#tree').on('nodeSelected', function(event, data) {
 `searchComplete (event, results)`  - After a search completes
 
 `searchCleared (event, results)`  - After search results are cleared
-
 
 
 ## Copyright and Licensing
