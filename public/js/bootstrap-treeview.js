@@ -60,6 +60,9 @@
 		multiSelect: false,
 
 		// Event handlers
+		onLoading: undefined,
+		onLoadingFailed: undefined,
+      onInitialized: undefined,
 		onNodeChecked: undefined,
 		onNodeCollapsed: undefined,
 		onNodeDisabled: undefined,
@@ -83,6 +86,12 @@
 		revealResults: true
 	};
 
+   _default.dataUrl = {
+		method: 'GET',
+		dataType: 'json',
+		cache: false
+	};
+
 	var Tree = function (element, options) {
 
 		this.$element = $(element);
@@ -99,6 +108,9 @@
 			// Initialize / destroy methods
 			init: $.proxy(this.init, this),
 			remove: $.proxy(this.remove, this),
+
+         // Reload method
+			reload: $.proxy(this.reload, this),
 
 			// Get methods
 			getNode: $.proxy(this.getNode, this),
@@ -150,20 +162,74 @@
 
 		this.tree = [];
 		this.nodes = [];
-
-		if (options.data) {
-			if (typeof options.data === 'string') {
-				options.data = $.parseJSON(options.data);
-			}
-			this.tree = $.extend(true, [], options.data);
-			delete options.data;
-		}
+		this.initialized = false;
 		this.options = $.extend({}, _default.settings, options);
 
 		this.destroy();
 		this.subscribeEvents();
-		this.setInitialStates({ nodes: this.tree }, 0);
-		this.render();
+		this.triggerEvent('loading', null, _default.options);
+
+		this.load(options)
+			.then($.proxy(function (data) {
+				// load done
+				return this.tree = $.extend(true, [], data);
+			}, this), $.proxy(function (error) {
+				// load fail
+				this.triggerEvent('loadingFailed', error, _default.options);
+			}, this))
+			.then($.proxy(function (treeData) {
+				// initialize data
+				return this.setInitialStates({ nodes: treeData }, 0);
+			}, this))
+			.then($.proxy(function () {
+				// render to DOM
+				this.render();
+      }, this));
+	};
+
+   Tree.prototype.load = function (options) {
+		var done = new $.Deferred();
+		if (options.data) {
+			this.loadLocalData(options, done);
+		} else if (options.dataUrl) {
+			this.loadRemoteData(options, done);
+		}
+		return done.promise();
+	};
+
+	Tree.prototype.loadRemoteData = function (options, done) {
+		$.ajax($.extend(true, {}, _default.dataUrl, options.dataUrl))
+			.done(function (data) {
+				done.resolve(data);
+			})
+			.fail(function (xhr, status, error) {
+				done.reject(error);
+			});
+	};
+
+	Tree.prototype.loadLocalData = function (options, done) {
+		done.resolve((typeof options.data === 'string') ?
+								$.parseJSON(options.data) :
+								$.extend(true, [], options.data));
+	};
+
+	Tree.prototype.reload = function () {
+		this.load(this.options)
+			.then($.proxy(function (data) {
+				// load done
+				return this.tree = $.extend(true, [], data);
+			}, this), $.proxy(function (error) {
+				// load fail
+				this.triggerEvent('loadingFailed', error, _default.options);
+			}, this))
+			.then($.proxy(function (treeData) {
+				// initialize data
+				return this.setInitialStates({ nodes: treeData }, 0);
+			}, this))
+			.then($.proxy(function () {
+				// render to DOM
+				this.render();
+      }, this));
 	};
 
 	Tree.prototype.remove = function () {
@@ -189,6 +255,9 @@
 	Tree.prototype.unsubscribeEvents = function () {
 
 		this.$element.off('click');
+		this.$element.off('loading');
+		this.$element.off('loadingFailed');
+      this.$element.off('initialized');
 		this.$element.off('nodeChecked');
 		this.$element.off('nodeCollapsed');
 		this.$element.off('nodeDisabled');
@@ -206,6 +275,18 @@
 		this.unsubscribeEvents();
 
 		this.$element.on('click', $.proxy(this.clickHandler, this));
+
+		if (typeof (this.options.onLoading) === 'function') {
+			this.$element.on('loading', this.options.onLoading);
+		}
+
+		if (typeof (this.options.onLoadingFailed) === 'function') {
+			this.$element.on('loadingFailed', this.options.onLoadingFailed);
+		}
+
+		if (typeof (this.options.onInitialized) === 'function') {
+			this.$element.on('initialized', this.options.onInitialized);
+      }
 
 		if (typeof (this.options.onNodeChecked) === 'function') {
 			this.$element.on('nodeChecked', this.options.onNodeChecked);
@@ -245,6 +326,12 @@
 
 		if (typeof (this.options.onSearchCleared) === 'function') {
 			this.$element.on('searchCleared', this.options.onSearchCleared);
+		}
+	};
+
+   Tree.prototype.triggerEvent = function (event, data, options) {
+		if (options && !options.silent) {
+			this.$element.trigger(event, $.extend(true, {}, data));
 		}
 	};
 
@@ -321,7 +408,7 @@
 		var target = $(event.target);
 		var node = this.findNode(target);
 		if (!node || node.state.disabled) return;
-		
+
 		var classList = target.attr('class') ? target.attr('class').split(' ') : [];
 		if ((classList.indexOf('expand-icon') !== -1)) {
 
@@ -329,12 +416,12 @@
 			this.render();
 		}
 		else if ((classList.indexOf('check-icon') !== -1)) {
-			
+
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
 		else {
-			
+
 			if (node.selectable) {
 				this.toggleSelectedState(node, _default.options);
 			} else {
@@ -516,7 +603,7 @@
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
-				.addClass(node.searchResult ? 'search-result' : '') 
+				.addClass(node.searchResult ? 'search-result' : '')
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
 
@@ -548,13 +635,13 @@
 
 			// Add node icon
 			if (_this.options.showIcon) {
-				
+
 				var classList = ['node-icon'];
 
 				classList.push(node.icon || _this.options.nodeIcon);
 				if (node.state.selected) {
 					classList.pop();
-					classList.push(node.selectedIcon || _this.options.selectedIcon || 
+					classList.push(node.selectedIcon || _this.options.selectedIcon ||
 									node.icon || _this.options.nodeIcon);
 				}
 
@@ -569,7 +656,7 @@
 
 				var classList = ['check-icon'];
 				if (node.state.checked) {
-					classList.push(_this.options.checkedIcon); 
+					classList.push(_this.options.checkedIcon);
 				}
 				else {
 					classList.push(_this.options.uncheckedIcon);
@@ -935,7 +1022,7 @@
 		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
 			this.toggleExpandedState(node, options);
 		}, this));
-		
+
 		this.render();
 	};
 
@@ -1085,7 +1172,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this.identifyNode(identifier), options);
-		}, this));	
+		}, this));
 	};
 
 	/*
@@ -1156,9 +1243,9 @@
 		});
 
 		if (options.render) {
-			this.render();	
+			this.render();
 		}
-		
+
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
 	};
 
