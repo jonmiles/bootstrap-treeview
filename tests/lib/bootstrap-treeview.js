@@ -109,6 +109,9 @@
 			init: $.proxy(this.init, this),
 			remove: $.proxy(this.remove, this),
 
+         // Reload method
+			reload: $.proxy(this.reload, this),
+
 			// Get methods
 			getNode: $.proxy(this.getNode, this),
 			getParent: $.proxy(this.getParent, this),
@@ -208,6 +211,25 @@
 		done.resolve((typeof options.data === 'string') ?
 								$.parseJSON(options.data) :
 								$.extend(true, [], options.data));
+	};
+
+	Tree.prototype.reload = function () {
+		this.load(this.options)
+			.then($.proxy(function (data) {
+				// load done
+				return this.tree = $.extend(true, [], data);
+			}, this), $.proxy(function (error) {
+				// load fail
+				this.triggerEvent('loadingFailed', error, _default.options);
+			}, this))
+			.then($.proxy(function (treeData) {
+				// initialize data
+				return this.setInitialStates({ nodes: treeData }, 0);
+			}, this))
+			.then($.proxy(function () {
+				// render to DOM
+				this.render();
+      }, this));
 	};
 
 	Tree.prototype.remove = function () {

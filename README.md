@@ -600,6 +600,14 @@ Returns an array of unselected nodes e.g. state.selected = false.
 $('#tree').treeview('getUnselected', nodeId);
 ```
 
+#### reload()
+
+Reload the tree view component.
+
+```javascript
+$('#tree').treeview('reload');
+```
+
 #### remove()
 
 Removes the tree view component. Removing attached events, internal attached objects, and added HTML elements.
