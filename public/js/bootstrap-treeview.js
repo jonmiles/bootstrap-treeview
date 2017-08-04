@@ -1,7 +1,7 @@
 /* =========================================================
  * bootstrap-treeview.js v1.2.0
  * =========================================================
- * Copyright 2013 Jonathan Miles
+ * Copyright 2017 Jonathan Miles
  * Project URL : http://www.jondmiles.com/bootstrap-treeview
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
