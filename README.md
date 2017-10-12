@@ -278,7 +278,7 @@ String, class name(s).  Default: "glyphicon" as defined by [Bootstrap Glyphicons
 Sets the icon to be used on a tree node with no child nodes.
 
 #### enableLinks
-Boolean.  Default: false
+Boolean. Default: false
 
 Whether or not to present node text as a hyperlink.  The href value of which must be provided in the data structure on a per node basis.
 
@@ -293,9 +293,19 @@ Boolean.  Default: true
 Whether or not to highlight search results.
 
 #### highlightSelected
-Boolean.  Default: true
+Boolean. Default: true
 
 Whether or not to highlight the selected node.
+
+#### lazyLoad
+Boolean. Default: false
+
+Whether or not to lazily load child nodes (must be used in conjunction with lazyLoadFunction).
+
+#### lazyLoadFunction
+Function. Default: bareBonesLazyLoadFunction (just enough to satisfy the callback loop, will show zero child nodes and remove the ability to attempt to expand that node again)
+
+The function to be called for retrieving child nodes for the node currently being expanded. This function should accept a node, and a callback function.
 
 #### levels
 Integer. Default: 2
@@ -316,6 +326,11 @@ Sets the default icon to be used on all nodes, except when overridden on a per n
 String, [any legal color value](http://www.w3schools.com/cssref/css_colors_legal.asp).  Default: '#F5F5F5'.
 
 Sets the default background color activated when the users cursor hovers over a node.
+
+#### readOnly
+Boolean. Default: false.
+
+Sets the entire tree to readOnly. This mode is visually similar to disabled, with grey font and "not allowed" cursor styling by default, while still allowing for the tree to be expanded, show search matches, and/or have a node selected upon loading. The tree may continue to be interacted with programatically; however, click events will be ignored.
 
 #### selectedIcon
 String, class name(s).  Default: "glyphicon glyphicon-stop" as defined by [Bootstrap Glyphicons](http://getbootstrap.com/components/#glyphicons)
@@ -747,10 +762,23 @@ $('#tree').on('nodeSelected', function(event, data) {
 
 `searchCleared (event, results)`  - After search results are cleared
 
+## Keyboard Actions
 
+This fork of the original project now offers keyboard-based accessibility functionality based upon the recommended keyboard interactions defined at http://www.w3.org/TR/2015/WD-wai-aria-practices-1.1-20150514/#TreeView (and as implemented in the reference implementation shown at http://www.oaa-accessibility.org/examplep/treeview1/). 
+
+__NOTE:__ not all recommended keyboard interactions have been implemented within this component. Only those listed below have been implemented:
+
+-	__Up arrow:__ Select the previous visible tree item.
+- __Down arrow:__ Select next visible tree item.
+- __Left arrow:__ Collapse the currently selected parent node if it is expanded. Move to the previous parent node (if possible) when the current parent node is collapsed.
+- __Right arrow:__ Expand the currently selected parent node and move to the first child list item.
+- __Space/Enter:__ Toggle the expanded or collapsed state of the selected parent node.
+- __Home:__ Select the root parent node of the tree.
+- __End:__ Select the last visible node of the tree.
+- __Tab/Shift-Tab:__ Navigate away from tree.
 
 ## Copyright and Licensing
-Copyright 2013 Jonathan Miles
+Copyright 2013 Jonathan Miles, 2017 Rich Rein
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
