@@ -470,7 +470,7 @@
 						  }
 						  node.loaded = true;
 						  this.setInitialStates({ nodes: this.tree }, 0);
-						  if (node === selectedNode) {
+						  if (node === selectedNode && node.selectable) {
 							  this.setSelectedState(node, true, _default.options);
 						  }	  
 						  this.toggleExpandedState(node, _default.options);
@@ -479,7 +479,7 @@
 					
 					  this.options.lazyLoadFunction(node, lazyLoadTreeviewCallback, options);
 				  } else {
-					  if (node === selectedNode) {
+					  if (node === selectedNode && node.selectable) {
 						  this.setSelectedState(node, true, _default.options);
 					  }	
 					  this.toggleExpandedState(node, _default.options);
@@ -497,7 +497,8 @@
 		  if (node.selectable) {
 			  this.toggleSelectedState(node, _default.options);
 		  } else {
-			  this.toggleExpandedState(node, _default.options);
+			  // only the plus/minus should toggle the expanded state
+			  //this.toggleExpandedState(node, _default.options);
 		  }
 
 		  this.render(options);
