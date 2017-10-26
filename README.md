@@ -134,7 +134,8 @@ If you want to do more, here's the full node specification
     checked: true,
     disabled: true,
     expanded: true,
-    selected: true
+    selected: true,
+    hasNodes?: false
   },
   tags: ['available'],
   nodes: [
@@ -210,6 +211,11 @@ Whether or not a node is expanded i.e. open.  Takes precedence over global optio
 `Boolean` `Default: false`
 
 Whether or not a node is selected.
+
+### state.hasClass
+`Boolean` `Default: false`
+
+If there is a child node, it is unconditionally true.
 
 #### tags
 `Array of Strings`  `Optional`
