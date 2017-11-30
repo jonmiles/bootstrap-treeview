@@ -584,9 +584,11 @@
 			// Add text
 			if (_this.options.enableLinks) {
 				// Add hyperlink
+				var target = (_this.options.openNewWindow) ? '_blank' : '';
 				treeItem
 					.append($(_this.template.link)
 						.attr('href', node.href)
+						.attr('target', target)
 						.append(node.text)
 					);
 			}
