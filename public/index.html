@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>Bootstrap Tree View</title>
-    <link href="./bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-    <!-- <link href="./css/bootstrap-treeview.css" rel="stylesheet"> -->
+    <link href="./libs/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="./css/bootstrap-treeview.css" rel="stylesheet">
   </head>
   <body>
   	<div class="container">
@@ -12,55 +12,43 @@
       <div class="row">
         <div class="col-sm-4">
           <h2>Default</h2>
-          <div id="treeview1" class=""></div>
+          <div id="treeview1"></div>
         </div>
         <div class="col-sm-4">
           <h2>Collapsed</h2>
-          <div id="treeview2" class=""></div>
+          <div id="treeview2"></div>
         </div>
         <div class="col-sm-4">
           <h2>Expanded</h2>
-          <div id="treeview3" class=""></div>
+          <div id="treeview3"></div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-4">
           <h2>Blue Theme</h2>
-          <div id="treeview4" class=""></div>
+          <div id="treeview4"></div>
         </div>
         <div class="col-sm-4">
           <h2>Custom Icons</h2>
-          <div id="treeview5" class=""></div>
+          <div id="treeview5"></div>
         </div>
         <div class="col-sm-4">
           <h2>Tags as Badges</h2>
-          <div id="treeview6" class=""></div>
+          <div id="treeview6"></div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-4">
           <h2>No Border</h2>
-          <div id="treeview7" class=""></div>
+          <div id="treeview7"></div>
         </div>
         <div class="col-sm-4">
           <h2>Colourful</h2>
-          <div id="treeview8" class=""></div>
+          <div id="treeview8"></div>
         </div>
         <div class="col-sm-4">
           <h2>Node Overrides</h2>
-          <div id="treeview9" class=""></div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-4">
-          <h2>Link enabled, or</h2>
-          <div id="treeview10" class=""></div>
-        </div>
-        <div class="col-sm-4">
-
-        </div>
-        <div class="col-sm-4">
-
+          <div id="treeview9"></div>
         </div>
       </div>
       <div class="row">
@@ -97,7 +85,7 @@
         </div>
         <div class="col-sm-4">
           <h2>Tree</h2>
-          <div id="treeview-searchable" class=""></div>
+          <div id="treeview-searchable"></div>
         </div>
         <div class="col-sm-4">
           <h2>Results</h2>
@@ -137,7 +125,7 @@
         </div>
         <div class="col-sm-4">
           <h2>Tree</h2>
-          <div id="treeview-selectable" class=""></div>
+          <div id="treeview-selectable"></div>
         </div>
         <div class="col-sm-4">
           <h2>Events</h2>
@@ -192,7 +180,7 @@
         </div>
         <div class="col-sm-4">
           <h2>Tree</h2>
-          <div id="treeview-expandible" class=""></div>
+          <div id="treeview-expandible"></div>
         </div>
         <div class="col-sm-4">
           <h2>Events</h2>
@@ -235,7 +223,7 @@
         </div>
         <div class="col-sm-4">
           <h2>Tree</h2>
-          <div id="treeview-checkable" class=""></div>
+          <div id="treeview-checkable"></div>
         </div>
         <div class="col-sm-4">
           <h2>Events</h2>
@@ -278,7 +266,7 @@
         </div>
         <div class="col-sm-4">
           <h2>Tree</h2>
-          <div id="treeview-disabled" class=""></div>
+          <div id="treeview-disabled"></div>
         </div>
         <div class="col-sm-4">
           <h2>Events</h2>
@@ -287,18 +275,38 @@
       </div>
       <div class="row">
         <hr>
-        <h2>Data</h2>
+        <h2>Lifecycle Events</h2>
         <div class="col-sm-4">
-          <h2>JSON Data</h2>
-          <div id="treeview12" class=""></div>
+          <h2>Input</h2>
+          <div class="form-group">
+            <button type="button" class="btn btn-success lifecycle-events" id="btn-init" disabled>New Tree</button>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-danger lifecycle-events" id="btn-remove">Destroy</button>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-lifecycle"></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Events</h2>
+          <div id="lifecycle-output"></div>
+        </div>
+      </div>
+      <div class="row">
+        <hr>
+        <h2>Data Options</h2>
+        <div class="col-sm-4">
+          <h2>Local JSON</h2>
+          <div id="treeview-json"></div>
+        </div>
+        <div class="col-sm-4">
+          <h2>Remote JSON</h2>
+          <div id="treeview-ajax"></div>
         </div>
         <div class="col-sm-4">
           <h2></h2>
-          <div id="treeview13" class=""></div>
-        </div>
-        <div class="col-sm-4">
-          <h2></h2>
-          <div id="treeview14"></div>
         </div>
       </div>
       <br/>
@@ -306,7 +314,7 @@
       <br/>
       <br/>
     </div>
-    <script src="./bower_components/jquery/dist/jquery.js"></script>
+    <script src="./libs/jquery/jquery.js"></script>
   	<script src="./js/bootstrap-treeview.js"></script>
   	<script type="text/javascript">
 
@@ -315,51 +323,42 @@
         var defaultData = [
           {
             text: 'Parent 1',
-            href: '#parent1',
             tags: ['4'],
             nodes: [
               {
                 text: 'Child 1',
-                href: '#child1',
                 tags: ['2'],
                 nodes: [
                   {
                     text: 'Grandchild 1',
-                    href: '#grandchild1',
                     tags: ['0']
                   },
                   {
                     text: 'Grandchild 2',
-                    href: '#grandchild2',
                     tags: ['0']
                   }
                 ]
               },
               {
                 text: 'Child 2',
-                href: '#child2',
                 tags: ['0']
               }
             ]
           },
           {
             text: 'Parent 2',
-            href: '#parent2',
             tags: ['0']
           },
           {
             text: 'Parent 3',
-            href: '#parent3',
              tags: ['0']
           },
           {
             text: 'Parent 4',
-            href: '#parent4',
             tags: ['0']
           },
           {
             text: 'Parent 5',
-            href: '#parent5'  ,
             tags: ['0']
           }
         ];
@@ -396,13 +395,11 @@
           {
             text: 'Parent 3',
             icon: 'glyphicon glyphicon-earphone',
-            href: '#demo',
             tags: ['11']
           },
           {
             text: 'Parent 4',
             icon: 'glyphicon glyphicon-cloud-download',
-            href: '/demo.html',
             tags: ['19'],
             selected: true
           },
@@ -411,7 +408,6 @@
             icon: 'glyphicon glyphicon-certificate',
             color: 'pink',
             backColor: 'red',
-            href: 'http://www.tesco.com',
             tags: ['available','0']
           }
         ];
@@ -466,7 +462,6 @@
         });
 
         $('#treeview4').treeview({
-
           color: "#428bca",
           data: defaultData
         });
@@ -526,12 +521,6 @@
           data: alternateData
         });
 
-        $('#treeview10').treeview({
-          color: "#428bca",
-          enableLinks: true,
-          data: defaultData
-        });
-
 
 
         var $searchableTree = $('#treeview-searchable').treeview({
@@ -586,7 +575,7 @@
         $('#chk-select-multi:checkbox').on('change', function () {
           console.log('multi-select change');
           $selectableTree = initSelectableTree();
-          selectableNodes = findSelectableNodes();          
+          selectableNodes = findSelectableNodes();
         });
 
         // Select/unselect/toggle nodes
@@ -754,8 +743,68 @@
 
 
 
-        var $tree = $('#treeview12').treeview({
+        var lifecycleTreeOptions = {
+          data: defaultData,
+          levels: 3,
+          onLoading: function(event) {
+            $('#lifecycle-output').prepend('<p>Loaded data</p>');
+          },
+          onInitialized: function(event, nodes) {
+            $('#lifecycle-output').prepend('<p>Initialized nodes</p>');
+          },
+          onNodeRendered: function (event, node) {
+            $('#lifecycle-output').prepend('<p>Finished rendering node : ' + node.text + '</p>');
+            if (node.text === 'Parent 1') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:darkred;">L</span>'));
+            } else if (node.text === 'Child 1') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:red;">I</span>'));
+            } else if (node.text === 'Grandchild 1') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:orange;">F</span>'));
+            } else if (node.text === 'Grandchild 2') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:gold;">E</span>'));
+            } else if (node.text === 'Child 2') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:green;">C</span>'));
+            } else if (node.text === 'Parent 2') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:blue;">Y</span>'));
+            } else if (node.text === 'Parent 3') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:indigo;">C</span>'));
+            } else if (node.text === 'Parent 4') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:violet;">L</span>'));
+            } else if (node.text === 'Parent 5') {
+              node.$el.append($('<span class="badge" style="width:24px;background-color:darkviolet;">E</span>'));
+            }
+          },
+          onRendered: function(event, nodes) {
+            $('#lifecycle-output').prepend('<p>Finished rendering</p>');
+          },
+          onDestroyed: function (event) {
+            $('#lifecycle-output').prepend('<p>Tree destroyed</p>');
+          }
+        };
+        var $lifecycleTree = $('#treeview-lifecycle').treeview(lifecycleTreeOptions);
+
+        $('#btn-init').on('click', function (e) {
+          $('#btn-init').prop('disabled', true);
+          $('#btn-remove').prop('disabled', false);
+          $lifecycleTree.treeview('init', lifecycleTreeOptions);
+        });
+
+        $('#btn-remove').on('click', function (e) {
+          $('#btn-remove').prop('disabled', true);
+          $('#btn-init').prop('disabled', false);
+          $lifecycleTree.treeview('remove');
+        });
+
+
+
+        var $jsonTree = $('#treeview-json').treeview({
           data: json
+        });
+
+        var $ajaxTree = $('#treeview-ajax').treeview({
+          dataUrl: {
+            url: './data.json'
+          }
         });
   		});
   	</script>
