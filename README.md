@@ -566,7 +566,7 @@ $('#tree').treeview('getParent', node);
 Returns an array of selected nodes e.g. state.selected = true.
 
 ```javascript
-$('#tree').treeview('getSelected', nodeId);
+$('#tree').treeview('getSelected');
 ```
 
 #### getSiblings(node | nodeId)
