@@ -442,7 +442,41 @@
 	};
 
 	Tree.prototype._sortNodes = function () {
-		return $.map(Object.keys(this._nodes).sort(), $.proxy(function (value, index) {
+		return $.map(Object.keys(this._nodes).sort(function (a, b) {
+				return sortrec(a, b);
+				function sortrec(al, bl) {
+					var alar = al.split('.');
+					var blar = bl.split('.');
+					if ((alar instanceof Array) && (blar instanceof Array)) {
+						if ((alar.length > 1) && (blar.length > 1)) {
+							var aln = alar.shift();
+							var bln = blar.shift();
+							if ((aln - bln) == 0) {return sortrec(alar.join('.'), blar.join('.'));}
+							else {return aln - bln;}
+						} else if (alar.length > 1) {
+							var aln = alar.shift();
+							var bln = blar.shift();
+							if ((aln - bln) == 0) {return 1;}
+							else {return aln - bln;}
+						} else if (blar.length > 1) {
+							var aln = alar.shift();
+							var bln = blar.shift();
+							if ((aln - bln) == 0) {return -1;}
+							else {return aln - bln;}
+						} else {
+							return alar[0] - blar[0];
+						}
+					} else if (alar instanceof Array) {
+						var aln = alar.shift();
+						return aln - bl;
+					} else if (blar instanceof Array) {
+						var bln = alar.shift();
+						return al - bln;
+					} else {
+						return al - bl;
+					}
+				}
+			}), $.proxy(function (value, index) {
 		  return this._nodes[value];
 		}, this));
 	};
