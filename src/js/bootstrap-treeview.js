@@ -103,6 +103,7 @@
 
 			// Get methods
 			getNode: $.proxy(this.getNode, this),
+			findNodes: $.proxy(this.findNodes, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
 			getSelected: $.proxy(this.getSelected, this),
