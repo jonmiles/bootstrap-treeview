@@ -69,7 +69,8 @@
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
 		onSearchComplete: undefined,
-		onSearchCleared: undefined
+		onSearchCleared: undefined,
+		onRenderOk: undefined
 	};
 
 	_default.options = {
@@ -102,6 +103,7 @@
 
 			// Get methods
 			getNode: $.proxy(this.getNode, this),
+			findNodes: $.proxy(this.findNodes, this),
 			getParent: $.proxy(this.getParent, this),
 			getSiblings: $.proxy(this.getSiblings, this),
 			getSelected: $.proxy(this.getSelected, this),
@@ -199,6 +201,7 @@
 		this.$element.off('nodeUnselected');
 		this.$element.off('searchComplete');
 		this.$element.off('searchCleared');
+		this.$element.off('renderOk');
 	};
 
 	Tree.prototype.subscribeEvents = function () {
@@ -246,6 +249,11 @@
 		if (typeof (this.options.onSearchCleared) === 'function') {
 			this.$element.on('searchCleared', this.options.onSearchCleared);
 		}
+
+		if (typeof (this.options.onRenderOk) === 'function') {
+			this.$element.on('renderOk', this.options.onRenderOk);
+		}
+
 	};
 
 	/*
@@ -499,6 +507,8 @@
 
 		// Build tree
 		this.buildTree(this.tree, 0);
+
+		this.$element.trigger('renderOk', $.extend(true, {}, {}));
 	};
 
 	// Starting from the root node, and recursing down the
@@ -516,6 +526,7 @@
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
+				.addClass(node.selectable ? 'node-selectable' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
 				.attr('style', _this.buildStyleOverride(node));
