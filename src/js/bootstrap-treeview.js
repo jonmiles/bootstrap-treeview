@@ -63,8 +63,8 @@
 		onNodeChecked: undefined,
 		onNodeCollapsed: undefined,
 		onNodeDisabled: undefined,
-        onNodeHidden: undefined,
-        onNodeVisible: undefined,
+		onNodeHidden: undefined,
+		onNodeVisible: undefined,
 		onNodeEnabled: undefined,
 		onNodeExpanded: undefined,
 		onNodeSelected: undefined,
@@ -138,10 +138,10 @@
 			// Disable / enable methods
 			disableAll: $.proxy(this.disableAll, this),
 			disableNode: $.proxy(this.disableNode, this),
-            hideNode: $.proxy(this.hideNode, this),
+			hideNode: $.proxy(this.hideNode, this),
 			enableAll: $.proxy(this.enableAll, this),
-            hideAll: $.proxy(this.hideAll, this),
-            showAll: $.proxy(this.showAll, this),
+			hideAll: $.proxy(this.hideAll, this),
+			showAll: $.proxy(this.showAll, this),
 			enableNode: $.proxy(this.enableNode, this),
 			toggleNodeDisabled: $.proxy(this.toggleNodeDisabled, this),
 
@@ -224,13 +224,13 @@
 			this.$element.on('nodeDisabled', this.options.onNodeDisabled);
 		}
 
-        if (typeof (this.options.onNodeHidden) === 'function') {
-            this.$element.on('nodeHidden', this.options.onNodeHidden);
-        }
+		if (typeof (this.options.onNodeHidden) === 'function') {
+			this.$element.on('nodeHidden', this.options.onNodeHidden);
+		}
 
-        if (typeof (this.options.onNodeVisible) === 'function'){
-            this.$element.on('nodeVisible', this.options.onNodeVisible);
-        }
+		if (typeof (this.options.onNodeVisible) === 'function'){
+			this.$element.on('nodeVisible', this.options.onNodeVisible);
+		}
 
 		if (typeof (this.options.onNodeEnabled) === 'function') {
 			this.$element.on('nodeEnabled', this.options.onNodeEnabled);
@@ -279,8 +279,8 @@
 			// nodeId : unique, incremental identifier
 			node.nodeId = _this.nodes.length;
 
-            // value : set value to node
-            node.value = node.value
+			// value : set value to node
+			node.value = node.value
 			// parentId : transversing up the tree
 			node.parentId = parent.nodeId;
 
@@ -302,10 +302,10 @@
 				node.state.disabled = false;
 			}
 
-            // Set hidden to false by default
-            if (!node.state.hasOwnProperty('hidden')){
-                node.state.hidden = false;
-            }
+			// Set hidden to false by default
+			if (!node.state.hasOwnProperty('hidden')){
+				node.state.hidden = false;
+			}
 
 			// set expanded state; if not provided based on levels
 			if (!node.state.hasOwnProperty('expanded')) {
@@ -502,31 +502,31 @@
 		}
 	};
 
-    Tree.prototype.setHiddenState = function (node, state, options) {
+	Tree.prototype.setHiddenState = function (node, state, options) {
 
-        if (state === node.state.hidden) return;
+		if (state === node.state.hidden) return;
 
-        if (state) {
+		if (state) {
 
-            // Hide node
-            node.state.hidden = true;
+			// Hide node
+			node.state.hidden = true;
 
-            // Disable all other states
-            this.setExpandedState(node, false, options);
+			// Disable all other states
+			this.setExpandedState(node, false, options);
 
-            if (!options.silent) {
-                this.$element.trigger('nodeHidden', $.extend(true, {}, node));
-            }
-        }
-        else {
+			if (!options.silent) {
+				this.$element.trigger('nodeHidden', $.extend(true, {}, node));
+			}
+		}
+		else {
 
-            // Show Node
-            node.state.hidden = false;
-            if (!options.silent) {
-                this.$element.trigger('nodeVisible', $.extend(true, {}, node));
-            }
-        }
-    };
+			// Show Node
+			node.state.hidden = false;
+			if (!options.silent) {
+				this.$element.trigger('nodeVisible', $.extend(true, {}, node));
+			}
+		}
+	};
 
 	Tree.prototype.render = function () {
 
@@ -561,11 +561,11 @@
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
 				.addClass(node.state.disabled ? 'node-disabled': '')
-                .addClass(node.state.hidden ? 'node-hidden': '')
+				.addClass(node.state.hidden ? 'node-hidden': '')
 				.addClass(node.state.selected ? 'node-selected' : '')
 				.addClass(node.searchResult ? 'search-result' : '') 
 				.attr('data-nodeid', node.nodeId)
-                .attr('data-value', node.value)
+				.attr('data-value', node.value)
 				.attr('style', _this.buildStyleOverride(node));
 
 			// Add indent/spacer to mimic tree structure
@@ -673,7 +673,7 @@
 
 		var color = node.color;
 		var backColor = node.backColor;
-        var nodeVisibility = 'block';
+		var nodeVisibility = 'block';
 
 		if (this.options.highlightSelected && node.state.selected) {
 			if (this.options.selectedColor) {
@@ -693,14 +693,14 @@
 			}
 		}
 
-        if (node.state.hidden) {
-            nodeVisibility = 'none';
-        }else{
-            nodeVisibility = 'block';
-        }
+		if (node.state.hidden) {
+			nodeVisibility = 'none';
+		}else{
+			nodeVisibility = 'block';
+		}
 
 		return 'color:' + color +
-            ';background-color:' + backColor + ';display:' + nodeVisibility + ';';
+			';background-color:' + backColor + ';display:' + nodeVisibility + ';';
 	};
 
 	// Add inline style into head
@@ -842,16 +842,16 @@
 		return this.findNodes('true', 'g', 'state.disabled');
 	};
 
-    Tree.prototype.getHidden = function () {
-        return this.findNodes('true', 'g', 'state.hidden');
-    };
+	Tree.prototype.getHidden = function () {
+		return this.findNodes('true', 'g', 'state.hidden');
+	};
 
-    Tree.prototype.getVisible = function () {
-        return this.findNodes('false', 'g', 'state.hidden');
-    };
+	Tree.prototype.getVisible = function () {
+		return this.findNodes('false', 'g', 'state.hidden');
+	};
 
 
-    /**
+	/**
 		Returns an array of enabled nodes.
 		@returns {Array} nodes - Enabled nodes
 	*/
@@ -1082,24 +1082,24 @@
 		this.render();
 	};
 
-    Tree.prototype.hideAll = function (options) {
-        var identifiers = this.findNodes('false', 'g', 'state.hidden');
-        this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-            this.setHiddenState(node, true, options);
-        }, this));
+	Tree.prototype.hideAll = function (options) {
+		var identifiers = this.findNodes('false', 'g', 'state.hidden');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, true, options);
+		}, this));
 
-        this.render();
-    };
+		this.render();
+	};
 
 
-    Tree.prototype.showAll = function (options) {
-        var identifiers = this.findNodes('true', 'g', 'state.hidden');
-        this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-            this.setHiddenState(node, false, options);
-        }, this));
+	Tree.prototype.showAll = function (options) {
+		var identifiers = this.findNodes('true', 'g', 'state.hidden');
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, false, options);
+		}, this));
 
-        this.render();
-    };
+		this.render();
+	};
 
 	/**
 		Disable a given tree node
@@ -1114,13 +1114,13 @@
 		this.render();
 	};
 
-    Tree.prototype.hideNode = function (identifiers, options) {
-        this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
-            this.setHiddenState(node, true, options);
-        }, this));
+	Tree.prototype.hideNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			this.setHiddenState(node, true, options);
+		}, this));
 
-        this.render();
-    };
+		this.render();
+	};
 
 	/**
 		Enable all tree nodes
@@ -1175,7 +1175,7 @@
 
 		$.each(identifiers, $.proxy(function (index, identifier) {
 			callback(this.identifyNode(identifier), options);
-		}, this));	
+		}, this));  
 	};
 
 	/*
@@ -1246,7 +1246,7 @@
 		});
 
 		if (options.render) {
-			this.render();	
+			this.render();  
 		}
 		
 		this.$element.trigger('searchCleared', $.extend(true, {}, results));
@@ -1337,3 +1337,4 @@
 	};
 
 })(jQuery, window, document);
+
