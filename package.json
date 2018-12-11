@@ -19,12 +19,9 @@
       "url": "https://github.com/jonmiles/bootstrap-treeview/blob/master/LICENSE"
     }
   ],
-  "main": [
-    "dist/bootstrap-treeview.min.js",
-    "dist/bootstrap-treeview.min.css"
-  ],
+  "main": "dist/bootstrap-treeview.min.js",
   "scripts": {
-    "install": "bower install",
+    "dev-install": "bower install",
     "start": "node app",
     "test": "grunt test"
   },
@@ -44,6 +41,10 @@
     "grunt-contrib-qunit": "0.5.x",
     "grunt-contrib-watch": "0.6.x",
     "grunt-contrib-copy": "0.7.x"
+  },
+  "peerDependencies": {
+    "jquery": ">= 1.9.0",
+    "bootstrap": ">= 3.0.0"
   },
   "keywords": [
     "twitter",
